@@ -1,1 +1,1 @@
-Bazinis raylib pavyzdys: atvaizduoja šachmatų lentą ir nupiešia vieną pėstininką pasirinktoje pozicijoje.
+Pradinė šachmatų projekto demonstracija: parodo lentą ir vieną figūrą pasirinktoje pozicijoje, pvz. "E5".
