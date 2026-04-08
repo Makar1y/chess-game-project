@@ -1,5 +1,7 @@
 #include "Game.hpp"
 
+#include <cmath>
+
 #define WIDTH 600
 #define LENGTH 600
 
@@ -9,6 +11,49 @@ bool Game::validateMove(Move move) {
 }
 
 void Game::updateBoard(Move move) {
+
+    static bool pieceSelected = false;
+    static int selectedX = -1;
+    static int selectedY = -1;
+
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+        Vector2 mousePos = GetMousePosition();
+
+        int x = (int)(mousePos.x / (WIDTH / 8.0f));
+        int y = (int)(mousePos.y / (LENGTH / 8.0f));
+
+        if (x >= 0 && x < 8 && y >= 0 && y < 8) {
+            Piece* clickedPiece = board.getPiece(x, y);
+
+            if (!pieceSelected) {
+                if (clickedPiece != nullptr) {
+                    pieceSelected = true;
+                    selectedX = x;
+                    selectedY = y;
+                }
+            } else {
+                if (x == selectedX && y == selectedY) {
+                    pieceSelected = false;
+                    selectedX = -1;
+                    selectedY = -1;
+                } else {
+                    Move newMove;
+                    newMove.setFromX(selectedX);
+                    newMove.setFromY(selectedY);
+                    newMove.setToX(x);
+                    newMove.setToY(y);
+
+                    if (validateMove(newMove)) {
+                        board.update(newMove);
+                    }
+
+                    pieceSelected = false;
+                    selectedX = -1;
+                    selectedY = -1;
+                }
+            }
+        }
+    }
 
     static Texture2D boardTexture = LoadTexture("Textures/board.png");
 
@@ -61,6 +106,18 @@ void Game::updateBoard(Move move) {
             Piece* piece = board.getPiece(x, y);
             if (piece == nullptr) continue;
 
+            if (pieceSelected && x == selectedX && y == selectedY) {
+                float centerX = x * cellSize + cellSize * 0.5f;
+                float centerY = y * cellSize + cellSize * 0.5f;
+
+                DrawCircle(
+                    (int)centerX,
+                    (int)centerY,
+                    cellSize * 0.4f,
+                    Fade(DARKGRAY, 0.8f)
+                );
+            }
+
             Texture2D* tex = nullptr;
 
             if (piece->getColor() == PieceColor::Black) {
@@ -88,8 +145,8 @@ void Game::updateBoard(Move move) {
             float drawW = (float)tex->width * PIECE_SCALE;
             float drawH = (float)tex->height * PIECE_SCALE;
 
-            float drawX = x * cellSize + (cellSize - drawW) * 0.5f;
-            float drawY = y * cellSize + (cellSize - drawH) * 0.5f;
+            float drawX = roundf(x * cellSize + (cellSize - drawW) * 0.5f);
+            float drawY = roundf(y * cellSize + (cellSize - drawH) * 0.5f);
 
             DrawTextureEx(*tex, { drawX, drawY }, 0.0f, PIECE_SCALE, WHITE);
         }

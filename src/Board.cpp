@@ -42,5 +42,17 @@ Piece *Board::getPiece(int x, int y) {
 }
 
 void Board::update(Move move) {
-    //TODO
+    int fromX = move.getFromX();
+    int fromY = move.getFromY();
+    int toX = move.getToX();
+    int toY = move.getToY();
+
+    if (squares[fromY][fromX] == nullptr) return;
+
+    if (squares[toY][toX] != nullptr) {
+        delete squares[toY][toX];
+    }
+
+    squares[toY][toX] = squares[fromY][fromX];
+    squares[fromY][fromX] = nullptr;
 }
