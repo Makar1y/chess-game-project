@@ -1,25 +1,28 @@
 #pragma once
-#include <bits/stdc++.h>
-#include <raylib.h>
 
 enum class PieceType {
-    None,
     Pawn,
     Knight,
     Bishop,
-    Ropk,
+    Rook,
     Queen,
     King
+};
+
+enum class PieceColor {
+    White,
+    Black
 };
 
 class Piece {
 
     private:
-        Color color;
+        PieceColor color;
         PieceType type;
 
     public:
+        Piece(PieceColor color, PieceType type);
 
-        Color getColor();
+        PieceColor getColor();
         PieceType getType();
 };

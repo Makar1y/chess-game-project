@@ -1,5 +1,4 @@
 #pragma once
-#include <bits/stdc++.h>
 
 #include "Move.hpp"
 #include "Piece.hpp"
@@ -12,6 +11,7 @@ class Board {
         Piece* squares[8][8];
 
     public:
+        Board();
         Piece* getPiece(int x, int y);
         void update(Move move);
 };

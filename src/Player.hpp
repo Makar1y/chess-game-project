@@ -1,14 +1,19 @@
 #pragma once
-#include <bits/stdc++.h>
-#include <raylib.h>
+
+#include <string>
 
 #include "Move.hpp"
+
+enum class PlayerColor {
+    White,
+    Black
+};
 
 class Player {
 
     private:
         std::string name;
-        Color color;
+        PlayerColor color;
 
     public:
         void makeMove(Move move);

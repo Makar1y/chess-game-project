@@ -1,6 +1,9 @@
 #include "Piece.hpp"
 
-Color Piece::getColor() {
+Piece::Piece(PieceColor color, PieceType type) : color(color), type(type) {
+}
+
+PieceColor Piece::getColor() {
     return color;
 }
 
