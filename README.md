@@ -1,1 +1,1 @@
-# Bazinis raylib pavyzdys: atvaizduoja šachmatų lentą ir nupiešia vieną pėstininką pasirinktoje pozicijoje.
+Bazinis raylib pavyzdys: atvaizduoja šachmatų lentą ir nupiešia vieną pėstininką pasirinktoje pozicijoje.
