@@ -1,9 +1,7 @@
 #include "Game.hpp"
 
-#include <cmath>
-
-#define WIDTH 600
-#define LENGTH 600
+#define WIDTH 800
+#define LENGTH 800
 
 bool Game::validateMove(Move move) {
     //TODO
@@ -91,7 +89,7 @@ void Game::updateBoard(Move move) {
         filterSet = true;
     }
 
-    static float PIECE_SCALE = 0.5f;
+    static float PIECE_SCALE = 0.6f;
 
     BeginDrawing();
     ClearBackground(RAYWHITE);
@@ -145,8 +143,8 @@ void Game::updateBoard(Move move) {
             float drawW = (float)tex->width * PIECE_SCALE;
             float drawH = (float)tex->height * PIECE_SCALE;
 
-            float drawX = roundf(x * cellSize + (cellSize - drawW) * 0.5f);
-            float drawY = roundf(y * cellSize + (cellSize - drawH) * 0.5f);
+            float drawX = x * cellSize + (cellSize - drawW) * 0.5f;
+            float drawY = y * cellSize + (cellSize - drawH) * 0.5f;
 
             DrawTextureEx(*tex, { drawX, drawY }, 0.0f, PIECE_SCALE, WHITE);
         }
