@@ -6,26 +6,31 @@
 #include "Move.hpp"
 #include "Player.hpp"
 
-enum class GameState {
-    NotStarted,
-    Started,
-    Ended
+enum class OverlayType {
+    None,
+    Resign,
+    Draw,
+    Results
 };
 
 class Game {
-
     private:
         Board board;
         Player player1;
         Player player2;
-        GameState state;
+        OverlayType overlayType = OverlayType::None;
 
-        bool validateMove(Move move);
-        void updateBoard(Move move);
+        bool pieceSelected = false;
+        int selectedX = -1;
+        int selectedY = -1;
 
     public:
+        Game();
+
+        void clearSelection();
+        bool validateMove(Move move);
+        void update();
         void startGame();
-        bool makeMove(Move move);
         void resign(Player Player);
         void offerDraw(Player player);
         void showResults();

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-
 #include "Move.hpp"
 
 enum class PlayerColor {
@@ -10,13 +9,13 @@ enum class PlayerColor {
 };
 
 class Player {
+private:
+    std::string name;
+    PlayerColor color;
 
-    private:
-        std::string name;
-        PlayerColor color;
+public:
+    Player(std::string name, PlayerColor color);
 
-    public:
-        void makeMove(Move move);
-        void resign();
-        void offerDraw();
+    std::string getName();
+    PlayerColor getColor();
 };

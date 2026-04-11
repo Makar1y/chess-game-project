@@ -1,13 +1,14 @@
 #include "Player.hpp"
 
-void Player::makeMove(Move move) {
-    //TODO
+Player::Player(std::string name, PlayerColor color) {
+    this->name = name;
+    this->color = color;
 }
 
-void Player::resign() {
-    //TODO
+std::string Player::getName() {
+    return name;
 }
 
-void Player::offerDraw() {
-    //TODO
+PlayerColor Player::getColor() {
+    return color;
 }
