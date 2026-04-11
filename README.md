@@ -1,6 +1,6 @@
 UML neturi visų getter'ių setter'ių ir super trivialių atributų/metodų
 
-![UML](UMLs/CLASSES_maybe.png)
+![UML](UMLs/CLASSES_1.png)
 ---
 
 kai reikės pradėti naują partiją vertėtų turėti smart pointerius, kad kai sunaikinama lenta nebūtų memeory leak dėl
