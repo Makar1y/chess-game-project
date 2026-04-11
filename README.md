@@ -1,4 +1,5 @@
 UML neturi visų getter'ių setter'ių ir super trivialių atributų/metodų
+
 ![UML](UMLs/CLASSES_maybe.png)
 ---
 
