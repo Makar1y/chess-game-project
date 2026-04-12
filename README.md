@@ -6,7 +6,7 @@
 - [ ] išsaugoti ėjimus į vektorių
 - [ ] stockFish gauna istoriją per stdin, sukuria ėjimą per stdout
 - [ ] resign, draw turi būti užpildytas jau egzistuojantis overlay
-- [ ] showResults() rodyti ėjimų istoriją, ėjimų skaičių, nugalėtoją, pan.
+- [ ] showResults() rodyti ėjimų istoriją, pan.
 - [ ] sutvarkyti dizainą
 - [ ] resign, draw, newGame mygtukai turi kviesti klases iš Game
 
