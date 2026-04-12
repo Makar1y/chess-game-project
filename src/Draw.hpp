@@ -19,7 +19,7 @@ public:
     bool isOfferDrawClicked();
     bool isShowResultsClicked();
     bool isOverlayButtonClicked();
-    bool getClickedBoardCell(int x, int y);
+    bool getClickedBoardCell(int& x, int& y);
 
     void render(Board& board, bool pieceSelected, int selectedX, int selectedY, OverlayType overlayType, std::string playerName);
 
