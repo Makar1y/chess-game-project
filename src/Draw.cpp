@@ -138,7 +138,7 @@ bool Draw::isOverlayButtonClicked() {
     return CheckCollisionPointRec(GetMousePosition(), overlayButton);
 }
 
-bool Draw::getClickedBoardCell(int x, int y) {
+bool Draw::getClickedBoardCell(int& x, int& y) {
     Vector2 mousePos = GetMousePosition();
 
     x = (int)(mousePos.x / (WIDTH / 8.0f));
