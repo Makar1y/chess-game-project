@@ -1,4 +1,14 @@
-UML neturi visų getter'ių setter'ių ir super trivialių atributų/metodų
+- [] ėjimo patikrinimas
+- [] specialių atvejų patikrinimas (en passant, check(mate), castle)
+- [] resign, draw, newGame funkcijos
+- [] main game loop'o flow; player -> stockfish -> player -> ....
+- [] stockFish su skirtingais elo
+- [] išsaugoti ėjimus į vektorių
+- [] stockFish gauna istoriją per stdin, sukuria ėjimą per stdout
+- [] resign, draw turi būti užpildytas jau egzistuojantis overlay
+- [] showResults() rodyti ėjimų istoriją, ėjimų skaičių, nugalėtoją, pan.
+- [] sutvarkyti dizainą
+- [] resign, draw, newGame mygtukai turi kviesti klases iš Game
 
 ![UML](UMLs/CLASSES_1.png)
 ---
