@@ -4,8 +4,6 @@
 - [ ] resign, draw turi būti užpildytas jau egzistuojantis overlay
 - [ ] showResults() rodyti ėjimų istoriją, pan.
 ---
-Jei nepasitikite, stockfish.exe yra https://stockfishchess.org/download/
+stockfish.exe: https://stockfishchess.org/download/
 ---
-Naujas UML otw
----
-![UML](UMLs/CLASSES)
+![UML](UMLs/CLASSES.png)
