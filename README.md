@@ -8,4 +8,4 @@ Jei nepasitikite, stockfish.exe yra https://stockfishchess.org/download/
 ---
 Naujas UML otw
 ---
-![UML](UMLs/CLASSES_1.png)
+![UML](UMLs/CLASSES)
