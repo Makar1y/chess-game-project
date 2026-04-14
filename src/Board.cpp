@@ -9,36 +9,36 @@ Board::Board() {
         }
     }
 
-    squares[0][0] = new Piece(PieceColor::Black, PieceType::Rook);
-    squares[0][1] = new Piece(PieceColor::Black, PieceType::Knight);
-    squares[0][2] = new Piece(PieceColor::Black, PieceType::Bishop);
-    squares[0][3] = new Piece(PieceColor::Black, PieceType::Queen);
-    squares[0][4] = new Piece(PieceColor::Black, PieceType::King);
-    squares[0][5] = new Piece(PieceColor::Black, PieceType::Bishop);
-    squares[0][6] = new Piece(PieceColor::Black, PieceType::Knight);
-    squares[0][7] = new Piece(PieceColor::Black, PieceType::Rook);
+    squares[0][0] = std::make_unique<Piece>(PieceColor::Black, PieceType::Rook);
+    squares[0][1] = std::make_unique<Piece>(PieceColor::Black, PieceType::Knight);
+    squares[0][2] = std::make_unique<Piece>(PieceColor::Black, PieceType::Bishop);
+    squares[0][3] = std::make_unique<Piece>(PieceColor::Black, PieceType::Queen);
+    squares[0][4] = std::make_unique<Piece>(PieceColor::Black, PieceType::King);
+    squares[0][5] = std::make_unique<Piece>(PieceColor::Black, PieceType::Bishop);
+    squares[0][6] = std::make_unique<Piece>(PieceColor::Black, PieceType::Knight);
+    squares[0][7] = std::make_unique<Piece>(PieceColor::Black, PieceType::Rook);
 
     for (int i = 0; i < 8; i++) {
-        squares[1][i] = new Piece(PieceColor::Black, PieceType::Pawn);
+        squares[1][i] = std::make_unique<Piece>(PieceColor::Black, PieceType::Pawn);
     }
 
     for (int i = 0; i < 8; i++) {
-        squares[6][i] = new Piece(PieceColor::White, PieceType::Pawn);
+        squares[6][i] = std::make_unique<Piece>(PieceColor::White, PieceType::Pawn);
     }
 
-    squares[7][0] = new Piece(PieceColor::White, PieceType::Rook);
-    squares[7][1] = new Piece(PieceColor::White, PieceType::Knight);
-    squares[7][2] = new Piece(PieceColor::White, PieceType::Bishop);
-    squares[7][3] = new Piece(PieceColor::White, PieceType::Queen);
-    squares[7][4] = new Piece(PieceColor::White, PieceType::King);
-    squares[7][5] = new Piece(PieceColor::White, PieceType::Bishop);
-    squares[7][6] = new Piece(PieceColor::White, PieceType::Knight);
-    squares[7][7] = new Piece(PieceColor::White, PieceType::Rook);
+    squares[7][0] = std::make_unique<Piece>(PieceColor::White, PieceType::Rook);
+    squares[7][1] = std::make_unique<Piece>(PieceColor::White, PieceType::Knight);
+    squares[7][2] = std::make_unique<Piece>(PieceColor::White, PieceType::Bishop);
+    squares[7][3] = std::make_unique<Piece>(PieceColor::White, PieceType::Queen);
+    squares[7][4] = std::make_unique<Piece>(PieceColor::White, PieceType::King);
+    squares[7][5] = std::make_unique<Piece>(PieceColor::White, PieceType::Bishop);
+    squares[7][6] = std::make_unique<Piece>(PieceColor::White, PieceType::Knight);
+    squares[7][7] = std::make_unique<Piece>(PieceColor::White, PieceType::Rook);
 
 }
 
-Piece *Board::getPiece(int x, int y) {
-    return squares[y][x];
+Piece* Board::getPiece(int x, int y) {
+    return squares[y][x].get();
 }
 
 void Board::update(Move move) {
@@ -47,12 +47,7 @@ void Board::update(Move move) {
     int toX = move.getToX();
     int toY = move.getToY();
 
-    if (squares[fromY][fromX] == nullptr) return;
+    if (!squares[fromY][fromX]) return;
 
-    if (squares[toY][toX] != nullptr) {
-        delete squares[toY][toX];
-    }
-
-    squares[toY][toX] = squares[fromY][fromX];
-    squares[fromY][fromX] = nullptr;
+    squares[toY][toX] = std::move(squares[fromY][fromX]);
 }
