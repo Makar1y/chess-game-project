@@ -4,3 +4,4 @@
 .vscode/
 .clangd
 .clanged_hidden_message
+!stockfish.exe

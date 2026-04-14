@@ -1,10 +1,13 @@
 #pragma once
 
 #include <string>
+#include <cmath>
 
 #include "Board.hpp"
-#include "Game.hpp"
+#include "UserInput.hpp"
 #include "raylib.h"
+
+enum class OverlayType : int;
 
 class Draw {
 public:
@@ -14,14 +17,9 @@ public:
     bool shouldClose();
     void closeWindow();
 
-    bool isLeftMousePressed();
-    bool isResignClicked();
-    bool isOfferDrawClicked();
-    bool isShowResultsClicked();
-    bool isOverlayButtonClicked();
-    bool getClickedBoardCell(int& x, int& y);
+    Input& getInput();
 
-    void render(Board& board, bool pieceSelected, int selectedX, int selectedY, OverlayType overlayType, std::string playerName);
+    void render(Board& board, bool pieceSelected, int selectedX, int selectedY, OverlayType overlayType, std::string playerName, bool playerPlaysWhite);
 
 private:
     void loadResources();
@@ -29,7 +27,8 @@ private:
 
     bool resourcesLoaded;
 
-    Font uiFont;
+    Font uiFont22;
+    Font uiFont36;
 
     Texture2D boardTexture;
     Texture2D stockfishTexture;
@@ -51,7 +50,8 @@ private:
     Rectangle resignButton;
     Rectangle offerDrawButton;
     Rectangle showResultsButton;
-
     Rectangle overlayRect;
     Rectangle overlayButton;
+
+    Input input;
 };
