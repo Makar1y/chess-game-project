@@ -3,6 +3,7 @@
 Player::Player(std::string name, PlayerColor color) {
     this->name = name;
     this->color = color;
+    this->inCheck = false;
 }
 
 std::string Player::getName() {
@@ -11,4 +12,12 @@ std::string Player::getName() {
 
 PlayerColor Player::getColor() {
     return color;
+}
+
+bool Player::getInCheck() {
+    return inCheck;
+}
+
+void Player::setInCheck(bool value) {
+    inCheck = value;
 }

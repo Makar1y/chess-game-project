@@ -19,10 +19,16 @@ class Piece {
     private:
         PieceColor color;
         PieceType type;
+        bool hasMoved = false;
 
     public:
         Piece(PieceColor color, PieceType type);
 
+
         PieceColor getColor();
+
         PieceType getType();
+
+        bool getHasMoved();
+        void setHasMoved(bool value);
 };
