@@ -1,80 +1,77 @@
+#include "../Config.hpp"
 #include "Draw.hpp"
+#include "Game.hpp"
 
-#define WIDTH 800
-#define LENGTH 800
-#define PANEL_WIDTH 220
-
-Draw::Draw() {
+Draw::Draw()
+    : input(resignButton, offerDrawButton, showResultsButton, overlayButton) {
     resourcesLoaded = false;
-
-    const float sideMargin                = 30.0f;
-    const float buttonHeight              = 50.0f;
-    const float buttonWidth               = 160.0f;
-    const float firstButtonY              = 360.0f;
-    const float buttonSpacing             = 70.0f;
 
     const float overlayMarginX            = 110.0f;
     const float overlayMarginY            = 80.0f;
     const float overlayButtonWidth        = 240.0f;
     const float buttonOffsetBottom        = 80.0f;
+    const float overlayButtonHeight       = 50.0f;
 
-    resignButton = { (float)WIDTH + sideMargin, firstButtonY, buttonWidth, buttonHeight };
-    offerDrawButton = { (float)WIDTH + sideMargin, firstButtonY + buttonSpacing, buttonWidth, buttonHeight };
-    showResultsButton = { (float)WIDTH + sideMargin, firstButtonY + buttonSpacing * 2.0f, buttonWidth, buttonHeight };
+    resignButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    offerDrawButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    showResultsButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
 
-    overlayRect = {
+    overlayRect = Rectangle{
         overlayMarginX,
         overlayMarginY,
         (float)(WIDTH + PANEL_WIDTH) - overlayMarginX * 2.0f,
         (float)LENGTH - overlayMarginY * 2.0f
     };
 
-    overlayButton = {
+    overlayButton = Rectangle{
         overlayRect.x + (overlayRect.width - overlayButtonWidth) * 0.5f,
         overlayRect.y + overlayRect.height - buttonOffsetBottom,
         overlayButtonWidth,
-        buttonHeight
+        overlayButtonHeight
     };
 }
 
 void Draw::loadResources() {
     if (resourcesLoaded) return;
 
-    uiFont = LoadFontEx("Fonts/Rubik-SemiBold.ttf", 96, 0, 0);
-    SetTextureFilter(uiFont.texture, TEXTURE_FILTER_BILINEAR);
+    uiFont22 = LoadFontEx("Fonts/Rubik-SemiBold.ttf", 22, 0, 0);
+    uiFont36 = LoadFontEx("Fonts/Rubik-SemiBold.ttf", 36, 0, 0);
+
+    SetTextureFilter(uiFont22.texture, TEXTURE_FILTER_BILINEAR);
+    SetTextureFilter(uiFont36.texture, TEXTURE_FILTER_BILINEAR);
 
     boardTexture = LoadTexture("Textures/board.png");
     stockfishTexture = LoadTexture("Textures/stockfish.png");
 
-    b_bishop = LoadTexture("Textures/b_bishop.png");
-    b_king   = LoadTexture("Textures/b_king.png");
-    b_knight = LoadTexture("Textures/b_knight.png");
-    b_pawn   = LoadTexture("Textures/b_pawn.png");
-    b_queen  = LoadTexture("Textures/b_queen.png");
-    b_rook   = LoadTexture("Textures/b_rook.png");
+    b_bishop = LoadTexture("Textures/bb.png");
+    b_king   = LoadTexture("Textures/bk.png");
+    b_knight = LoadTexture("Textures/bn.png");
+    b_pawn   = LoadTexture("Textures/bp.png");
+    b_queen  = LoadTexture("Textures/bq.png");
+    b_rook   = LoadTexture("Textures/br.png");
 
-    w_bishop = LoadTexture("Textures/w_bishop.png");
-    w_king   = LoadTexture("Textures/w_king.png");
-    w_knight = LoadTexture("Textures/w_knight.png");
-    w_pawn   = LoadTexture("Textures/w_pawn.png");
-    w_queen  = LoadTexture("Textures/w_queen.png");
-    w_rook   = LoadTexture("Textures/w_rook.png");
+    w_bishop = LoadTexture("Textures/wb.png");
+    w_king   = LoadTexture("Textures/wk.png");
+    w_knight = LoadTexture("Textures/wn.png");
+    w_pawn   = LoadTexture("Textures/wp.png");
+    w_queen  = LoadTexture("Textures/wq.png");
+    w_rook   = LoadTexture("Textures/wr.png");
 
-    SetTextureFilter(stockfishTexture, TEXTURE_FILTER_BILINEAR);
+    SetTextureFilter(stockfishTexture, TEXTURE_FILTER_TRILINEAR);
 
-    SetTextureFilter(b_bishop, TEXTURE_FILTER_BILINEAR);
-    SetTextureFilter(b_king,   TEXTURE_FILTER_BILINEAR);
-    SetTextureFilter(b_knight, TEXTURE_FILTER_BILINEAR);
-    SetTextureFilter(b_pawn,   TEXTURE_FILTER_BILINEAR);
-    SetTextureFilter(b_queen,  TEXTURE_FILTER_BILINEAR);
-    SetTextureFilter(b_rook,   TEXTURE_FILTER_BILINEAR);
+    SetTextureFilter(b_bishop, TEXTURE_FILTER_TRILINEAR);
+    SetTextureFilter(b_king,   TEXTURE_FILTER_TRILINEAR);
+    SetTextureFilter(b_knight, TEXTURE_FILTER_TRILINEAR);
+    SetTextureFilter(b_pawn,   TEXTURE_FILTER_TRILINEAR);
+    SetTextureFilter(b_queen,  TEXTURE_FILTER_TRILINEAR);
+    SetTextureFilter(b_rook,   TEXTURE_FILTER_TRILINEAR);
 
-    SetTextureFilter(w_bishop, TEXTURE_FILTER_BILINEAR);
-    SetTextureFilter(w_king,   TEXTURE_FILTER_BILINEAR);
-    SetTextureFilter(w_knight, TEXTURE_FILTER_BILINEAR);
-    SetTextureFilter(w_pawn,   TEXTURE_FILTER_BILINEAR);
-    SetTextureFilter(w_queen,  TEXTURE_FILTER_BILINEAR);
-    SetTextureFilter(w_rook,   TEXTURE_FILTER_BILINEAR);
+    SetTextureFilter(w_bishop, TEXTURE_FILTER_TRILINEAR);
+    SetTextureFilter(w_king,   TEXTURE_FILTER_TRILINEAR);
+    SetTextureFilter(w_knight, TEXTURE_FILTER_TRILINEAR);
+    SetTextureFilter(w_pawn,   TEXTURE_FILTER_TRILINEAR);
+    SetTextureFilter(w_queen,  TEXTURE_FILTER_TRILINEAR);
+    SetTextureFilter(w_rook,   TEXTURE_FILTER_TRILINEAR);
 
     resourcesLoaded = true;
 }
@@ -82,7 +79,8 @@ void Draw::loadResources() {
 void Draw::unloadResources() {
     if (!resourcesLoaded) return;
 
-    UnloadFont(uiFont);
+    UnloadFont(uiFont22);
+    UnloadFont(uiFont36);
 
     UnloadTexture(boardTexture);
     UnloadTexture(stockfishTexture);
@@ -105,6 +103,7 @@ void Draw::unloadResources() {
 }
 
 void Draw::initWindow() {
+    SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(WIDTH + PANEL_WIDTH, LENGTH, "Chess");
     loadResources();
 }
@@ -118,38 +117,13 @@ void Draw::closeWindow() {
     CloseWindow();
 }
 
-bool Draw::isLeftMousePressed() {
-    return IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+Input& Draw::getInput() {
+    return input;
 }
 
-bool Draw::isResignClicked() {
-    return CheckCollisionPointRec(GetMousePosition(), resignButton);
-}
-
-bool Draw::isOfferDrawClicked() {
-    return CheckCollisionPointRec(GetMousePosition(), offerDrawButton);
-}
-
-bool Draw::isShowResultsClicked() {
-    return CheckCollisionPointRec(GetMousePosition(), showResultsButton);
-}
-
-bool Draw::isOverlayButtonClicked() {
-    return CheckCollisionPointRec(GetMousePosition(), overlayButton);
-}
-
-bool Draw::getClickedBoardCell(int& x, int& y) {
-    Vector2 mousePos = GetMousePosition();
-
-    x = (int)(mousePos.x / (WIDTH / 8.0f));
-    y = (int)(mousePos.y / (LENGTH / 8.0f));
-
-    return x >= 0 && x < 8 && y >= 0 && y < 8;
-}
-
-void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY, OverlayType overlayType, std::string playerName) {
-    static float PIECE_SCALE = 0.6f;
-    static float PLAYER_SCALE = 0.2f;
+void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY, OverlayType overlayType, std::string playerName, bool playerPlaysWhite) {
+    static float PIECE_SCALE = 0.46f;
+    static float PLAYER_SCALE = 0.28f;
 
     BeginDrawing();
     ClearBackground(RAYWHITE);
@@ -164,9 +138,12 @@ void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY
             Piece* piece = board.getPiece(x, y);
             if (piece == nullptr) continue;
 
+            int drawBoardX = playerPlaysWhite ? x : 7 - x;
+            int drawBoardY = playerPlaysWhite ? y : 7 - y;
+
             if (pieceSelected && x == selectedX && y == selectedY) {
-                float centerX = x * cellSize + cellSize * 0.5f;
-                float centerY = y * cellSize + cellSize * 0.5f;
+                float centerX = drawBoardX * cellSize + cellSize * 0.5f;
+                float centerY = drawBoardY * cellSize + cellSize * 0.5f;
 
                 DrawCircle(
                     (int)centerX,
@@ -203,23 +180,25 @@ void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY
             float drawW = (float)tex->width * PIECE_SCALE;
             float drawH = (float)tex->height * PIECE_SCALE;
 
-            float drawX = x * cellSize + (cellSize - drawW) * 0.5f;
-            float drawY = y * cellSize + (cellSize - drawH) * 0.5f;
+            float drawX = drawBoardX * cellSize + (cellSize - drawW) * 0.5f;
+            float drawY = drawBoardY * cellSize + (cellSize - drawH) * 0.5f;
 
             DrawTextureEx(*tex, { drawX, drawY }, 0.0f, PIECE_SCALE, WHITE);
         }
     }
+    const float playerImageTop       = 40.0f;
+    const float playerNameSize       = 36.0f;
+    const float playerNameSpacingY   = 14.0f;
+    const float panelSidePadding     = 18.0f;
+    const float buttonsTopSpacing    = 28.0f;
+    const float buttonHeight         = 48.0f;
+    const float buttonSpacing        = 18.0f;
+    const float buttonSize           = 22.0f;
+    const float buttonRoundness      = 0.2f;
+    const int   buttonSegments       = 8;
 
-    const float playerImageTop          = 60.0f;
-    const float playerNameSize          = 26.0f;
-    const float playerNameSpacingY      = 15.0f;
-    const float buttonSize              = 24.0f;
-    const float overlayDim              = 0.25f;
-    const float buttonRoundness         = 0.2f;
-    const int   buttonSegments          = 8;
-
-    DrawRectangle(WIDTH, 0, PANEL_WIDTH, LENGTH, LIGHTGRAY);
-    DrawLine(WIDTH, 0, WIDTH, LENGTH, GRAY);
+    DrawRectangle(WIDTH, 0, PANEL_WIDTH, LENGTH, Color{ 117, 148, 85, 255 });
+    DrawLine(WIDTH, 0, WIDTH, LENGTH, Color{ 238, 238, 210, 255 });
 
     float playerImageW = (float)stockfishTexture.width * PLAYER_SCALE;
     float playerImageH = (float)stockfishTexture.height * PLAYER_SCALE;
@@ -228,17 +207,36 @@ void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY
 
     DrawTextureEx(stockfishTexture, { playerImageX, playerImageY }, 0.0f, PLAYER_SCALE, WHITE);
 
-    Vector2 playerTextSize = MeasureTextEx(uiFont, playerName.c_str(), playerNameSize, 1);
-    DrawTextEx(uiFont, playerName.c_str(),
-    {
-        WIDTH + (PANEL_WIDTH - playerTextSize.x) * 0.5f,
-        playerImageY + playerImageH + playerNameSpacingY
-    },
-    playerNameSize, 1, BLACK);
+    Vector2 playerTextSize = MeasureTextEx(uiFont36, playerName.c_str(), 36, 1);
+    float playerTextX = WIDTH + (PANEL_WIDTH - playerTextSize.x) * 0.5f;
+    float playerTextY = playerImageY + playerImageH + playerNameSpacingY;
 
-    Color resignColor = isResignClicked() ? GRAY : LIGHTGRAY;
-    Color drawColor = isOfferDrawClicked() ? GRAY : LIGHTGRAY;
-    Color resultsColor = isShowResultsClicked() ? GRAY : LIGHTGRAY;
+    DrawTextEx(uiFont36, playerName.c_str(),
+    {
+        (float)std::round(playerTextX),
+        (float)std::round(playerTextY)
+    },
+    36, 1, Color{ 238, 238, 210, 255 });
+
+    float buttonWidth = PANEL_WIDTH - panelSidePadding * 2.0f;
+    float buttonX = WIDTH + (PANEL_WIDTH - buttonWidth) * 0.5f;
+    float firstButtonY = playerTextY + playerTextSize.y + buttonsTopSpacing;
+
+    resignButton = { buttonX, firstButtonY, buttonWidth, buttonHeight };
+    offerDrawButton = { buttonX, firstButtonY + buttonHeight + buttonSpacing, buttonWidth, buttonHeight };
+    showResultsButton = { buttonX, firstButtonY + (buttonHeight + buttonSpacing) * 2.0f, buttonWidth, buttonHeight };
+
+Color resignColor = input.isResignClicked()
+    ? Color{ 218, 218, 190, 255 }
+    : Color{ 238, 238, 210, 255 };
+
+Color drawColor = input.isOfferDrawClicked()
+    ? Color{ 218, 218, 190, 255 }
+    : Color{ 238, 238, 210, 255 };
+
+Color resultsColor = input.isShowResultsClicked()
+    ? Color{ 218, 218, 190, 255 }
+    : Color{ 238, 238, 210, 255 };
 
     DrawRectangleRounded(resignButton, buttonRoundness, buttonSegments, resignColor);
     DrawRectangleRounded(offerDrawButton, buttonRoundness, buttonSegments, drawColor);
@@ -248,48 +246,48 @@ void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY
     const char* drawTextStr = "Offer Draw";
     const char* resultsText = "Show Results";
 
-    Vector2 resignSize = MeasureTextEx(uiFont, resignText, buttonSize, 1);
-    Vector2 drawSize = MeasureTextEx(uiFont, drawTextStr, buttonSize, 1);
-    Vector2 resultsSize = MeasureTextEx(uiFont, resultsText, buttonSize, 1);
+    Vector2 resignSize = MeasureTextEx(uiFont22, resignText, 22, 1);
+    Vector2 drawSize = MeasureTextEx(uiFont22, drawTextStr, 22, 1);
+    Vector2 resultsSize = MeasureTextEx(uiFont22, resultsText, 22, 1);
 
-    DrawTextEx(uiFont, resignText,
+    DrawTextEx(uiFont22, resignText,
         {
-            resignButton.x + (resignButton.width - resignSize.x) * 0.5f,
-            resignButton.y + (resignButton.height - resignSize.y) * 0.5f
+            roundf(resignButton.x + (resignButton.width - resignSize.x) * 0.5f),
+            roundf(resignButton.y + (resignButton.height - resignSize.y) * 0.5f)
         },
-        buttonSize, 1, BLACK);
+        22, 1, BLACK);
 
-    DrawTextEx(uiFont, drawTextStr,
+    DrawTextEx(uiFont22, drawTextStr,
         {
-            offerDrawButton.x + (offerDrawButton.width - drawSize.x) * 0.5f,
-            offerDrawButton.y + (offerDrawButton.height - drawSize.y) * 0.5f
+            roundf(offerDrawButton.x + (offerDrawButton.width - drawSize.x) * 0.5f),
+            roundf(offerDrawButton.y + (offerDrawButton.height - drawSize.y) * 0.5f)
         },
-        buttonSize, 1, BLACK);
+        22, 1, BLACK);
 
-    DrawTextEx(uiFont, resultsText,
+    DrawTextEx(uiFont22, resultsText,
         {
-            showResultsButton.x + (showResultsButton.width - resultsSize.x) * 0.5f,
-            showResultsButton.y + (showResultsButton.height - resultsSize.y) * 0.5f
+            roundf(showResultsButton.x + (showResultsButton.width - resultsSize.x) * 0.5f),
+            roundf(showResultsButton.y + (showResultsButton.height - resultsSize.y) * 0.5f)
         },
-        buttonSize, 1, BLACK);
+        22, 1, BLACK);
 
     if (overlayType != OverlayType::None) {
-        DrawRectangle(0, 0, WIDTH + PANEL_WIDTH, LENGTH, Fade(BLACK, overlayDim));
+        DrawRectangle(0, 0, WIDTH + PANEL_WIDTH, LENGTH, Fade(BLACK, 0.25f));
         DrawRectangleRec(overlayRect, RAYWHITE);
         DrawRectangleLinesEx(overlayRect, 2, GRAY);
 
         const char* overlayButtonText = (overlayType == OverlayType::Results) ? "Back to the game" : "New game";
-        Vector2 overlayButtonTextSize = MeasureTextEx(uiFont, overlayButtonText, buttonSize, 1);
+        Vector2 overlayButtonTextSize = MeasureTextEx(uiFont22, overlayButtonText, 22, 1);
 
-        Color overlayButtonColor = isOverlayButtonClicked() ? GRAY : LIGHTGRAY;
+        Color overlayButtonColor = input.isOverlayButtonClicked() ? GRAY : LIGHTGRAY;
 
         DrawRectangleRounded(overlayButton, buttonRoundness, buttonSegments, overlayButtonColor);
-        DrawTextEx(uiFont, overlayButtonText,
+        DrawTextEx(uiFont22, overlayButtonText,
             {
-                overlayButton.x + (overlayButton.width - overlayButtonTextSize.x) * 0.5f,
-                overlayButton.y + (overlayButton.height - overlayButtonTextSize.y) * 0.5f
+                roundf(overlayButton.x + (overlayButton.width - overlayButtonTextSize.x) * 0.5f),
+                roundf(overlayButton.y + (overlayButton.height - overlayButtonTextSize.y) * 0.5f)
             },
-            buttonSize, 1, BLACK);
+            22, 1, BLACK);
     }
 
     EndDrawing();

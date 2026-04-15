@@ -1,10 +1,16 @@
 #pragma once
 
-#include <raylib.h>
+#include <string>
+#include <vector>
+#include <thread>
+#include <chrono>
 
+#include "../Config.hpp"
 #include "Board.hpp"
+#include "Draw.hpp"
 #include "Move.hpp"
 #include "Player.hpp"
+#include "Stockfish.hpp"
 
 enum class OverlayType {
     None,
@@ -14,24 +20,34 @@ enum class OverlayType {
 };
 
 class Game {
-    private:
-        Board board;
-        Player player1;
-        Player player2;
-        OverlayType overlayType = OverlayType::None;
+private:
+    Draw draw;
+    Board board;
+    Player player1;
+    Player player2;
+    Stockfish stockfish;
 
-        bool pieceSelected = false;
-        int selectedX = -1;
-        int selectedY = -1;
+    OverlayType overlayType = OverlayType::None;
 
-    public:
-        Game();
+    bool pieceSelected = false;
+    int selectedX = -1;
+    int selectedY = -1;
 
-        void clearSelection();
-        bool validateMove(Move move);
-        void update();
-        void startGame();
-        void resign(Player Player);
-        void offerDraw(Player player);
-        void showResults();
+    bool isPlayerTurn = true;
+    std::vector<std::string> moveHistory;
+
+    void makeStockfishMove();
+    std::string moveToUci(Move move);
+    Move uciToMove(const std::string& uciMove);
+
+public:
+    Game();
+
+    void update();
+    void startGame();
+    void clearSelection();
+    void showResults();
+    void resign(Player player);
+    void offerDraw(Player player);
+    bool validateMove(Move move);
 };
