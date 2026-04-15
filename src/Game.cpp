@@ -154,6 +154,9 @@ void Game::offerDraw(Player player) {
 }
 
 bool Game::validateMove(Move move) {
+    // Šita funkcija jau turi prieigą prie board, moveHistory, player1, player2, ko turėtų užtekti
+    // board turi piece, turi hasMoved, o en passant galima remtis moveHistory
+    // kol kas nėra promote ir endGame
     // TODO
     return true;
 }

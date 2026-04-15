@@ -49,5 +49,6 @@ void Board::update(Move move) {
 
     if (!squares[fromY][fromX]) return;
 
+    squares[fromY][fromX]->setHasMoved(true);
     squares[toY][toX] = std::move(squares[fromY][fromX]);
 }
