@@ -14,6 +14,7 @@ public:
     Draw();
 
     void initWindow();
+    void mainMenu();
     bool shouldClose();
     void closeWindow();
 
