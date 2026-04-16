@@ -2,6 +2,8 @@
 #include "Draw.hpp"
 #include "Game.hpp"
 
+#include <cmath>
+
 Draw::Draw()
     : input(resignButton, offerDrawButton, showResultsButton, overlayButton) {
     resourcesLoaded = false;
@@ -123,74 +125,46 @@ Input& Draw::getInput() {
 }
 
 void Draw::mainMenu() {
+    float centerX = (WIDTH + PANEL_WIDTH) / 2.0f;
+    float centerY = LENGTH / 2.0f;
+
+    const std::string titleText = "Chess";
+    Vector2 titleSize = MeasureTextEx(uiFont36, titleText.c_str(), 36, 1);
+    const float titleX = centerX - titleSize.x / 2.0f;
+    const float titleY = centerY / 2.0f - titleSize.y / 2.0f;
+
+    const std::string startBtnText = "Start game";;
+    Vector2 startBtnSize = MeasureTextEx(uiFont22, startBtnText.c_str(), 22, 1);
+    const float startBtnX = centerX - startBtnSize.x / 2.0f - 20.0f;
+    const float startBtnY = titleY + titleSize.y + 40.0f;
+
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
-    const float titleSize = 36.0f;
-    const float subtitleSize = 22.0f;
-    const float buttonWidth = 320.0f;
-    const float buttonHeight = 58.0f;
-    const float buttonSpacing = 24.0f;
-    const float buttonRoundness = 0.22f;
-    const int buttonSegments = 10;
-    const float titleTop = 120.0f;
-    const float buttonsTop = 280.0f;
+    DrawTextEx(uiFont36, titleText.c_str(),
+        {
+            roundf(titleX),
+            roundf(titleY)
+        },
+        36, 1, BLACK);
 
-    const char* titleText = "Chess";
-    const char* subtitleText = "Main Menu";
-    const char* startText = "Start Game";
-    const char* colorText = PLAYER_PLAYS_WHITE ? "Color: White" : "Color: Black";
+    Rectangle startBtnRect = {
+        roundf(startBtnX),
+        roundf(startBtnY),
+        startBtnSize.x + 40.0f,
+        startBtnSize.y + 20.0f
+    };
 
+    Color startBtnColor = input.isOverlayButtonClicked() ? GRAY : LIGHTGRAY;
+    DrawRectangleRounded(startBtnRect, 0.2f, 8, startBtnColor);
+    DrawTextEx(uiFont22, startBtnText.c_str(),
+        {
+            roundf(startBtnX + (startBtnRect.width - startBtnSize.x) / 2.0f),
+            roundf(startBtnY + 10.0f)
+        },
+        22, 1, BLACK);
 
-    const char* eloText = "Stockfish Elo: 1320";
-
-    Vector2 titleSizePx = MeasureTextEx(uiFont36, titleText, titleSize, 1);
-    Vector2 subtitleSizePx = MeasureTextEx(uiFont22, subtitleText, subtitleSize, 1);
-
-    const float centerX = (WIDTH + PANEL_WIDTH) * 0.5f;
-    const float buttonX = centerX - buttonWidth * 0.5f;
-
-    Rectangle startButton = { buttonX, buttonsTop, buttonWidth, buttonHeight };
-    Rectangle colorButton = { buttonX, buttonsTop + buttonHeight + buttonSpacing, buttonWidth, buttonHeight };
-    Rectangle eloButton = { buttonX, buttonsTop + (buttonHeight + buttonSpacing) * 2.0f, buttonWidth, buttonHeight };
-
-    Vector2 mousePos = GetMousePosition();
-    Color defaultButtonColor = Color{ 238, 238, 210, 255 };
-    Color hoveredButtonColor = Color{ 218, 218, 190, 255 };
-    Color accentColor = Color{ 117, 148, 85, 255 };
-
-    DrawRectangleGradientV(0, 0, WIDTH + PANEL_WIDTH, LENGTH, Color{ 245, 245, 240, 255 }, Color{ 224, 232, 214, 255 });
-    DrawRectangleRounded(Rectangle{ centerX - 240.0f, 70.0f, 480.0f, 640.0f }, 0.08f, 12, Fade(WHITE, 0.8f));
-    DrawRectangleLinesEx(Rectangle{ centerX - 240.0f, 70.0f, 480.0f, 640.0f }, 2.0f, Fade(accentColor, 0.4f));
-
-    DrawTextEx(uiFont36, titleText,
-        { roundf(centerX - titleSizePx.x * 0.5f), titleTop },
-        titleSize, 1, accentColor);
-    DrawTextEx(uiFont22, subtitleText,
-        { roundf(centerX - subtitleSizePx.x * 0.5f), titleTop + titleSizePx.y + 12.0f },
-        subtitleSize, 1, DARKGRAY);
-
-    Color startButtonColor = CheckCollisionPointRec(mousePos, startButton) ? hoveredButtonColor : defaultButtonColor;
-    Color colorButtonColor = CheckCollisionPointRec(mousePos, colorButton) ? hoveredButtonColor : defaultButtonColor;
-    Color eloButtonColor = CheckCollisionPointRec(mousePos, eloButton) ? hoveredButtonColor : defaultButtonColor;
-
-    DrawRectangleRounded(startButton, buttonRoundness, buttonSegments, startButtonColor);
-    DrawRectangleRounded(colorButton, buttonRoundness, buttonSegments, colorButtonColor);
-    DrawRectangleRounded(eloButton, buttonRoundness, buttonSegments, eloButtonColor);
-
-    Vector2 startSize = MeasureTextEx(uiFont22, startText, subtitleSize, 1);
-    Vector2 colorSize = MeasureTextEx(uiFont22, colorText, subtitleSize, 1);
-    Vector2 eloSize = MeasureTextEx(uiFont22, eloText, subtitleSize, 1);
-
-    DrawTextEx(uiFont22, startText,
-        { roundf(startButton.x + (startButton.width - startSize.x) * 0.5f), roundf(startButton.y + (startButton.height - startSize.y) * 0.5f) },
-        subtitleSize, 1, BLACK);
-    DrawTextEx(uiFont22, colorText,
-        { roundf(colorButton.x + (colorButton.width - colorSize.x) * 0.5f), roundf(colorButton.y + (colorButton.height - colorSize.y) * 0.5f) },
-        subtitleSize, 1, BLACK);
-    DrawTextEx(uiFont22, eloText,
-        { roundf(eloButton.x + (eloButton.width - eloSize.x) * 0.5f), roundf(eloButton.y + (eloButton.height - eloSize.y) * 0.5f) },
-        subtitleSize, 1, BLACK);
+    
 
     EndDrawing();
 }
