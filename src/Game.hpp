@@ -45,6 +45,7 @@ public:
 
     void update();
     void startGame();
+    void drawMainMenu();
     void clearSelection();
     void showResults();
     void resign(Player player);

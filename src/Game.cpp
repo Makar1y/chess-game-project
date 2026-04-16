@@ -2,11 +2,10 @@
 #include "Draw.hpp"
 
 Game::Game()
-    : player1("Player 1", PLAYER_PLAYS_WHITE ? PlayerColor::White : PlayerColor::Black),
-      player2("Stockfish", PLAYER_PLAYS_WHITE ? PlayerColor::Black : PlayerColor::White),
+    : player1("Player 1",  PlayerColor::White),
+      player2("Stockfish", PlayerColor::Black),
       stockfish((StockfishElo)STOCKFISH_ELO) {
-    stockfish.newGame();
-    isPlayerTurn = PLAYER_PLAYS_WHITE;
+    isPlayerTurn = player1.getColor() == PlayerColor::White;
 }
 
 void Game::update() {
@@ -19,7 +18,7 @@ void Game::update() {
                 board = Board();
                 clearSelection();
                 moveHistory.clear();
-                isPlayerTurn = PLAYER_PLAYS_WHITE;
+                isPlayerTurn = player1.getColor() == PlayerColor::White;
                 stockfish.newGame();
             }
 
@@ -100,7 +99,7 @@ void Game::makeStockfishMove() {
 }
 
 void Game::startGame() {
-    draw.initWindow();
+    stockfish.newGame();
 
     while (!draw.shouldClose()) {
         update();
@@ -112,6 +111,16 @@ void Game::startGame() {
         }
     }
 
+    draw.closeWindow();
+}
+
+void Game::drawMainMenu() {
+    draw.initWindow();
+    while (!draw.shouldClose()) {
+        // TODO: input handling
+
+        draw.mainMenu();
+    }
     draw.closeWindow();
 }
 
@@ -144,7 +153,6 @@ void Game::showResults() {
 }
 
 void Game::resign(Player player) {
-    // TODO
     overlayType = OverlayType::Resign;
 }
 
