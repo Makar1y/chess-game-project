@@ -1,8 +1,4 @@
-- [ ] ėjimo patikrinimas
-- [ ] specialių atvejų patikrinimas (en passant, check(mate), castle)
-- [ ] resign, draw, newGame funkcijos
-- [ ] resign, draw turi būti užpildytas jau egzistuojantis overlay
-- [ ] showResults() rodyti ėjimų istoriją, pan.
+https://docs.google.com/document/d/1awpV3wgpop0jnhoeYZ910YsmFCwjL3FWwo-3oLJLTqE/edit?tab=t.0
 ---
 stockfish.exe: https://stockfishchess.org/download/
 ---
