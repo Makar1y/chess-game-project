@@ -114,12 +114,12 @@ void Game::startGame() {
     draw.closeWindow();
 }
 
-void Game::drawMainMenu() {
+void Game::mainMenu() {
     draw.initWindow();
     while (!draw.shouldClose()) {
         // TODO: input handling
 
-        draw.mainMenu();
+        draw.mainMenu(true, STOCKFISH_ELO);
     }
     draw.closeWindow();
 }

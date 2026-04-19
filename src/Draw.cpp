@@ -18,6 +18,11 @@ Draw::Draw()
     offerDrawButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
     showResultsButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
 
+    startGameButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    selectWhiteButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    selectBlackButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+
+
     overlayRect = Rectangle{
         overlayMarginX,
         overlayMarginY,
@@ -107,7 +112,7 @@ void Draw::unloadResources() {
 void Draw::initWindow() {
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(WIDTH + PANEL_WIDTH, LENGTH, "Chess");
-    SetTargetFPS(60);
+    SetTargetFPS(FPS);
     loadResources();
 }
 
@@ -124,7 +129,7 @@ Input& Draw::getInput() {
     return input;
 }
 
-void Draw::mainMenu() {
+void Draw::mainMenu(bool playerPlaysWhite, int stockfishEllo) {
     float centerX = (WIDTH + PANEL_WIDTH) / 2.0f;
     float centerY = LENGTH / 2.0f;
 
@@ -137,6 +142,42 @@ void Draw::mainMenu() {
     Vector2 startBtnSize = MeasureTextEx(uiFont22, startBtnText.c_str(), 22, 1);
     const float startBtnX = centerX - startBtnSize.x / 2.0f - 20.0f;
     const float startBtnY = titleY + titleSize.y + 40.0f;
+    startGameButton = Rectangle{
+        roundf(startBtnX),
+        roundf(startBtnY),
+        startBtnSize.x + 40.0f,
+        startBtnSize.y + 20.0f
+    };
+
+
+    const std::string colorSelectorTitle = "Play as";
+    const std::string whiteOption = "White";
+    const std::string blackOption = "Black";
+    Vector2 colorSelectorTitleSize = MeasureTextEx(uiFont22, colorSelectorTitle.c_str(), 22, 1);
+    Vector2 whiteOptionSize = MeasureTextEx(uiFont22, whiteOption.c_str(), 22, 1);
+    Vector2 blackOptionSize = MeasureTextEx(uiFont22, blackOption.c_str(), 22, 1);
+    const float colorSelectorTitleX = centerX - colorSelectorTitleSize.x / 2.0f;
+    const float colorSelectorTitleY = startBtnY + startBtnSize.y + 40.0f;
+    const float whiteOptionX = centerX - whiteOptionSize.x - 20.0f;
+    const float whiteOptionY = colorSelectorTitleY + colorSelectorTitleSize.y + 20.0f;
+    const float blackOptionX = centerX + 20.0f;
+    const float blackOptionY = whiteOptionY;
+    selectWhiteButton = Rectangle{
+        roundf(whiteOptionX - 10.0f),
+        roundf(whiteOptionY - 5.0f),
+        whiteOptionSize.x + 20.0f,
+        whiteOptionSize.y + 10.0f
+    };
+    selectBlackButton = Rectangle{
+        roundf(blackOptionX - 10.0f),
+        roundf(blackOptionY - 5.0f),
+        blackOptionSize.x + 20.0f,
+        blackOptionSize.y + 10.0f
+    };
+
+
+
+
 
     BeginDrawing();
     ClearBackground(RAYWHITE);
@@ -148,23 +189,35 @@ void Draw::mainMenu() {
         },
         36, 1, BLACK);
 
-    Rectangle startBtnRect = {
-        roundf(startBtnX),
-        roundf(startBtnY),
-        startBtnSize.x + 40.0f,
-        startBtnSize.y + 20.0f
-    };
-
-    Color startBtnColor = input.isOverlayButtonClicked() ? GRAY : LIGHTGRAY;
-    DrawRectangleRounded(startBtnRect, 0.2f, 8, startBtnColor);
+    DrawRectangleRounded(startGameButton, 0.2f, 8, LIGHTGRAY);
     DrawTextEx(uiFont22, startBtnText.c_str(),
         {
-            roundf(startBtnX + (startBtnRect.width - startBtnSize.x) / 2.0f),
+            roundf(startBtnX + (startGameButton.width - startBtnSize.x) / 2.0f),
             roundf(startBtnY + 10.0f)
         },
         22, 1, BLACK);
 
     
+    DrawTextEx(uiFont22, colorSelectorTitle.c_str(),
+        {
+            roundf(colorSelectorTitleX),
+            roundf(colorSelectorTitleY)
+        },
+        22, 1, BLACK);
+
+    DrawRectangleRounded(selectWhiteButton, 0.2f, 8, playerPlaysWhite ? GRAY : LIGHTGRAY);
+    DrawTextEx(uiFont22, whiteOption.c_str(),
+        {
+            roundf(whiteOptionX),
+            roundf(whiteOptionY)        },
+        22, 1, BLACK);  
+
+    DrawRectangleRounded(selectBlackButton, 0.2f, 8, !playerPlaysWhite ? GRAY : LIGHTGRAY);
+    DrawTextEx(uiFont22, blackOption.c_str(),
+        {
+            roundf(blackOptionX),
+            roundf(blackOptionY)        },
+        22, 1, BLACK);  
 
     EndDrawing();
 }
