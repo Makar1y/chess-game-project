@@ -20,11 +20,11 @@ enum class StockfishElo {
 class Stockfish {
 public:
     Stockfish(StockfishElo elo, const std::string& executablePath =
-#ifdef _WIN32
+    #ifdef _WIN32
         "stockfish.exe"
-#else
+    #else
         "stockfish"
-#endif
+    #endif
     );
 
     void setElo(StockfishElo newElo);
