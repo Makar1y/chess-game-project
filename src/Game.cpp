@@ -99,7 +99,7 @@ void Game::makeStockfishMove() {
 }
 
 void Game::startGame(bool playerPlaysWhite, int stockfishElo) {
-    this->stockfish = Stockfish((StockfishElo)stockfishElo);
+    stockfish.setElo((StockfishElo)stockfishElo);
     player1.setColor(playerPlaysWhite ? PlayerColor::White : PlayerColor::Black);
     player2.setColor(playerPlaysWhite ? PlayerColor::Black : PlayerColor::White);
     stockfish.newGame();
