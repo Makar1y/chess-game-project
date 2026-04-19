@@ -51,12 +51,12 @@ void Game::update() {
     int x = -1;
     int y = -1;
 
-    if (!draw.getInput().getClickedBoardCell(x, y, PLAYER_PLAYS_WHITE)) return;
+    if (!draw.getInput().getClickedBoardCell(x, y, playerPlaysWhite)) return;
 
     Piece* clickedPiece = board.getPiece(x, y);
 
     if (!pieceSelected) {
-        PieceColor playerPieceColor = PLAYER_PLAYS_WHITE ? PieceColor::White : PieceColor::Black;
+        PieceColor playerPieceColor = playerPlaysWhite ? PieceColor::White : PieceColor::Black;
 
         if (clickedPiece != nullptr && clickedPiece->getColor() == playerPieceColor) {
             pieceSelected = true;
@@ -104,14 +104,20 @@ void Game::makeStockfishMove() {
 }
 
 void Game::startGame(bool playerPlaysWhite, int stockfishElo) {
+    this->playerPlaysWhite = playerPlaysWhite;
     stockfish.setElo((StockfishElo)stockfishElo);
     player1.setColor(playerPlaysWhite ? PlayerColor::White : PlayerColor::Black);
     player2.setColor(playerPlaysWhite ? PlayerColor::Black : PlayerColor::White);
+    isPlayerTurn = playerPlaysWhite;
+    overlayType = OverlayType::None;
+    clearSelection();
+    moveHistory.clear();
+    board = Board();
     stockfish.newGame();
 
     while (!draw.shouldClose()) {
         update();
-        draw.render(board, pieceSelected, selectedX, selectedY, overlayType, player2.getName(), playerPlaysWhite);
+        draw.render(board, pieceSelected, selectedX, selectedY, overlayType, player2.getName(), this->playerPlaysWhite);
 
         if (!isPlayerTurn) {
             std::this_thread::sleep_for(std::chrono::milliseconds(STOCKFISH_MOVE_TIME_MS));
