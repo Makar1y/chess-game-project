@@ -31,4 +31,5 @@ class Piece {
 
         bool getHasMoved();
         void setHasMoved(bool value);
+        void setType(PieceType type);
 };

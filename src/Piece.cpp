@@ -18,3 +18,7 @@ bool Piece::getHasMoved() {
 void Piece::setHasMoved(bool value) {
     hasMoved = value;
 }
+
+void Piece::setType(PieceType type) {
+    this->type = type;
+}

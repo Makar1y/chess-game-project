@@ -14,5 +14,7 @@ private:
 public:
     Board();
     Piece* getPiece(int x, int y);
-    void update(Move move);
+    std::unique_ptr<Piece> getPieceOwnership(int x, int y);
+    void update(Move& move);
+    void undo(Move& move);
 };

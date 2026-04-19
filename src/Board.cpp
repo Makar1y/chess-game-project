@@ -41,14 +41,30 @@ Piece* Board::getPiece(int x, int y) {
     return squares[y][x].get();
 }
 
-void Board::update(Move move) {
-    int fromX = move.getFromX();
-    int fromY = move.getFromY();
-    int toX = move.getToX();
-    int toY = move.getToY();
+std::unique_ptr<Piece> Board::getPieceOwnership(int x, int y) {
+    return move(squares[y][x]);
+}
 
-    if (!squares[fromY][fromX]) return;
+void Board::update(Move& move) {
+    auto& from = squares[move.getFromY()][move.getFromX()];
+    auto& to   = squares[move.getToY()][move.getToX()];
 
-    squares[fromY][fromX]->setHasMoved(true);
-    squares[toY][toX] = std::move(squares[fromY][fromX]);
+    move.setIsFirstMove(from->getHasMoved());
+
+    move.setCapturedPiece(std::move(to));
+
+    to = std::move(from);
+
+    to->setHasMoved(true);
+}
+
+void Board::undo(Move& move) {
+    auto& from = squares[move.getFromY()][move.getFromX()];
+    auto& to   = squares[move.getToY()][move.getToX()];
+
+    from = std::move(to);
+
+    from->setHasMoved(move.getIsFirstMove());
+
+    to = std::move(move.getCapturedPiece());
 }

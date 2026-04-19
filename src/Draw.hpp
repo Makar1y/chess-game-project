@@ -2,6 +2,7 @@
 
 #include <string>
 #include <cmath>
+#include <set>
 
 #include "Board.hpp"
 #include "UserInput.hpp"
@@ -19,7 +20,9 @@ public:
 
     Input& getInput();
 
-    void render(Board& board, bool pieceSelected, int selectedX, int selectedY, OverlayType overlayType, std::string playerName, bool playerPlaysWhite);
+    void render(Board& board, bool pieceSelected, int selectedX, int selectedY, 
+        std::set<std::pair<int, int>>& possibleMoves, std::set<std::pair<int, int>>& possibleCaptures,
+        Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName, bool playerPlaysWhite);
 
 private:
     void loadResources();

@@ -121,13 +121,12 @@ Input& Draw::getInput() {
     return input;
 }
 
-void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY, OverlayType overlayType, std::string playerName, bool playerPlaysWhite) {
+void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY, std::set<std::pair<int, int>>& possibleMoves, std::set<std::pair<int, int>>& possibleCaptures, Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName, bool playerPlaysWhite) {
     static float PIECE_SCALE = 0.46f;
     static float PLAYER_SCALE = 0.28f;
 
     BeginDrawing();
     ClearBackground(RAYWHITE);
-
     float boardScale = (float)WIDTH / (float)boardTexture.width;
     DrawTextureEx(boardTexture, { 0.0f, 0.0f }, 0.0f, boardScale, WHITE);
 
@@ -135,21 +134,61 @@ void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY
 
     for (int y = 0; y < 8; y++) {
         for (int x = 0; x < 8; x++) {
-            Piece* piece = board.getPiece(x, y);
-            if (piece == nullptr) continue;
-
             int drawBoardX = playerPlaysWhite ? x : 7 - x;
             int drawBoardY = playerPlaysWhite ? y : 7 - y;
 
-            if (pieceSelected && x == selectedX && y == selectedY) {
-                float centerX = drawBoardX * cellSize + cellSize * 0.5f;
-                float centerY = drawBoardY * cellSize + cellSize * 0.5f;
+            Color hightlight;
+            if((x + y) % 2) {
+                hightlight = Color {185, 202, 67, 255};
+            } else {
+                hightlight = Color {245, 246, 130, 255};
+            }
 
+            if(hasLastMove && lastMove->getFromX() == x && lastMove->getFromY() == y) {
+                DrawRectangle((int)drawBoardX * cellSize, (int)drawBoardY * cellSize, cellSize + 1, cellSize + 1, hightlight);
+            }
+
+            if(hasLastMove && lastMove->getToX() == x && lastMove->getToY() == y) {
+                DrawRectangle((int)drawBoardX * cellSize, (int)drawBoardY * cellSize, cellSize + 1, cellSize + 1, hightlight);
+            }
+
+            float centerX = drawBoardX * cellSize + cellSize * 0.5f;
+            float centerY = drawBoardY * cellSize + cellSize * 0.5f;
+
+            if(possibleMoves.find(std::make_pair(x, y)) != possibleMoves.end()) {
                 DrawCircle(
                     (int)centerX,
                     (int)centerY,
-                    cellSize * 0.4f,
-                    Fade(DARKGRAY, 0.8f)
+                    cellSize * 0.18f,
+                    Fade(DARKGRAY, 0.5f)
+                );
+            }
+
+            if(possibleCaptures.find(std::make_pair(x, y)) != possibleCaptures.end()) {
+                float radius = cellSize * 0.4f;
+                float thickness = cellSize * 0.08f;
+
+                DrawRing(
+                    (Vector2){centerX, centerY},
+                    radius - thickness,
+                    radius,
+                    0.0f,
+                    360.0f,
+                    32,
+                    Fade(BLACK, 0.5f)
+                );
+            }
+
+            Piece* piece = board.getPiece(x, y);
+            if (piece == nullptr) continue;
+
+            if (pieceSelected && x == selectedX && y == selectedY) {
+                DrawRectangle(
+                    (int)drawBoardX * cellSize,
+                    (int)drawBoardY * cellSize,
+                    cellSize + 1, // Need to add plus one to width because of rounding above makes small hole
+                    cellSize + 1,
+                    hightlight
                 );
             }
 
