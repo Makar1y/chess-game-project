@@ -1,7 +1,6 @@
 #include "StockfishInput.hpp"
 
 #include <stdexcept>
-#include <string>
 #include <windows.h>
 
 StockfishInput::StockfishInput(const std::string& executablePath) {
