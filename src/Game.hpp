@@ -51,4 +51,5 @@ public:
     void resign(Player player);
     void offerDraw(Player player);
     bool validateMove(Move move);
+    int getNextStockfishElo(int currentElo);
 };

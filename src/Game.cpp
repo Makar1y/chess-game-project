@@ -1,10 +1,15 @@
 #include "Game.hpp"
 #include "Draw.hpp"
 
+namespace {
+const int STOCKFISH_ELO_OPTIONS[] = { 1320, 1450, 1600, 1750, 1950, 2200, 2550, 3190 };
+const int STOCKFISH_ELO_OPTION_COUNT = sizeof(STOCKFISH_ELO_OPTIONS) / sizeof(STOCKFISH_ELO_OPTIONS[0]);
+}
+
 Game::Game()
     : player1("Player 1", PLAYER_PLAYS_WHITE ? PlayerColor::White : PlayerColor::Black),
       player2("Stockfish", PLAYER_PLAYS_WHITE ? PlayerColor::Black : PlayerColor::White),
-      stockfish((StockfishElo)STOCKFISH_ELO) {
+      stockfish((StockfishElo)STOCKFISH_ELO_OPTIONS[0]) {
     isPlayerTurn = player1.getColor() == PlayerColor::White;
 }
 
@@ -121,22 +126,36 @@ void Game::mainMenu() {
     draw.initWindow();
 
     bool playerPlaysWhite = PLAYER_PLAYS_WHITE;
+    int selectedElo = STOCKFISH_ELO;
     while (!draw.shouldClose()) {
         if (draw.getInput().isLeftMousePressed()) {
             if (draw.getInput().isStartGameClicked()) {
-                startGame(playerPlaysWhite, STOCKFISH_ELO);
+                startGame(playerPlaysWhite, selectedElo);
             } else if (draw.getInput().isSelectWhiteClicked()) {
                 playerPlaysWhite = true;
-                draw.mainMenu(true, STOCKFISH_ELO);
+                draw.mainMenu(true, selectedElo);
             } else if (draw.getInput().isSelectBlackClicked()) {
                 playerPlaysWhite = false;
-                draw.mainMenu(false, STOCKFISH_ELO);
+                draw.mainMenu(false, selectedElo);
+            } else if (draw.getInput().isSelectEloClicked()) {
+                selectedElo = getNextStockfishElo(selectedElo);
+                draw.mainMenu(playerPlaysWhite, selectedElo);
             }
         } else {
-            draw.mainMenu(playerPlaysWhite, STOCKFISH_ELO);
+            draw.mainMenu(playerPlaysWhite, selectedElo);
         }
     }
     draw.closeWindow();
+}
+
+int Game::getNextStockfishElo(int currentElo) {
+    for (int i = 0; i < STOCKFISH_ELO_OPTION_COUNT; i++) {
+        if (STOCKFISH_ELO_OPTIONS[i] == currentElo) {
+            return STOCKFISH_ELO_OPTIONS[(i + 1) % STOCKFISH_ELO_OPTION_COUNT];
+        }
+    }
+
+    return STOCKFISH_ELO_OPTIONS[0];
 }
 
 std::string Game::moveToUci(Move move) {
