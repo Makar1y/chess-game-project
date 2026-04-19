@@ -2,8 +2,8 @@
 #include "Draw.hpp"
 
 Game::Game()
-    : player1("Player 1",  PlayerColor::White),
-      player2("Stockfish", PlayerColor::Black),
+    : player1("Player 1", PLAYER_PLAYS_WHITE ? PlayerColor::White : PlayerColor::Black),
+      player2("Stockfish", PLAYER_PLAYS_WHITE ? PlayerColor::Black : PlayerColor::White),
       stockfish((StockfishElo)STOCKFISH_ELO) {
     isPlayerTurn = player1.getColor() == PlayerColor::White;
 }
@@ -98,12 +98,15 @@ void Game::makeStockfishMove() {
     isPlayerTurn = true;
 }
 
-void Game::startGame() {
+void Game::startGame(bool playerPlaysWhite, int stockfishElo) {
+    this->stockfish = Stockfish((StockfishElo)stockfishElo);
+    player1.setColor(playerPlaysWhite ? PlayerColor::White : PlayerColor::Black);
+    player2.setColor(playerPlaysWhite ? PlayerColor::Black : PlayerColor::White);
     stockfish.newGame();
 
     while (!draw.shouldClose()) {
         update();
-        draw.render(board, pieceSelected, selectedX, selectedY, overlayType, player2.getName(), PLAYER_PLAYS_WHITE);
+        draw.render(board, pieceSelected, selectedX, selectedY, overlayType, player2.getName(), playerPlaysWhite);
 
         if (!isPlayerTurn) {
             std::this_thread::sleep_for(std::chrono::milliseconds(STOCKFISH_MOVE_TIME_MS));
@@ -116,10 +119,22 @@ void Game::startGame() {
 
 void Game::mainMenu() {
     draw.initWindow();
-    while (!draw.shouldClose()) {
-        // TODO: input handling
 
-        draw.mainMenu(true, STOCKFISH_ELO);
+    bool playerPlaysWhite = PLAYER_PLAYS_WHITE;
+    while (!draw.shouldClose()) {
+        if (draw.getInput().isLeftMousePressed()) {
+            if (draw.getInput().isStartGameClicked()) {
+                startGame(playerPlaysWhite, STOCKFISH_ELO);
+            } else if (draw.getInput().isSelectWhiteClicked()) {
+                playerPlaysWhite = true;
+                draw.mainMenu(true, STOCKFISH_ELO);
+            } else if (draw.getInput().isSelectBlackClicked()) {
+                playerPlaysWhite = false;
+                draw.mainMenu(false, STOCKFISH_ELO);
+            }
+        } else {
+            draw.mainMenu(playerPlaysWhite, STOCKFISH_ELO);
+        }
     }
     draw.closeWindow();
 }

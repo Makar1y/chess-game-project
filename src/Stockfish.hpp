@@ -27,6 +27,7 @@ public:
 #endif
     );
 
+    void setElo(StockfishElo newElo);
     void newGame();
     std::string move(const std::vector<std::string>& moveHistory);
 
