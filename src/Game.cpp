@@ -1,12 +1,16 @@
 #include "Game.hpp"
 #include "Draw.hpp"
 
+namespace {
+const int STOCKFISH_ELO_OPTIONS[] = { 1320, 1450, 1600, 1750, 1950, 2200, 2550, 3190 };
+const int STOCKFISH_ELO_OPTION_COUNT = sizeof(STOCKFISH_ELO_OPTIONS) / sizeof(STOCKFISH_ELO_OPTIONS[0]);
+}
+
 Game::Game()
     : player1("Player 1", PLAYER_PLAYS_WHITE ? PlayerColor::White : PlayerColor::Black),
       player2("Stockfish", PLAYER_PLAYS_WHITE ? PlayerColor::Black : PlayerColor::White),
-      stockfish((StockfishElo)STOCKFISH_ELO) {
-    stockfish.newGame();
-    isPlayerTurn = PLAYER_PLAYS_WHITE;
+      stockfish((StockfishElo)STOCKFISH_ELO_OPTIONS[0]) {
+    isPlayerTurn = player1.getColor() == PlayerColor::White;
 }
 
 void Game::update() {
@@ -19,7 +23,7 @@ void Game::update() {
                 board = Board();
                 clearSelection();
                 moveHistory.clear();
-                isPlayerTurn = PLAYER_PLAYS_WHITE;
+                isPlayerTurn = player1.getColor() == PlayerColor::White;
                 stockfish.newGame();
             }
 
@@ -47,7 +51,7 @@ void Game::update() {
     int x = -1;
     int y = -1;
 
-    if (!draw.getInput().getClickedBoardCell(x, y, PLAYER_PLAYS_WHITE)) return;
+    if (!draw.getInput().getClickedBoardCell(x, y, playerPlaysWhite)) return;
 
     Piece* clickedPiece = board.getPiece(x, y);
 
@@ -220,12 +224,21 @@ void Game::makeStockfishMove() {
     isPlayerTurn = true;
 }
 
-void Game::startGame() {
-    draw.initWindow();
+void Game::startGame(bool playerPlaysWhite, int stockfishElo) {
+    this->playerPlaysWhite = playerPlaysWhite;
+    stockfish.setElo((StockfishElo)stockfishElo);
+    player1.setColor(playerPlaysWhite ? PlayerColor::White : PlayerColor::Black);
+    player2.setColor(playerPlaysWhite ? PlayerColor::Black : PlayerColor::White);
+    isPlayerTurn = playerPlaysWhite;
+    overlayType = OverlayType::None;
+    clearSelection();
+    moveHistory.clear();
+    board = Board();
+    stockfish.newGame();
 
     while (!draw.shouldClose()) {
         update();
-        draw.render(board, pieceSelected, selectedX, selectedY, possibleMoves, possibleCaptures, &lastMove, hasLastMove, overlayType, player2.getName(), PLAYER_PLAYS_WHITE);
+        draw.render(board, pieceSelected, selectedX, selectedY, possibleMoves, possibleCaptures, &lastMove, hasLastMove, overlayType, player2.getName(), this->playerPlaysWhite);
 
         if (!isPlayerTurn) {
             std::this_thread::sleep_for(std::chrono::milliseconds(STOCKFISH_MOVE_TIME_MS));
@@ -234,6 +247,42 @@ void Game::startGame() {
     }
 
     draw.closeWindow();
+}
+
+void Game::mainMenu() {
+    draw.initWindow();
+
+    bool playerPlaysWhite = PLAYER_PLAYS_WHITE;
+    int selectedElo = STOCKFISH_ELO;
+    while (!draw.shouldClose()) {
+        if (draw.getInput().isLeftMousePressed()) {
+            if (draw.getInput().isStartGameClicked()) {
+                startGame(playerPlaysWhite, selectedElo);
+            } else if (draw.getInput().isSelectWhiteClicked()) {
+                playerPlaysWhite = true;
+                draw.mainMenu(true, selectedElo);
+            } else if (draw.getInput().isSelectBlackClicked()) {
+                playerPlaysWhite = false;
+                draw.mainMenu(false, selectedElo);
+            } else if (draw.getInput().isSelectEloClicked()) {
+                selectedElo = getNextStockfishElo(selectedElo);
+                draw.mainMenu(playerPlaysWhite, selectedElo);
+            }
+        } else {
+            draw.mainMenu(playerPlaysWhite, selectedElo);
+        }
+    }
+    draw.closeWindow();
+}
+
+int Game::getNextStockfishElo(int currentElo) {
+    for (int i = 0; i < STOCKFISH_ELO_OPTION_COUNT; i++) {
+        if (STOCKFISH_ELO_OPTIONS[i] == currentElo) {
+            return STOCKFISH_ELO_OPTIONS[(i + 1) % STOCKFISH_ELO_OPTION_COUNT];
+        }
+    }
+
+    return STOCKFISH_ELO_OPTIONS[0];
 }
 
 std::string Game::moveToUci(Move& move) {
@@ -265,7 +314,6 @@ void Game::showResults() {
 }
 
 void Game::resign(Player player) {
-    // TODO
     overlayType = OverlayType::Resign;
 }
 

@@ -19,8 +19,15 @@ enum class StockfishElo {
 
 class Stockfish {
 public:
-    Stockfish(StockfishElo elo, const std::string& executablePath = "stockfish.exe");
+    Stockfish(StockfishElo elo, const std::string& executablePath =
+    #ifdef _WIN32
+        "stockfish.exe"
+    #else
+        "stockfish"
+    #endif
+    );
 
+    void setElo(StockfishElo newElo);
     void newGame();
     std::string move(const std::vector<std::string>& moveHistory);
 

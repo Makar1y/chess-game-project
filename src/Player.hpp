@@ -19,7 +19,8 @@ public:
 
     std::string getName();
     PlayerColor getColor();
-
     bool getInCheck();
+
     void setInCheck(bool value);
+    void setColor(PlayerColor color);
 };

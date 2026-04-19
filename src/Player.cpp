@@ -21,3 +21,7 @@ bool Player::getInCheck() {
 void Player::setInCheck(bool value) {
     inCheck = value;
 }
+
+void Player::setColor(PlayerColor color) {
+    this->color = color;
+}

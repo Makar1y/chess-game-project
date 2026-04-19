@@ -2,8 +2,10 @@
 #include "Draw.hpp"
 #include "Game.hpp"
 
+#include <cmath>
+
 Draw::Draw()
-    : input(resignButton, offerDrawButton, showResultsButton, overlayButton) {
+    : input(resignButton, offerDrawButton, showResultsButton, overlayButton, selectWhiteButton, selectBlackButton, startGameButton, selectEloButton) {
     resourcesLoaded = false;
 
     const float overlayMarginX            = 110.0f;
@@ -15,6 +17,13 @@ Draw::Draw()
     resignButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
     offerDrawButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
     showResultsButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+
+    // main menu buttons
+    startGameButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    selectWhiteButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    selectBlackButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    selectEloButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+
 
     overlayRect = Rectangle{
         overlayMarginX,
@@ -105,6 +114,7 @@ void Draw::unloadResources() {
 void Draw::initWindow() {
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(WIDTH + PANEL_WIDTH, LENGTH, "Chess");
+    SetTargetFPS(FPS);
     loadResources();
 }
 
@@ -119,6 +129,149 @@ void Draw::closeWindow() {
 
 Input& Draw::getInput() {
     return input;
+}
+
+void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo) {
+    float centerX = (WIDTH + PANEL_WIDTH) / 2.0f;
+    float centerY = LENGTH / 2.0f;
+
+    // Tiile
+    const std::string titleText = "Chess";
+    Vector2 titleSize = MeasureTextEx(uiFont36, titleText.c_str(), 36, 1);
+    const float titleX = centerX - titleSize.x / 2.0f;
+    const float titleY = centerY / 2.0f - titleSize.y / 2.0f;
+
+    // Start button
+    const std::string startBtnText = "Start game";;
+    Vector2 startBtnSize = MeasureTextEx(uiFont22, startBtnText.c_str(), 22, 1);
+    const float startBtnX = centerX - startBtnSize.x / 2.0f - 20.0f;
+    const float startBtnY = titleY + titleSize.y + 40.0f;
+    startGameButton = Rectangle{
+        roundf(startBtnX),
+        roundf(startBtnY),
+        startBtnSize.x + 40.0f,
+        startBtnSize.y + 20.0f
+    };
+
+    // Color selector
+    const std::string colorSelectorTitle = "Play as";
+    const std::string whiteOption = "White";
+    const std::string blackOption = "Black";
+    Vector2 colorSelectorTitleSize = MeasureTextEx(uiFont22, colorSelectorTitle.c_str(), 22, 1);
+    Vector2 whiteOptionSize = MeasureTextEx(uiFont22, whiteOption.c_str(), 22, 1);
+    Vector2 blackOptionSize = MeasureTextEx(uiFont22, blackOption.c_str(), 22, 1);
+    const float colorSelectorTitleX = centerX - colorSelectorTitleSize.x / 2.0f;
+    const float colorSelectorTitleY = startBtnY + startBtnSize.y + 40.0f;
+    const float whiteOptionX = centerX - whiteOptionSize.x - 20.0f;
+    const float whiteOptionY = colorSelectorTitleY + colorSelectorTitleSize.y + 20.0f;
+    const float blackOptionX = centerX + 20.0f;
+    const float blackOptionY = whiteOptionY;
+    selectWhiteButton = Rectangle{
+        roundf(whiteOptionX - 10.0f),
+        roundf(whiteOptionY - 5.0f),
+        whiteOptionSize.x + 20.0f,
+        whiteOptionSize.y + 10.0f
+    };
+    selectBlackButton = Rectangle{
+        roundf(blackOptionX - 10.0f),
+        roundf(blackOptionY - 5.0f),
+        blackOptionSize.x + 20.0f,
+        blackOptionSize.y + 10.0f
+    };
+
+    // Elo selector
+    const std::string eloSelectorTitle = "Stockfish Elo";
+    const std::string eloSelectorValue = "<  " + std::to_string(stockfishElo) + "  >";
+    const std::string eloSelectorHint = "Click to change";
+    Vector2 eloSelectorTitleSize = MeasureTextEx(uiFont22, eloSelectorTitle.c_str(), 22, 1);
+    Vector2 eloSelectorValueSize = MeasureTextEx(uiFont22, eloSelectorValue.c_str(), 22, 1);
+    Vector2 eloSelectorHintSize = MeasureTextEx(uiFont22, eloSelectorHint.c_str(), 22, 1);
+    const float eloSelectorTitleX = centerX - eloSelectorTitleSize.x / 2.0f;
+    const float eloSelectorTitleY = whiteOptionY + whiteOptionSize.y + 36.0f;
+    const float eloSelectorValueX = centerX - eloSelectorValueSize.x / 2.0f;
+    const float eloSelectorValueY = eloSelectorTitleY + eloSelectorTitleSize.y + 18.0f;
+    const float eloSelectorHintX = centerX - eloSelectorHintSize.x / 2.0f;
+    const float eloSelectorHintY = eloSelectorValueY + eloSelectorValueSize.y + 14.0f;
+    selectEloButton = Rectangle{
+        roundf(eloSelectorValueX - 18.0f),
+        roundf(eloSelectorValueY - 10.0f),
+        eloSelectorValueSize.x + 36.0f,
+        eloSelectorValueSize.y + 20.0f
+    };
+
+    // Draw
+    BeginDrawing();
+    ClearBackground(RAYWHITE);
+
+    DrawTextEx(uiFont36, titleText.c_str(),
+        {
+            roundf(titleX),
+            roundf(titleY)
+        },
+        36, 1, BLACK);
+
+    DrawRectangleRounded(startGameButton, 0.2f, 8, input.isStartGameClicked() ? GRAY : LIGHTGRAY);
+    DrawTextEx(uiFont22, startBtnText.c_str(),
+        {
+            roundf(startBtnX + (startGameButton.width - startBtnSize.x) / 2.0f),
+            roundf(startBtnY + 10.0f)
+        },
+        22, 1, BLACK);
+
+    
+    DrawTextEx(uiFont22, colorSelectorTitle.c_str(),
+        {
+            roundf(colorSelectorTitleX),
+            roundf(colorSelectorTitleY)
+        },
+        22, 1, BLACK);
+
+    DrawRectangleRounded(selectWhiteButton, 0.2f, 8, input.isSelectWhiteClicked() ? GRAY : LIGHTGRAY);
+    if (playerPlaysWhite) {
+        DrawRectangleLinesEx(selectWhiteButton, 3, BLACK);
+    }
+    DrawTextEx(uiFont22, whiteOption.c_str(),
+        {
+            roundf(whiteOptionX),
+            roundf(whiteOptionY)
+        },
+        22, 1, BLACK);  
+
+    DrawRectangleRounded(selectBlackButton, 0.2f, 8, input.isSelectBlackClicked() ? GRAY : LIGHTGRAY);
+    if (!playerPlaysWhite) {
+        DrawRectangleLinesEx(selectBlackButton, 3, BLACK);
+    }
+    DrawTextEx(uiFont22, blackOption.c_str(),
+        {
+            roundf(blackOptionX),
+            roundf(blackOptionY)
+        },
+        22, 1, BLACK);
+
+    DrawTextEx(uiFont22, eloSelectorTitle.c_str(),
+        {
+            roundf(eloSelectorTitleX),
+            roundf(eloSelectorTitleY)
+        },
+        22, 1, BLACK);
+
+    Color eloButtonColor = input.isSelectEloClicked() ? GRAY : LIGHTGRAY;
+    DrawRectangleRounded(selectEloButton, 0.2f, 8, eloButtonColor);
+    DrawTextEx(uiFont22, eloSelectorValue.c_str(),
+        {
+            roundf(eloSelectorValueX),
+            roundf(eloSelectorValueY)
+        },
+        22, 1, BLACK);
+
+    DrawTextEx(uiFont22, eloSelectorHint.c_str(),
+        {
+            roundf(eloSelectorHintX),
+            roundf(eloSelectorHintY)
+        },
+        22, 1, GRAY);
+
+    EndDrawing();
 }
 
 void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY, std::set<std::pair<int, int>>& possibleMoves, std::set<std::pair<int, int>>& possibleCaptures, Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName, bool playerPlaysWhite) {

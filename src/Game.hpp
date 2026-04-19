@@ -38,6 +38,7 @@ private:
     std::set<std::pair<int, int>> possibleMoves;
     std::set<std::pair<int, int>> possibleCaptures;
 
+    bool playerPlaysWhite = PLAYER_PLAYS_WHITE;
     bool isPlayerTurn = true;
     std::vector<std::string> moveHistory;
     Move lastMove;
@@ -75,10 +76,12 @@ public:
     Game();
 
     void update();
-    void startGame();
+    void startGame(bool playerPlaysWhite, int stockfishElo);
+    void mainMenu();
     void clearSelection();
     void showResults();
     void resign(Player player);
     void offerDraw(Player player);
     bool validateMove(Move& move);
+    int getNextStockfishElo(int currentElo);
 };

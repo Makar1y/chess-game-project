@@ -15,6 +15,7 @@ public:
     Draw();
 
     void initWindow();
+    void mainMenu(bool playerPlaysWhite, int stockfishElo);
     bool shouldClose();
     void closeWindow();
 
@@ -55,6 +56,10 @@ private:
     Rectangle showResultsButton;
     Rectangle overlayRect;
     Rectangle overlayButton;
+    Rectangle startGameButton;
+    Rectangle selectWhiteButton;
+    Rectangle selectBlackButton;
+    Rectangle selectEloButton;
 
     Input input;
 };
