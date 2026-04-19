@@ -206,6 +206,9 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishEllo) {
         22, 1, BLACK);
 
     DrawRectangleRounded(selectWhiteButton, 0.2f, 8, playerPlaysWhite ? GRAY : LIGHTGRAY);
+    if (playerPlaysWhite) {
+        DrawRectangleLinesEx(selectWhiteButton, 2, LIGHTGRAY);
+    }
     DrawTextEx(uiFont22, whiteOption.c_str(),
         {
             roundf(whiteOptionX),
