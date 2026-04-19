@@ -7,14 +7,16 @@ Input::Input(const Rectangle& resignButton,
              const Rectangle& overlayButton,
              const Rectangle& selectWhiteButton,
              const Rectangle& selectBlackButton,
-             const Rectangle& startGameButton)
+             const Rectangle& startGameButton,
+             const Rectangle& selectEloButton)
     : resignButton(resignButton),
       offerDrawButton(offerDrawButton),
       showResultsButton(showResultsButton),
       overlayButton(overlayButton),
       selectWhiteButton(selectWhiteButton),
       selectBlackButton(selectBlackButton),
-      startGameButton(startGameButton) {
+      startGameButton(startGameButton),
+      selectEloButton(selectEloButton) {
 }
 
 bool Input::isLeftMousePressed() {
@@ -47,6 +49,10 @@ bool Input::isSelectBlackClicked() {
 
 bool Input::isStartGameClicked() {
     return CheckCollisionPointRec(GetMousePosition(), startGameButton);
+}
+
+bool Input::isSelectEloClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), selectEloButton);
 }
 
 bool Input::getClickedBoardCell(int& x, int& y, bool playerPlaysWhite) {

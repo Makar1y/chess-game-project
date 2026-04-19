@@ -10,7 +10,8 @@ public:
           const Rectangle& overlayButton,
           const Rectangle& selectWhiteButton,
           const Rectangle& selectBlackButton,
-          const Rectangle& startGameButton);
+          const Rectangle& startGameButton,
+          const Rectangle& selectEloButton);
 
     bool isLeftMousePressed();
     bool isResignClicked();
@@ -20,6 +21,7 @@ public:
     bool isSelectWhiteClicked();
     bool isSelectBlackClicked();
     bool isStartGameClicked();
+    bool isSelectEloClicked();
     bool getClickedBoardCell(int& x, int& y, bool playerPlaysWhite);
 
 private:
@@ -30,4 +32,5 @@ private:
     const Rectangle& selectWhiteButton;
     const Rectangle& selectBlackButton;
     const Rectangle& startGameButton;
+    const Rectangle& selectEloButton;
 };

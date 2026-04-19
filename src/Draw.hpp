@@ -56,6 +56,7 @@ private:
     Rectangle startGameButton;
     Rectangle selectWhiteButton;
     Rectangle selectBlackButton;
+    Rectangle selectEloButton;
 
     Input input;
 };
