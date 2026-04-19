@@ -33,6 +33,7 @@ private:
     int selectedX = -1;
     int selectedY = -1;
 
+    bool playerPlaysWhite = PLAYER_PLAYS_WHITE;
     bool isPlayerTurn = true;
     std::vector<std::string> moveHistory;
 
