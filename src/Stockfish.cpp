@@ -19,6 +19,14 @@ Stockfish::Stockfish(StockfishElo elo, const std::string& executablePath)
     waitFor("readyok");
 }
 
+void Stockfish::setElo(StockfishElo newElo) {
+    elo = StockfishElo(newElo);
+
+    std::ostringstream eloCommand;
+    eloCommand << "setoption name UCI_Elo value " << (int)elo;
+    inputHandler.sendCommand(eloCommand.str());
+}
+
 void Stockfish::newGame() {
     inputHandler.sendCommand("ucinewgame");
     inputHandler.sendCommand("isready");

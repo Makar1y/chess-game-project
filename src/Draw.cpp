@@ -5,7 +5,7 @@
 #include <cmath>
 
 Draw::Draw()
-    : input(resignButton, offerDrawButton, showResultsButton, overlayButton) {
+    : input(resignButton, offerDrawButton, showResultsButton, overlayButton, selectWhiteButton, selectBlackButton, startGameButton) {
     resourcesLoaded = false;
 
     const float overlayMarginX            = 110.0f;
@@ -205,9 +205,9 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishEllo) {
         },
         22, 1, BLACK);
 
-    DrawRectangleRounded(selectWhiteButton, 0.2f, 8, playerPlaysWhite ? GRAY : LIGHTGRAY);
+    DrawRectangleRounded(selectWhiteButton, 0.2f, 8, LIGHTGRAY);
     if (playerPlaysWhite) {
-        DrawRectangleLinesEx(selectWhiteButton, 2, LIGHTGRAY);
+        DrawRectangleLinesEx(selectWhiteButton, 3, BLACK);
     }
     DrawTextEx(uiFont22, whiteOption.c_str(),
         {
@@ -215,7 +215,10 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishEllo) {
             roundf(whiteOptionY)        },
         22, 1, BLACK);  
 
-    DrawRectangleRounded(selectBlackButton, 0.2f, 8, !playerPlaysWhite ? GRAY : LIGHTGRAY);
+    DrawRectangleRounded(selectBlackButton, 0.2f, 8, LIGHTGRAY);
+    if (!playerPlaysWhite) {
+        DrawRectangleLinesEx(selectBlackButton, 3, BLACK);
+    }
     DrawTextEx(uiFont22, blackOption.c_str(),
         {
             roundf(blackOptionX),

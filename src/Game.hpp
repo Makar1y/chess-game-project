@@ -44,7 +44,7 @@ public:
     Game();
 
     void update();
-    void startGame();
+    void startGame(bool playerPlaysWhite, int stockfishElo);
     void mainMenu();
     void clearSelection();
     void showResults();
