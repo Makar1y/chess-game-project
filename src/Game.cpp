@@ -63,7 +63,7 @@ void Game::update() {
 
     Piece* clickedPiece = board.getPiece(x, y);
 
-    PieceColor playerPieceColor = PLAYER_PLAYS_WHITE ? PieceColor::White : PieceColor::Black;
+    PieceColor playerPieceColor = playerPlaysWhite ? PieceColor::White : PieceColor::Black;
 
     if (!pieceSelected) {
         if (clickedPiece != nullptr && clickedPiece->getColor() == playerPieceColor) {
