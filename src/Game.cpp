@@ -374,16 +374,7 @@ void Game::resign(Player player) {
 }
 
 void Game::offerDraw(Player player) {
-    draw.confirmationOverlay(
-        draw.overlayRect,
-        draw.overlayYesButton,
-        draw.overlayNoButton,
-        "Offer rejected by opponent.",
-        draw.getInput().isOverlayYesClicked(),
-        draw.getInput().isOverlayNoClicked(),
-        0.2f,
-        20
-    );
+    draw.infoOverlay("Draw offer rejected(automatically).");
     return;
     overlayType = OverlayType::Draw;
 }

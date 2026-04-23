@@ -20,6 +20,7 @@ public:
 
 
     bool isLeftMousePressed();
+    bool isAnyKeyPressed();
     bool isResignClicked();
     bool isOfferDrawClicked();
 	bool isUndoClicked();

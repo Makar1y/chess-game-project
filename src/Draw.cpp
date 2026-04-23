@@ -349,6 +349,37 @@ void Draw::confirmationOverlay(const Rectangle& overlayRect, const Rectangle& ov
         bodyFontSize, 1, BLACK);
 }
 
+void Draw::infoOverlay(const char* messageText) {
+    const float overlayWidth = 400.0f;
+    const float overlayHeight = 150.0f;
+    Rectangle overlayRect = {
+        ((float)(WIDTH + PANEL_WIDTH) - overlayWidth) * 0.5f,
+        ((float)LENGTH - overlayHeight) * 0.5f,
+        overlayWidth,
+        overlayHeight
+    };
+
+    DrawRectangle(0, 0, WIDTH + PANEL_WIDTH, LENGTH, Fade(BLACK, 0.25f));
+    DrawRectangleRec(overlayRect, RAYWHITE);
+    DrawRectangleLinesEx(overlayRect, 2, GRAY);
+
+    const Vector2 messageSize = MeasureTextEx(uiFont22, messageText, 22, 1);
+    DrawTextEx(uiFont22, messageText,
+        {
+            std::round(overlayRect.x + (overlayRect.width - messageSize.x) * 0.5f),
+            std::round(overlayRect.y + (overlayRect.height - messageSize.y) * 0.5f)
+        },
+        22, 1, DARKGRAY);
+
+    // Wait for 2 seconds or until any key is pressed
+    double startTime = GetTime();
+    while (GetTime() - startTime < 2.0) {
+        if (WindowShouldClose() || input.isAnyKeyPressed()) {
+            break;
+        }
+    }
+}
+
 void Draw::renderOverlay(OverlayType overlayType, float buttonRoundness, int buttonSegments, const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason) {
     if (overlayType == OverlayType::None) return;
 

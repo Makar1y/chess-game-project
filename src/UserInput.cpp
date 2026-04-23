@@ -33,6 +33,10 @@ bool Input::isLeftMousePressed() {
     return IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
 }
 
+bool Input::isAnyKeyPressed() {
+    return GetKeyPressed() != 0;
+}
+
 bool Input::isResignClicked() {
     return CheckCollisionPointRec(GetMousePosition(), resignButton);
 }

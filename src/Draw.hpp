@@ -32,6 +32,7 @@ public:
         Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName, bool playerPlaysWhite,
         const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason);
     void confirmationOverlay(const Rectangle& overlayRect, const Rectangle& overlayYesButton, const Rectangle& overlayNoButton, const char* messageText, bool overlayYesPressed, bool overlayNoPressed, float buttonRoundness, int buttonSegments);
+    void infoOverlay(const char* titleText);
     void showMoveHistory(const std::vector<std::string>& moveHistory);
     void showResults(const std::string& winnerName, const std::string& winReason, int movesMade, const std::vector<std::string>& moveHistory);
 
