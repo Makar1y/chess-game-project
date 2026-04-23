@@ -30,6 +30,7 @@ private:
     int selectedElo = STOCKFISH_ELO;
 
     OverlayType overlayType = OverlayType::None;
+    std::string overlayMessage;
 
     std::string winnerName;
     std::string winReason;

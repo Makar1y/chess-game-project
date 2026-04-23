@@ -356,17 +356,9 @@ void Draw::infoOverlay(const char* messageText) {
             std::round(overlayRect.y + (overlayRect.height - messageSize.y) * 0.5f)
         },
         22, 1, DARKGRAY);
-
-    // Wait for 2 seconds or until any key is pressed
-    double startTime = GetTime();
-    while (GetTime() - startTime < 2.0) {
-        if (WindowShouldClose() || input.isAnyKeyPressed()) {
-            break;
-        }
-    }
 }
 
-void Draw::renderOverlay(OverlayType overlayType, float buttonRoundness, int buttonSegments, const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason) {
+void Draw::renderOverlay(OverlayType overlayType, float buttonRoundness, int buttonSegments, const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason, const std::string& infoMessage) {
     if (overlayType == OverlayType::None) return;
 
     if (overlayType == OverlayType::Results) {
@@ -376,6 +368,11 @@ void Draw::renderOverlay(OverlayType overlayType, float buttonRoundness, int but
 
     if (overlayType == OverlayType::MoveHistory) {
         showMoveHistory(moveHistory);
+        return;
+    }
+
+    if (overlayType == OverlayType::Info) {
+        infoOverlay(infoMessage.c_str());
         return;
     }
 
@@ -547,7 +544,7 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo) {
     EndDrawing();
 }
 
-void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY, std::set<std::pair<int, int>>& possibleMoves, std::set<std::pair<int, int>>& possibleCaptures, Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName, bool playerPlaysWhite, const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason) {
+void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY, std::set<std::pair<int, int>>& possibleMoves, std::set<std::pair<int, int>>& possibleCaptures, Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName, bool playerPlaysWhite, const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason, const std::string& infoMessage) {
     static float PIECE_SCALE = 0.46f;
     static float PLAYER_SCALE = 0.28f;
 
@@ -748,7 +745,7 @@ Color resultsColor = input.isShowResultsClicked()
     22, 1, BLACK);
 
     if (overlayType != OverlayType::None) {
-        renderOverlay(overlayType, buttonRoundness, buttonSegments, moveHistory, winnerName, winReason);
+        renderOverlay(overlayType, buttonRoundness, buttonSegments, moveHistory, winnerName, winReason, infoMessage);
     }
 
     EndDrawing();

@@ -22,6 +22,7 @@ void Game::resetGameState() {
     hasLastMove = false;
     winnerName.clear();
     winReason.clear();
+    overlayMessage.clear();
     overlayType = OverlayType::None;
     stockfish.newGame();
 }
@@ -39,6 +40,9 @@ void Game::update() {
             if (draw.getInput().isBackToGameClicked()) {
                 overlayType = OverlayType::None;
             }
+        } else if (overlayType == OverlayType::Info) {
+            overlayMessage.clear();
+            overlayType = OverlayType::None;
         } else if (overlayType == OverlayType::Results) {
             if (draw.getInput().isExitToMenuClicked()) {
                 goToMainMenu();
@@ -51,9 +55,8 @@ void Game::update() {
                 winReason = "Resignation";
                 overlayType = OverlayType::Results;
             } else if (overlayType == OverlayType::Draw) {
-                winnerName = "None";
-                winReason = "Draw Agreement";
-                overlayType = OverlayType::Results;
+                overlayMessage = "Draw offer rejected automatically.";
+                overlayType = OverlayType::Info;
             }
         } else if (draw.getInput().isOverlayNoClicked()) {
             overlayType = OverlayType::None;
@@ -306,7 +309,7 @@ void Game::mainMenu() {
         }
 
         update();
-        draw.render(board, pieceSelected, selectedX, selectedY, possibleMoves, possibleCaptures, &lastMove, hasLastMove, overlayType, player2.getName(), playerPlaysWhite, moveHistory, winnerName, winReason);
+        draw.render(board, pieceSelected, selectedX, selectedY, possibleMoves, possibleCaptures, &lastMove, hasLastMove, overlayType, player2.getName(), playerPlaysWhite, moveHistory, winnerName, winReason, overlayMessage);
 
         if (screenState == ScreenState::InGame && !isPlayerTurn) {
             std::this_thread::sleep_for(std::chrono::milliseconds(STOCKFISH_MOVE_TIME_MS));
@@ -376,8 +379,7 @@ void Game::resign() {
 }
 
 void Game::offerDraw() {
-    draw.infoOverlay("Draw offer rejected(automatically).");
-    // overlayType = OverlayType::Draw;
+    overlayType = OverlayType::Draw;
 }
 
 bool Game::validateMove(Move& move) {
