@@ -12,7 +12,8 @@ enum class OverlayType {
     None,
     Resign,
     Draw,
-    Results
+    Results,
+    MoveHistory
 };
 
 class Draw {
@@ -30,13 +31,13 @@ public:
         std::set<std::pair<int, int>>& possibleMoves, std::set<std::pair<int, int>>& possibleCaptures,
         Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName, bool playerPlaysWhite,
         const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason);
+    void confirmationOverlay(const Rectangle& overlayRect, const Rectangle& overlayYesButton, const Rectangle& overlayNoButton, const char* messageText, bool overlayYesPressed, bool overlayNoPressed, float buttonRoundness, int buttonSegments);
+    void showMoveHistory(const std::vector<std::string>& moveHistory);
+    void showResults(const std::string& winnerName, const std::string& winReason, int movesMade, const std::vector<std::string>& moveHistory);
 
 private:
     void renderOverlay(OverlayType overlayType, float buttonRoundness, int buttonSegments,
         const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason);
-    static void confirmationOverlay(const Rectangle& overlayRect, const Rectangle& overlayYesButton, const Rectangle& overlayNoButton, const Font& uiFont22, const char* messageText, bool overlayYesPressed, bool overlayNoPressed, float buttonRoundness, int buttonSegments);
-    void showMoveHistory(const std::vector<std::string>& moveHistory);
-    void showResults(const std::string& winnerName, const std::string& winReason, int movesMade);
     void loadResources();
     void unloadResources();
 
@@ -73,6 +74,9 @@ private:
     Rectangle selectWhiteButton;
     Rectangle selectBlackButton;
     Rectangle selectEloButton;
+    Rectangle backToGameButton;
+    Rectangle exitToMenuButton;
+    Rectangle newGameButton;
 
     Input input;
 };

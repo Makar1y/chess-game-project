@@ -17,11 +17,17 @@
 
 class Game {
 private:
+    enum class ScreenState {
+        MainMenu,
+        InGame
+    };
+
     Draw draw;
     Board board;
     Player player1;
     Player player2;
     Stockfish stockfish;
+    int selectedElo = STOCKFISH_ELO;
 
     OverlayType overlayType = OverlayType::None;
 
@@ -40,6 +46,9 @@ private:
     std::vector<std::string> moveHistory;
     Move lastMove;
     bool hasLastMove = false;
+    ScreenState screenState = ScreenState::MainMenu;
+
+    void resetGameState();
 
     void makeStockfishMove();
     std::string moveToUci(Move& move);
@@ -77,6 +86,9 @@ public:
     void mainMenu();
     void clearSelection();
     void showResults();
+    void showMoveHistory();
+    void goToMainMenu();
+    void startNewGame();
     void resign(Player player);
     void offerDraw(Player player);
     bool validateMove(Move& move);

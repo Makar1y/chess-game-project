@@ -13,7 +13,10 @@ public:
           const Rectangle& selectBlackButton,
           const Rectangle& startGameButton,
           const Rectangle& selectEloButton,
-		  const Rectangle& undoButton);
+          const Rectangle& undoButton,
+          const Rectangle& backToGameButton,
+          const Rectangle& exitToMenuButton,
+          const Rectangle& newGameButton);
 
 
     bool isLeftMousePressed();
@@ -27,6 +30,9 @@ public:
     bool isSelectBlackClicked();
     bool isStartGameClicked();
     bool isSelectEloClicked();
+    bool isBackToGameClicked();
+    bool isExitToMenuClicked();
+    bool isNewGameClicked();
     bool getClickedBoardCell(int& x, int& y, bool playerPlaysWhite);
 
 private:
@@ -40,4 +46,7 @@ private:
     const Rectangle& startGameButton;
     const Rectangle& selectEloButton;
     const Rectangle& undoButton;
+    const Rectangle& backToGameButton;
+    const Rectangle& exitToMenuButton;
+    const Rectangle& newGameButton;
 };

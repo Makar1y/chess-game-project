@@ -13,6 +13,19 @@ Game::Game()
     isPlayerTurn = player1.getColor() == PlayerColor::White;
 }
 
+void Game::resetGameState() {
+    board = Board();
+    clearSelection();
+    clearPossibleMoves();
+    moveHistory.clear();
+    undoStack = std::stack<Move>();
+    hasLastMove = false;
+    winnerName.clear();
+    winReason.clear();
+    overlayType = OverlayType::None;
+    stockfish.newGame();
+}
+
 void Game::update() {
     if (!isPlayerTurn) return;
     if (IsKeyPressed(KEY_U)) {
@@ -22,7 +35,13 @@ void Game::update() {
     if (!draw.getInput().isLeftMousePressed()) return;
 
     if (overlayType != OverlayType::None) {
-        if (draw.getInput().isOverlayYesClicked()) {
+        if (overlayType == OverlayType::MoveHistory) {
+            if (draw.getInput().isBackToGameClicked()) {
+                overlayType = OverlayType::None;
+            } else if (draw.getInput().isNewGameClicked()) {
+                startNewGame();
+            }
+        } else if (draw.getInput().isOverlayYesClicked()) {
             if (overlayType == OverlayType::Resign) {
                 winnerName = player2.getName();
                 winReason = "Resignation";
@@ -32,12 +51,8 @@ void Game::update() {
                 winReason = "Draw Agreement";
                 overlayType = OverlayType::Results;
             } else if (overlayType == OverlayType::Results) {
-                board = Board();
-                clearSelection();
-                moveHistory.clear();
+                resetGameState();
                 isPlayerTurn = player1.getColor() == PlayerColor::White;
-                stockfish.newGame();
-                overlayType = OverlayType::None;
             }
         } else if (draw.getInput().isOverlayNoClicked()) {
             overlayType = OverlayType::None;
@@ -61,7 +76,17 @@ void Game::update() {
     }
 
     if (draw.getInput().isShowResultsClicked()) {
-        showResults();
+        showMoveHistory();
+        return;
+    }
+
+    if (draw.getInput().isExitToMenuClicked()) {
+        goToMainMenu();
+        return;
+    }
+
+    if (draw.getInput().isNewGameClicked()) {
+        startNewGame();
         return;
     }
 
@@ -248,52 +273,45 @@ void Game::makeStockfishMove() {
 
 void Game::startGame(bool playerPlaysWhite, int stockfishElo) {
     this->playerPlaysWhite = playerPlaysWhite;
+    selectedElo = stockfishElo;
     stockfish.setElo((StockfishElo)stockfishElo);
     player1.setColor(playerPlaysWhite ? PlayerColor::White : PlayerColor::Black);
     player2.setColor(playerPlaysWhite ? PlayerColor::Black : PlayerColor::White);
     isPlayerTurn = playerPlaysWhite;
-    overlayType = OverlayType::None;
-    clearSelection();
-    moveHistory.clear();
-    board = Board();
-    stockfish.newGame();
-
-    while (!draw.shouldClose()) {
-        update();
-        draw.render(board, pieceSelected, selectedX, selectedY, possibleMoves, possibleCaptures, &lastMove, hasLastMove, overlayType, player2.getName(), this->playerPlaysWhite, moveHistory, winnerName, winReason);
-
-        if (!isPlayerTurn) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(STOCKFISH_MOVE_TIME_MS));
-            makeStockfishMove();
-        }
-    }
-
-    draw.closeWindow();
+    resetGameState();
+    screenState = ScreenState::InGame;
 }
 
 void Game::mainMenu() {
     draw.initWindow();
 
-    bool playerPlaysWhite = PLAYER_PLAYS_WHITE;
-    int selectedElo = STOCKFISH_ELO;
     while (!draw.shouldClose()) {
-        if (draw.getInput().isLeftMousePressed()) {
-            if (draw.getInput().isStartGameClicked()) {
-                startGame(playerPlaysWhite, selectedElo);
-            } else if (draw.getInput().isSelectWhiteClicked()) {
-                playerPlaysWhite = true;
-                draw.mainMenu(true, selectedElo);
-            } else if (draw.getInput().isSelectBlackClicked()) {
-                playerPlaysWhite = false;
-                draw.mainMenu(false, selectedElo);
-            } else if (draw.getInput().isSelectEloClicked()) {
-                selectedElo = getNextStockfishElo(selectedElo);
-                draw.mainMenu(playerPlaysWhite, selectedElo);
+        if (screenState == ScreenState::MainMenu) {
+            if (draw.getInput().isLeftMousePressed()) {
+                if (draw.getInput().isStartGameClicked()) {
+                    startGame(playerPlaysWhite, selectedElo);
+                } else if (draw.getInput().isSelectWhiteClicked()) {
+                    playerPlaysWhite = true;
+                } else if (draw.getInput().isSelectBlackClicked()) {
+                    playerPlaysWhite = false;
+                } else if (draw.getInput().isSelectEloClicked()) {
+                    selectedElo = getNextStockfishElo(selectedElo);
+                }
             }
-        } else {
+
             draw.mainMenu(playerPlaysWhite, selectedElo);
+            continue;
+        }
+
+        update();
+        draw.render(board, pieceSelected, selectedX, selectedY, possibleMoves, possibleCaptures, &lastMove, hasLastMove, overlayType, player2.getName(), playerPlaysWhite, moveHistory, winnerName, winReason);
+
+        if (screenState == ScreenState::InGame && !isPlayerTurn) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(STOCKFISH_MOVE_TIME_MS));
+            makeStockfishMove();
         }
     }
+
     draw.closeWindow();
 }
 
@@ -337,12 +355,36 @@ void Game::showResults() {
     overlayType = OverlayType::Results;
 }
 
+void Game::showMoveHistory() {
+    overlayType = OverlayType::MoveHistory;
+}
+
+void Game::goToMainMenu() {
+    resetGameState();
+    isPlayerTurn = player1.getColor() == PlayerColor::White;
+    screenState = ScreenState::MainMenu;
+}
+
+void Game::startNewGame() {
+    startGame(playerPlaysWhite, selectedElo);
+}
+
 void Game::resign(Player player) {
     overlayType = OverlayType::Resign;
 }
 
 void Game::offerDraw(Player player) {
-    // TODO
+    draw.confirmationOverlay(
+        draw.overlayRect,
+        draw.overlayYesButton,
+        draw.overlayNoButton,
+        "Offer rejected by opponent.",
+        draw.getInput().isOverlayYesClicked(),
+        draw.getInput().isOverlayNoClicked(),
+        0.2f,
+        20
+    );
+    return;
     overlayType = OverlayType::Draw;
 }
 

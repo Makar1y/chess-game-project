@@ -10,7 +10,10 @@ Input::Input(const Rectangle& resignButton,
              const Rectangle& selectBlackButton,
              const Rectangle& startGameButton,
              const Rectangle& selectEloButton,
-			 const Rectangle& undoButton)
+             const Rectangle& undoButton,
+             const Rectangle& backToGameButton,
+             const Rectangle& exitToMenuButton,
+             const Rectangle& newGameButton)
     : resignButton(resignButton),
       offerDrawButton(offerDrawButton),
       showResultsButton(showResultsButton),
@@ -20,7 +23,10 @@ Input::Input(const Rectangle& resignButton,
       selectBlackButton(selectBlackButton),
       startGameButton(startGameButton),
       selectEloButton(selectEloButton),
-	  undoButton(undoButton) {
+      undoButton(undoButton),
+      backToGameButton(backToGameButton),
+      exitToMenuButton(exitToMenuButton),
+      newGameButton(newGameButton) {
 }
 
 bool Input::isLeftMousePressed() {
@@ -62,8 +68,21 @@ bool Input::isStartGameClicked() {
 bool Input::isSelectEloClicked() {
     return CheckCollisionPointRec(GetMousePosition(), selectEloButton);
 }
+
 bool Input::isUndoClicked() {
     return CheckCollisionPointRec(GetMousePosition(), undoButton);
+}
+
+bool Input::isBackToGameClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), backToGameButton);
+}
+
+bool Input::isExitToMenuClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), exitToMenuButton);
+}
+
+bool Input::isNewGameClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), newGameButton);
 }
 
 bool Input::getClickedBoardCell(int& x, int& y, bool playerPlaysWhite) {

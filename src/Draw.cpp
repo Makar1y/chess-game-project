@@ -5,7 +5,7 @@
 #include <cmath>
 
 Draw::Draw()
-    : input(resignButton, offerDrawButton, showResultsButton, overlayYesButton, overlayNoButton, selectWhiteButton, selectBlackButton, startGameButton, selectEloButton, undoButton) {
+    : input(resignButton, offerDrawButton, showResultsButton, overlayYesButton, overlayNoButton, selectWhiteButton, selectBlackButton, startGameButton, selectEloButton, undoButton, backToGameButton, exitToMenuButton, newGameButton) {
     resourcesLoaded = false;
 
     const float overlayWidth              = 380.0f;
@@ -19,6 +19,9 @@ Draw::Draw()
     undoButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
     offerDrawButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
     showResultsButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    backToGameButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    exitToMenuButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    newGameButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
 
     // main menu buttons
     startGameButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
@@ -140,17 +143,31 @@ Input& Draw::getInput() {
 }
 
 void Draw::showMoveHistory(const std::vector<std::string>& moveHistory) {
+    // Use a larger overlay for move history with buttons
+    const float historyOverlayWidth = 500.0f;
+    const float historyOverlayHeight = 450.0f;
+    Rectangle historyOverlayRect = {
+        ((float)(WIDTH + PANEL_WIDTH) - historyOverlayWidth) * 0.5f,
+        ((float)LENGTH - historyOverlayHeight) * 0.5f,
+        historyOverlayWidth,
+        historyOverlayHeight
+    };
+
     DrawRectangle(0, 0, WIDTH + PANEL_WIDTH, LENGTH, Fade(BLACK, 0.25f));
-    DrawRectangleRec(overlayRect, RAYWHITE);
-    DrawRectangleLinesEx(overlayRect, 2, GRAY);
+    DrawRectangleRec(historyOverlayRect, RAYWHITE);
+    DrawRectangleLinesEx(historyOverlayRect, 2, GRAY);
 
     const char* title = "Move History";
     Vector2 titleSize = MeasureTextEx(uiFont22, title, 22, 1);
-    DrawTextEx(uiFont22, title, { overlayRect.x + (overlayRect.width - titleSize.x) * 0.5f, overlayRect.y + 10 }, 22, 1, DARKGRAY);
+    DrawTextEx(uiFont22, title, { historyOverlayRect.x + (historyOverlayRect.width - titleSize.x) * 0.5f, historyOverlayRect.y + 10 }, 22, 1, DARKGRAY);
 
+    // Show result stats
+    std::string movesStr = "Total Moves: " + std::to_string(moveHistory.size());
+    DrawTextEx(uiFont22, movesStr.c_str(), { historyOverlayRect.x + 20, historyOverlayRect.y + 40 }, 18, 1, DARKGRAY);
+
+    // Build move history text (show all moves)
     std::string historyText = "";
-    int movesToShow = std::min(10, (int)moveHistory.size()); // Show up to 10 latest moves
-    for (int i = moveHistory.size() - movesToShow; i < (int)moveHistory.size(); ++i) {
+    for (size_t i = 0; i < moveHistory.size(); ++i) {
         if (i % 2 == 0) {
             historyText += std::to_string(i / 2 + 1) + ". ";
         }
@@ -158,40 +175,136 @@ void Draw::showMoveHistory(const std::vector<std::string>& moveHistory) {
         if (i % 2 != 0) historyText += "\n";
     }
 
-    DrawTextEx(uiFont22, historyText.c_str(), { overlayRect.x + 20, overlayRect.y + 40 }, 20, 1, BLACK);
+    // Draw move history in a scrollable area (simplified - just show last 20 moves)
+    std::string recentHistoryText = "";
+    int movesToShow = std::min(20, (int)moveHistory.size());
+    int startIdx = std::max(0, (int)moveHistory.size() - movesToShow);
+    for (int i = startIdx; i < (int)moveHistory.size(); ++i) {
+        if (i % 2 == 0) {
+            recentHistoryText += std::to_string(i / 2 + 1) + ". ";
+        }
+        recentHistoryText += moveHistory[i] + " ";
+        if (i % 2 != 0) recentHistoryText += "\n";
+    }
 
-    // Draw close button
-    DrawRectangleRounded(overlayYesButton, 0.2f, 8, input.isOverlayYesClicked() ? Color{ 218, 218, 190, 255 } : Color{ 238, 238, 210, 255 });
-    const char* closeText = "Close";
-    Vector2 closeSize = MeasureTextEx(uiFont22, closeText, 22, 1);
-    DrawTextEx(uiFont22, closeText, { overlayYesButton.x + (overlayYesButton.width - closeSize.x) * 0.5f, overlayYesButton.y + (overlayYesButton.height - closeSize.y) * 0.5f }, 22, 1, BLACK);
+    DrawTextEx(uiFont22, recentHistoryText.c_str(), { historyOverlayRect.x + 20, historyOverlayRect.y + 70 }, 18, 1, BLACK);
+
+    // Draw buttons
+    float buttonWidth = 160.0f;
+    float buttonHeight = 40.0f;
+    float buttonSpacing = 15.0f;
+    float buttonsY = historyOverlayRect.y + historyOverlayRect.height - buttonHeight - 20;
+
+    backToGameButton = {
+        historyOverlayRect.x + (historyOverlayRect.width - (buttonWidth * 2 + buttonSpacing)) * 0.5f,
+        buttonsY,
+        buttonWidth,
+        buttonHeight
+    };
+
+    newGameButton = {
+        backToGameButton.x + buttonWidth + buttonSpacing,
+        buttonsY,
+        buttonWidth,
+        buttonHeight
+    };
+
+    // Back to game button
+    Color backColor = input.isBackToGameClicked() ? Color{ 218, 218, 190, 255 } : Color{ 238, 238, 210, 255 };
+    DrawRectangleRounded(backToGameButton, 0.2f, 8, backColor);
+    const char* backText = "Back to Game";
+    Vector2 backSize = MeasureTextEx(uiFont22, backText, 18, 1);
+    DrawTextEx(uiFont22, backText, { backToGameButton.x + (backToGameButton.width - backSize.x) * 0.5f, backToGameButton.y + (backToGameButton.height - backSize.y) * 0.5f }, 18, 1, BLACK);
+
+    // Draw New Game button
+    Color newGameColor = input.isNewGameClicked() ? Color{ 218, 218, 190, 255 } : Color{ 238, 238, 210, 255 };
+    DrawRectangleRounded(newGameButton, 0.2f, 8, newGameColor);
+    const char* newGameText = "New Game";
+    Vector2 newGameSize = MeasureTextEx(uiFont22, newGameText, 18, 1);
+    DrawTextEx(uiFont22, newGameText, { newGameButton.x + (newGameButton.width - newGameSize.x) * 0.5f, newGameButton.y + (newGameButton.height - newGameSize.y) * 0.5f }, 18, 1, BLACK);
+
 }
 
-void Draw::showResults(const std::string& winnerName, const std::string& winReason, int movesMade) {
+void Draw::showResults(const std::string& winnerName, const std::string& winReason, int movesMade, const std::vector<std::string>& moveHistory) {
+    // Use a larger overlay for results with move history and buttons
+    const float resultsOverlayWidth = 500.0f;
+    const float resultsOverlayHeight = 500.0f;
+    Rectangle resultsOverlayRect = {
+        ((float)(WIDTH + PANEL_WIDTH) - resultsOverlayWidth) * 0.5f,
+        ((float)LENGTH - resultsOverlayHeight) * 0.5f,
+        resultsOverlayWidth,
+        resultsOverlayHeight
+    };
+
     DrawRectangle(0, 0, WIDTH + PANEL_WIDTH, LENGTH, Fade(BLACK, 0.25f));
-    DrawRectangleRec(overlayRect, RAYWHITE);
-    DrawRectangleLinesEx(overlayRect, 2, GRAY);
+    DrawRectangleRec(resultsOverlayRect, RAYWHITE);
+    DrawRectangleLinesEx(resultsOverlayRect, 2, GRAY);
 
     const char* title = "Game Results";
     Vector2 titleSize = MeasureTextEx(uiFont22, title, 22, 1);
-    DrawTextEx(uiFont22, title, { overlayRect.x + (overlayRect.width - titleSize.x) * 0.5f, overlayRect.y + 10 }, 22, 1, DARKGRAY);
+    DrawTextEx(uiFont22, title, { resultsOverlayRect.x + (resultsOverlayRect.width - titleSize.x) * 0.5f, resultsOverlayRect.y + 10 }, 22, 1, DARKGRAY);
 
     std::string winnerStr = "Winner: " + winnerName;
     std::string reasonStr = "Reason: " + winReason;
     std::string movesStr = "Total moves: " + std::to_string(movesMade);
 
-    DrawTextEx(uiFont22, winnerStr.c_str(), { overlayRect.x + 20, overlayRect.y + 50 }, 20, 1, BLACK);
-    DrawTextEx(uiFont22, reasonStr.c_str(), { overlayRect.x + 20, overlayRect.y + 80 }, 20, 1, BLACK);
-    DrawTextEx(uiFont22, movesStr.c_str(), { overlayRect.x + 20, overlayRect.y + 110 }, 20, 1, BLACK);
+    DrawTextEx(uiFont22, winnerStr.c_str(), { resultsOverlayRect.x + 20, resultsOverlayRect.y + 50 }, 20, 1, BLACK);
+    DrawTextEx(uiFont22, reasonStr.c_str(), { resultsOverlayRect.x + 20, resultsOverlayRect.y + 80 }, 20, 1, BLACK);
+    DrawTextEx(uiFont22, movesStr.c_str(), { resultsOverlayRect.x + 20, resultsOverlayRect.y + 110 }, 20, 1, BLACK);
 
-    // Draw OK button
-    DrawRectangleRounded(overlayYesButton, 0.2f, 8, input.isOverlayYesClicked() ? Color{ 218, 218, 190, 255 } : Color{ 238, 238, 210, 255 });
-    const char* okText = "OK";
-    Vector2 okSize = MeasureTextEx(uiFont22, okText, 22, 1);
-    DrawTextEx(uiFont22, okText, { overlayYesButton.x + (overlayYesButton.width - okSize.x) * 0.5f, overlayYesButton.y + (overlayYesButton.height - okSize.y) * 0.5f }, 22, 1, BLACK);
+    // Show move history
+    const char* historyTitle = "Move History:";
+    DrawTextEx(uiFont22, historyTitle, { resultsOverlayRect.x + 20, resultsOverlayRect.y + 145 }, 18, 1, DARKGRAY);
+
+    std::string recentHistoryText = "";
+    int movesToShow = std::min(16, (int)moveHistory.size());
+    int startIdx = std::max(0, (int)moveHistory.size() - movesToShow);
+    for (int i = startIdx; i < (int)moveHistory.size(); ++i) {
+        if (i % 2 == 0) {
+            recentHistoryText += std::to_string(i / 2 + 1) + ". ";
+        }
+        recentHistoryText += moveHistory[i] + " ";
+        if (i % 2 != 0) recentHistoryText += "\n";
+    }
+
+    DrawTextEx(uiFont22, recentHistoryText.c_str(), { resultsOverlayRect.x + 20, resultsOverlayRect.y + 175 }, 18, 1, BLACK);
+
+    // Draw buttons
+    float buttonWidth = 160.0f;
+    float buttonHeight = 40.0f;
+    float buttonSpacing = 15.0f;
+    float buttonsY = resultsOverlayRect.y + resultsOverlayRect.height - buttonHeight - 20;
+
+    exitToMenuButton = {
+        resultsOverlayRect.x + (resultsOverlayRect.width - (buttonWidth * 2 + buttonSpacing)) * 0.5f,
+        buttonsY,
+        buttonWidth,
+        buttonHeight
+    };
+
+    newGameButton = {
+        exitToMenuButton.x + buttonWidth + buttonSpacing,
+        buttonsY,
+        buttonWidth,
+        buttonHeight
+    };
+
+    // Draw Exit to Main Menu button
+    Color exitColor = input.isExitToMenuClicked() ? Color{ 218, 218, 190, 255 } : Color{ 238, 238, 210, 255 };
+    DrawRectangleRounded(exitToMenuButton, 0.2f, 8, exitColor);
+    const char* exitText = "Exit to Menu";
+    Vector2 exitSize = MeasureTextEx(uiFont22, exitText, 18, 1);
+    DrawTextEx(uiFont22, exitText, { exitToMenuButton.x + (exitToMenuButton.width - exitSize.x) * 0.5f, exitToMenuButton.y + (exitToMenuButton.height - exitSize.y) * 0.5f }, 18, 1, BLACK);
+
+    // Draw New Game button
+    Color newGameColor = input.isNewGameClicked() ? Color{ 218, 218, 190, 255 } : Color{ 238, 238, 210, 255 };
+    DrawRectangleRounded(newGameButton, 0.2f, 8, newGameColor);
+    const char* newGameText = "New Game";
+    Vector2 newGameSize = MeasureTextEx(uiFont22, newGameText, 18, 1);
+    DrawTextEx(uiFont22, newGameText, { newGameButton.x + (newGameButton.width - newGameSize.x) * 0.5f, newGameButton.y + (newGameButton.height - newGameSize.y) * 0.5f }, 18, 1, BLACK);
 }
 
-void Draw::confirmationOverlay(const Rectangle& overlayRect, const Rectangle& overlayYesButton, const Rectangle& overlayNoButton, const Font& uiFont22,
+void Draw::confirmationOverlay(const Rectangle& overlayRect, const Rectangle& overlayYesButton, const Rectangle& overlayNoButton,
     const char* messageText, bool overlayYesPressed, bool overlayNoPressed, float buttonRoundness, int buttonSegments) {
     DrawRectangle(0, 0, WIDTH + PANEL_WIDTH, LENGTH, Fade(BLACK, 0.25f));
     DrawRectangleRec(overlayRect, RAYWHITE);
@@ -240,7 +353,12 @@ void Draw::renderOverlay(OverlayType overlayType, float buttonRoundness, int but
     if (overlayType == OverlayType::None) return;
 
     if (overlayType == OverlayType::Results) {
-        showResults(winnerName, winReason, moveHistory.size());
+        showResults(winnerName, winReason, moveHistory.size(), moveHistory);
+        return;
+    }
+
+    if (overlayType == OverlayType::MoveHistory) {
+        showMoveHistory(moveHistory);
         return;
     }
 
@@ -261,7 +379,6 @@ void Draw::renderOverlay(OverlayType overlayType, float buttonRoundness, int but
         overlayRect,
         overlayYesButton,
         overlayNoButton,
-        uiFont22,
         messageText,
         input.isOverlayYesClicked(),
         input.isOverlayNoClicked(),
@@ -578,7 +695,7 @@ Color resultsColor = input.isShowResultsClicked()
 
     const char* resignText = "Resign";
     const char* drawTextStr = "Offer Draw";
-    const char* resultsText = "Show Results";
+    const char* resultsText = "Show Moves";
     const char* undoText = "Undo Move";
 
     Vector2 resignSize = MeasureTextEx(uiFont22, resignText, 22, 1);
