@@ -89,8 +89,8 @@ public:
     void showMoveHistory();
     void goToMainMenu();
     void startNewGame();
-    void resign(Player player);
-    void offerDraw(Player player);
+    void resign();
+    void offerDraw();
     bool validateMove(Move& move);
     int getNextStockfishElo(int currentElo);
     void undoLastMove();

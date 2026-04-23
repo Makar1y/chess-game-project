@@ -202,26 +202,12 @@ void Draw::showMoveHistory(const std::vector<std::string>& moveHistory) {
         buttonHeight
     };
 
-    newGameButton = {
-        backToGameButton.x + buttonWidth + buttonSpacing,
-        buttonsY,
-        buttonWidth,
-        buttonHeight
-    };
-
     // Back to game button
     Color backColor = input.isBackToGameClicked() ? Color{ 218, 218, 190, 255 } : Color{ 238, 238, 210, 255 };
     DrawRectangleRounded(backToGameButton, 0.2f, 8, backColor);
     const char* backText = "Back to Game";
     Vector2 backSize = MeasureTextEx(uiFont22, backText, 18, 1);
     DrawTextEx(uiFont22, backText, { backToGameButton.x + (backToGameButton.width - backSize.x) * 0.5f, backToGameButton.y + (backToGameButton.height - backSize.y) * 0.5f }, 18, 1, BLACK);
-
-    // Draw New Game button
-    Color newGameColor = input.isNewGameClicked() ? Color{ 218, 218, 190, 255 } : Color{ 238, 238, 210, 255 };
-    DrawRectangleRounded(newGameButton, 0.2f, 8, newGameColor);
-    const char* newGameText = "New Game";
-    Vector2 newGameSize = MeasureTextEx(uiFont22, newGameText, 18, 1);
-    DrawTextEx(uiFont22, newGameText, { newGameButton.x + (newGameButton.width - newGameSize.x) * 0.5f, newGameButton.y + (newGameButton.height - newGameSize.y) * 0.5f }, 18, 1, BLACK);
 
 }
 
@@ -717,7 +703,7 @@ Color drawColor = input.isOfferDrawClicked()
 Color resultsColor = input.isShowResultsClicked()
     ? Color{ 218, 218, 190, 255 }
     : Color{ 238, 238, 210, 255 };
-    Color undoColor = LIGHTGRAY;
+    Color undoColor = input.isUndoClicked() ? GRAY : LIGHTGRAY;
 
     DrawRectangleRounded(resignButton, buttonRoundness, buttonSegments, resignColor);
     DrawRectangleRounded(offerDrawButton, buttonRoundness, buttonSegments, drawColor);

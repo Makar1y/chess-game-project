@@ -38,6 +38,10 @@ void Game::update() {
         if (overlayType == OverlayType::MoveHistory) {
             if (draw.getInput().isBackToGameClicked()) {
                 overlayType = OverlayType::None;
+            }
+        } else if (overlayType == OverlayType::Results) {
+            if (draw.getInput().isExitToMenuClicked()) {
+                goToMainMenu();
             } else if (draw.getInput().isNewGameClicked()) {
                 startNewGame();
             }
@@ -50,9 +54,6 @@ void Game::update() {
                 winnerName = "None";
                 winReason = "Draw Agreement";
                 overlayType = OverlayType::Results;
-            } else if (overlayType == OverlayType::Results) {
-                resetGameState();
-                isPlayerTurn = player1.getColor() == PlayerColor::White;
             }
         } else if (draw.getInput().isOverlayNoClicked()) {
             overlayType = OverlayType::None;
@@ -62,7 +63,7 @@ void Game::update() {
     }
 
     if (draw.getInput().isResignClicked()) {
-        resign(player2);
+        resign();
         return;
     }
     if (draw.getInput().isUndoClicked()) {
@@ -71,7 +72,8 @@ void Game::update() {
     }
 
     if (draw.getInput().isOfferDrawClicked()) {
-        offerDraw(player2);
+
+        offerDraw();
         return;
     }
 
@@ -369,14 +371,13 @@ void Game::startNewGame() {
     startGame(playerPlaysWhite, selectedElo);
 }
 
-void Game::resign(Player player) {
+void Game::resign() {
     overlayType = OverlayType::Resign;
 }
 
-void Game::offerDraw(Player player) {
+void Game::offerDraw() {
     draw.infoOverlay("Draw offer rejected(automatically).");
-    return;
-    overlayType = OverlayType::Draw;
+    // overlayType = OverlayType::Draw;
 }
 
 bool Game::validateMove(Move& move) {
