@@ -54,6 +54,7 @@ private:
     Rectangle resignButton;
     Rectangle offerDrawButton;
     Rectangle showResultsButton;
+	Rectangle undoButton;
     Rectangle overlayRect;
     Rectangle overlayButton;
     Rectangle startGameButton;

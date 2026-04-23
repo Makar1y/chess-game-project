@@ -15,6 +15,10 @@ Game::Game()
 
 void Game::update() {
     if (!isPlayerTurn) return;
+    if (IsKeyPressed(KEY_U)) {
+        undoLastMove();
+        return;
+    }
     if (!draw.getInput().isLeftMousePressed()) return;
 
     if (overlayType != OverlayType::None) {
@@ -35,6 +39,10 @@ void Game::update() {
 
     if (draw.getInput().isResignClicked()) {
         resign(player2);
+        return;
+    }
+    if (draw.getInput().isUndoClicked()) {
+        undoLastMove();
         return;
     }
 
@@ -81,6 +89,8 @@ void Game::update() {
         }
 
         board.update(newMove);
+
+undoStack.push(std::move(newMove));
         moveHistory.push_back(moveToUci(newMove));
 
         if(wasItPawnPromotio(newMove)) {
@@ -211,6 +221,7 @@ void Game::makeStockfishMove() {
 
     board.update(move);
     moveHistory.push_back(moveToUci(move));
+	undoStack.push(std::move(move));
 
     if(wasItPawnPromotio(move)) {
         promotePawn(move);
@@ -570,6 +581,20 @@ bool Game::wasItPawnPromotio(Move& move) {
     unpackMove(move, fx, fy, tx, ty);
     if(board.getPiece(tx, ty)->getType() == PieceType::Pawn && (ty == 0 || ty == 7)) return true;
     return false;
+}
+void Game::undoLastMove() {
+    if (undoStack.empty()) return;
+
+    Move last = std::move(undoStack.top());
+    undoStack.pop();
+
+    board.undo(last);
+
+    if (!moveHistory.empty()) {
+        moveHistory.pop_back();
+    }
+
+    hasLastMove = false;
 }
 
 void Game::promotePawn(Move& move) {

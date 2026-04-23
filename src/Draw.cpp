@@ -5,7 +5,7 @@
 #include <cmath>
 
 Draw::Draw()
-    : input(resignButton, offerDrawButton, showResultsButton, overlayButton, selectWhiteButton, selectBlackButton, startGameButton, selectEloButton) {
+    : input(resignButton, offerDrawButton, showResultsButton, overlayButton, selectWhiteButton, selectBlackButton, startGameButton, selectEloButton, undoButton) {
     resourcesLoaded = false;
 
     const float overlayMarginX            = 110.0f;
@@ -15,6 +15,7 @@ Draw::Draw()
     const float overlayButtonHeight       = 50.0f;
 
     resignButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    undoButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
     offerDrawButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
     showResultsButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
 
@@ -417,6 +418,7 @@ void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY
     resignButton = { buttonX, firstButtonY, buttonWidth, buttonHeight };
     offerDrawButton = { buttonX, firstButtonY + buttonHeight + buttonSpacing, buttonWidth, buttonHeight };
     showResultsButton = { buttonX, firstButtonY + (buttonHeight + buttonSpacing) * 2.0f, buttonWidth, buttonHeight };
+    undoButton = {buttonX,firstButtonY + (buttonHeight + buttonSpacing) * 3.0f,buttonWidth,buttonHeight};
 
 Color resignColor = input.isResignClicked()
     ? Color{ 218, 218, 190, 255 }
@@ -429,18 +431,22 @@ Color drawColor = input.isOfferDrawClicked()
 Color resultsColor = input.isShowResultsClicked()
     ? Color{ 218, 218, 190, 255 }
     : Color{ 238, 238, 210, 255 };
+    Color undoColor = LIGHTGRAY;
 
     DrawRectangleRounded(resignButton, buttonRoundness, buttonSegments, resignColor);
     DrawRectangleRounded(offerDrawButton, buttonRoundness, buttonSegments, drawColor);
     DrawRectangleRounded(showResultsButton, buttonRoundness, buttonSegments, resultsColor);
+    DrawRectangleRounded(undoButton, buttonRoundness, buttonSegments, undoColor);
 
     const char* resignText = "Resign";
     const char* drawTextStr = "Offer Draw";
     const char* resultsText = "Show Results";
+    const char* undoText = "Undo Move";
 
     Vector2 resignSize = MeasureTextEx(uiFont22, resignText, 22, 1);
     Vector2 drawSize = MeasureTextEx(uiFont22, drawTextStr, 22, 1);
     Vector2 resultsSize = MeasureTextEx(uiFont22, resultsText, 22, 1);
+    Vector2 undoSize = MeasureTextEx(uiFont22, undoText, 22, 1);
 
     DrawTextEx(uiFont22, resignText,
         {
@@ -462,6 +468,12 @@ Color resultsColor = input.isShowResultsClicked()
             roundf(showResultsButton.y + (showResultsButton.height - resultsSize.y) * 0.5f)
         },
         22, 1, BLACK);
+    DrawTextEx(uiFont22, undoText,
+    {
+        roundf(undoButton.x + (undoButton.width - undoSize.x) * 0.5f),
+        roundf(undoButton.y + (undoButton.height - undoSize.y) * 0.5f)
+    },
+    22, 1, BLACK);
 
     if (overlayType != OverlayType::None) {
         DrawRectangle(0, 0, WIDTH + PANEL_WIDTH, LENGTH, Fade(BLACK, 0.25f));

@@ -14,6 +14,14 @@ private:
     std::unique_ptr<Piece> capturedPiece;
 
 public:
+    Move() = default;
+
+    Move(const Move&) = delete;
+    Move& operator=(const Move&) = delete;
+
+    Move(Move&&) = default;
+    Move& operator=(Move&&) = default;
+
     int getFromX();
     int getFromY();
     int getToX();

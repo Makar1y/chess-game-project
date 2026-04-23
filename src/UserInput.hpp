@@ -11,11 +11,14 @@ public:
           const Rectangle& selectWhiteButton,
           const Rectangle& selectBlackButton,
           const Rectangle& startGameButton,
-          const Rectangle& selectEloButton);
+          const Rectangle& selectEloButton,
+		  const Rectangle& undoButton);
+
 
     bool isLeftMousePressed();
     bool isResignClicked();
     bool isOfferDrawClicked();
+	bool isUndoClicked();
     bool isShowResultsClicked();
     bool isOverlayButtonClicked();
     bool isSelectWhiteClicked();
@@ -33,4 +36,5 @@ private:
     const Rectangle& selectBlackButton;
     const Rectangle& startGameButton;
     const Rectangle& selectEloButton;
+    const Rectangle& undoButton;
 };

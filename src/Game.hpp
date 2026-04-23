@@ -5,6 +5,7 @@
 #include <thread>
 #include <chrono>
 #include <optional>
+#include  <stack>
 
 #include "../Config.hpp"
 #include "Board.hpp"
@@ -12,6 +13,7 @@
 #include "Move.hpp"
 #include "Player.hpp"
 #include "Stockfish.hpp"
+
 
 enum class OverlayType {
     None,
@@ -84,4 +86,6 @@ public:
     void offerDraw(Player player);
     bool validateMove(Move& move);
     int getNextStockfishElo(int currentElo);
+    void undoLastMove();
+    std::stack<Move> undoStack;
 };

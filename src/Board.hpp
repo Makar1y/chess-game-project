@@ -2,12 +2,13 @@
 
 #include "Move.hpp"
 #include "Piece.hpp"
-
 #include <memory>
 
 class Piece;
 
 class Board {
+
+
 private:
     std::unique_ptr<Piece> squares[8][8];
 
