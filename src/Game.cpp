@@ -9,7 +9,8 @@ const int STOCKFISH_ELO_OPTION_COUNT = sizeof(STOCKFISH_ELO_OPTIONS) / sizeof(ST
 Game::Game()
     : player1("Player 1", PLAYER_PLAYS_WHITE ? PlayerColor::White : PlayerColor::Black),
       player2("Stockfish", PLAYER_PLAYS_WHITE ? PlayerColor::Black : PlayerColor::White),
-      stockfish((StockfishElo)STOCKFISH_ELO_OPTIONS[0]) {
+      stockfish((StockfishElo)STOCKFISH_ELO_OPTIONS[0]),
+      playerTimeLeftSeconds(PLAYER_TIME) {
     isPlayerTurn = player1.getColor() == PlayerColor::White;
 }
 
@@ -24,18 +25,26 @@ void Game::resetGameState() {
     winReason.clear();
     overlayMessage.clear();
     overlayType = OverlayType::None;
+    playerTimeLeftSeconds = PLAYER_TIME;
     stockfish.newGame();
 }
 
 void Game::update() {
-    if (!isPlayerTurn) return;
-    if (IsKeyPressed(KEY_U)) {
-        undoLastMove();
-        return;
+    if (overlayType == OverlayType::None && isPlayerTurn) {
+        playerTimeLeftSeconds -= GetFrameTime();
+        if (playerTimeLeftSeconds <= 0.0f) {
+            playerTimeLeftSeconds = 0.0f;
+            winnerName = player2.getName();
+            winReason = "Time out";
+            overlayType = OverlayType::Results;
+            audio.playGameEnd();
+            return;
+        }
     }
-    if (!draw.getInput().isLeftMousePressed()) return;
 
     if (overlayType != OverlayType::None) {
+        if (!draw.getInput().isLeftMousePressed()) return;
+
         if (overlayType == OverlayType::MoveHistory) {
             if (draw.getInput().isBackToGameClicked()) {
                 overlayType = OverlayType::None;
@@ -54,6 +63,7 @@ void Game::update() {
                 winnerName = player2.getName();
                 winReason = "Resignation";
                 overlayType = OverlayType::Results;
+                audio.playGameEnd();
             } else if (overlayType == OverlayType::Draw) {
                 overlayMessage = "Draw offer rejected automatically.";
                 overlayType = OverlayType::Info;
@@ -65,6 +75,14 @@ void Game::update() {
         return;
     }
 
+    if (!isPlayerTurn) return;
+
+    if (IsKeyPressed(KEY_U)) {
+        undoLastMove();
+        return;
+    }
+    if (!draw.getInput().isLeftMousePressed()) return;
+
     if (draw.getInput().isResignClicked()) {
         resign();
         return;
@@ -75,8 +93,7 @@ void Game::update() {
     }
 
     if (draw.getInput().isOfferDrawClicked()) {
-
-        offerDraw();
+        offerdaw();
         return;
     }
 
@@ -101,7 +118,6 @@ void Game::update() {
     if (!draw.getInput().getClickedBoardCell(x, y, playerPlaysWhite)) return;
 
     Piece* clickedPiece = board.getPiece(x, y);
-
     PieceColor playerPieceColor = playerPlaysWhite ? PieceColor::White : PieceColor::Black;
 
     if (!pieceSelected) {
@@ -123,20 +139,23 @@ void Game::update() {
     Move newMove = convertToMove(selectedX, selectedY, x, y);
 
     if (validateMove(newMove) && isThereNoCheck(newMove)) {
-        if(wasIsEnPassant(newMove)) {
+        bool isEnPassantMove = wasIsEnPassant(newMove);
+        bool isCaptureMove = board.getPiece(x, y) != nullptr || isEnPassantMove;
+        if (isEnPassantMove) {
             removeEnPassantPawn(newMove);
         }
 
         board.update(newMove);
+        bool isCastleMove = wasItcastle(newMove);
 
-undoStack.push(std::move(newMove));
+        undoStack.push(std::move(newMove));
         moveHistory.push_back(moveToUci(newMove));
 
-        if(wasItPawnPromotio(newMove)) {
+        if (wasItPawnPromotio(newMove)) {
             promotePawn(newMove);
         }
 
-        if(wasItcastle(newMove)) {
+        if (wasItcastle(newMove)) {
             moveRook(newMove);
         }
 
@@ -144,8 +163,16 @@ undoStack.push(std::move(newMove));
         hasLastMove = true;
         clearSelection();
         clearPossibleMoves();
-        isPlayerTurn = false;
-    } else if(board.getPiece(x, y) != nullptr && board.getPiece(x, y)->getColor() == playerPieceColor){
+
+        PieceColor stockfishPieceColor = playerPlaysWhite ? PieceColor::Black : PieceColor::White;
+        bool isCheckMove = checkForCheck(stockfishPieceColor);
+        checkForGameEnd(stockfishPieceColor);
+
+        if (overlayType == OverlayType::None) {
+            audio.playMoveEvent(isCaptureMove, isCastleMove, isCheckMove);
+            isPlayerTurn = false;
+        }
+    } else if (board.getPiece(x, y) != nullptr && board.getPiece(x, y)->getColor() == playerPieceColor) {
         selectedX = x;
         selectedY = y;
         getPossibleMoves(x, y);
@@ -241,6 +268,43 @@ bool Game::isThereNoCheck(Move& move) {
     return flag;
 }
 
+bool Game::hasAnyLegalMove(PieceColor color) {
+    for (int fx = 0; fx < 8; ++fx) {
+        for (int fy = 0; fy < 8; ++fy) {
+            Piece* piece = board.getPiece(fx, fy);
+            if (piece == nullptr || piece->getColor() != color) continue;
+
+            for (int tx = 0; tx < 8; ++tx) {
+                for (int ty = 0; ty < 8; ++ty) {
+                    if (fx == tx && fy == ty) continue;
+                    Move move = convertToMove(fx, fy, tx, ty);
+                    if (validateMove(move) && isThereNoCheck(move)) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+void Game::checkForGameEnd(PieceColor color) {
+    if (hasAnyLegalMove(color)) return;
+
+    if (checkForCheck(color)) {
+        winnerName = (color == (playerPlaysWhite ? PieceColor::White : PieceColor::Black)) ? player2.getName() : player1.getName();
+        winReason = "Checkmate";
+    } else {
+        winnerName = "Draw";
+        winReason = "Stalemate";
+    }
+
+    overlayType = OverlayType::Results;
+    isPlayerTurn = true;
+    audio.playGameEnd();
+}
+
 void Game::makeStockfishMove() {
     if (overlayType != OverlayType::None) return;
     if (isPlayerTurn) return;
@@ -248,33 +312,45 @@ void Game::makeStockfishMove() {
     std::string bestMove = stockfish.move(moveHistory);
 
     if (bestMove.empty() || bestMove == "(none)" || bestMove == "0000") {
-        winnerName = player1.getName();
-        winReason = "Checkmate / Stalemate";
-        overlayType = OverlayType::Results;
+        PieceColor stockfishPieceColor = playerPlaysWhite ? PieceColor::Black : PieceColor::White;
+        checkForGameEnd(stockfishPieceColor);
         isPlayerTurn = true;
         return;
     }
 
     Move move = uciToMove(bestMove);
-    if(wasIsEnPassant(move)) {
+    bool isEnPassantMove = wasIsEnPassant(move);
+    bool isCaptureMove = board.getPiece(move.getToX(), move.getToY()) != nullptr || isEnPassantMove;
+    if (isEnPassantMove) {
         removeEnPassantPawn(move);
     }
 
     board.update(move);
+    bool isCastleMove = wasItcastle(move);
     moveHistory.push_back(moveToUci(move));
-	undoStack.push(std::move(move));
+    undoStack.push(std::move(move));
 
-    if(wasItPawnPromotio(move)) {
+    if (wasItPawnPromotio(move)) {
         promotePawn(move);
     }
 
-    if(wasItcastle(move)) {
+    if (wasItcastle(move)) {
         moveRook(move);
     }
+
     lastMove = std::move(move);
     hasLastMove = true;
-    isPlayerTurn = true;
+
+    PieceColor playerPieceColor = playerPlaysWhite ? PieceColor::White : PieceColor::Black;
+    bool isCheckMove = checkForCheck(playerPieceColor);
+    checkForGameEnd(playerPieceColor);
+
+    if (overlayType == OverlayType::None) {
+        audio.playMoveEvent(isCaptureMove, isCastleMove, isCheckMove);
+        isPlayerTurn = true;
+    }
 }
+
 
 void Game::startGame(bool playerPlaysWhite, int stockfishElo) {
     this->playerPlaysWhite = playerPlaysWhite;
@@ -284,17 +360,21 @@ void Game::startGame(bool playerPlaysWhite, int stockfishElo) {
     player2.setColor(playerPlaysWhite ? PlayerColor::Black : PlayerColor::White);
     isPlayerTurn = playerPlaysWhite;
     resetGameState();
+    audio.playGameStart();
     screenState = ScreenState::InGame;
 }
 
 void Game::mainMenu() {
     draw.initWindow();
+    audio.load();
 
     while (!draw.shouldClose()) {
         if (screenState == ScreenState::MainMenu) {
             if (draw.getInput().isLeftMousePressed()) {
                 if (draw.getInput().isStartGameClicked()) {
                     startGame(playerPlaysWhite, selectedElo);
+                } else if (draw.getInput().isExitClicked()) {
+                    break;
                 } else if (draw.getInput().isSelectWhiteClicked()) {
                     playerPlaysWhite = true;
                 } else if (draw.getInput().isSelectBlackClicked()) {
@@ -309,7 +389,7 @@ void Game::mainMenu() {
         }
 
         update();
-        draw.render(board, pieceSelected, selectedX, selectedY, possibleMoves, possibleCaptures, &lastMove, hasLastMove, overlayType, player2.getName(), playerPlaysWhite, moveHistory, winnerName, winReason, overlayMessage);
+        draw.render(board, pieceSelected, selectedX, selectedY, possibleMoves, possibleCaptures, &lastMove, hasLastMove, overlayType, player2.getName(), playerPlaysWhite, playerTimeLeftSeconds, moveHistory, winnerName, winReason, overlayMessage);
 
         if (screenState == ScreenState::InGame && !isPlayerTurn) {
             std::this_thread::sleep_for(std::chrono::milliseconds(STOCKFISH_MOVE_TIME_MS));
@@ -317,6 +397,7 @@ void Game::mainMenu() {
         }
     }
 
+    audio.unload();
     draw.closeWindow();
 }
 
@@ -380,6 +461,10 @@ void Game::resign() {
 
 void Game::offerDraw() {
     overlayType = OverlayType::Draw;
+}
+
+void Game::offerdaw() {
+    offerDraw();
 }
 
 bool Game::validateMove(Move& move) {

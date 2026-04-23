@@ -16,7 +16,8 @@ public:
           const Rectangle& undoButton,
           const Rectangle& backToGameButton,
           const Rectangle& exitToMenuButton,
-          const Rectangle& newGameButton);
+          const Rectangle& newGameButton,
+          const Rectangle& exitButton);
 
 
     bool isLeftMousePressed();
@@ -35,6 +36,7 @@ public:
     bool isExitToMenuClicked();
     bool isNewGameClicked();
     bool getClickedBoardCell(int& x, int& y, bool playerPlaysWhite);
+    bool isExitClicked();
 
 private:
     const Rectangle& resignButton;
@@ -50,4 +52,5 @@ private:
     const Rectangle& backToGameButton;
     const Rectangle& exitToMenuButton;
     const Rectangle& newGameButton;
+    const Rectangle& exitButton;
 };

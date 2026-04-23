@@ -13,6 +13,7 @@
 #include "Move.hpp"
 #include "Player.hpp"
 #include "Stockfish.hpp"
+#include "Audio.hpp"
 
 
 class Game {
@@ -27,6 +28,7 @@ private:
     Player player1;
     Player player2;
     Stockfish stockfish;
+    Audio audio;
     int selectedElo = STOCKFISH_ELO;
 
     OverlayType overlayType = OverlayType::None;
@@ -41,6 +43,8 @@ private:
 
     std::set<std::pair<int, int>> possibleMoves;
     std::set<std::pair<int, int>> possibleCaptures;
+
+    float playerTimeLeftSeconds = PLAYER_TIME;
 
     bool playerPlaysWhite = PLAYER_PLAYS_WHITE;
     bool isPlayerTurn = true;
@@ -62,6 +66,8 @@ private:
     void unpackMove(Move& move, int& fx, int& fy, int& tx, int& ty);
     bool checkForCheck(PieceColor color);
     bool isThereNoCheck(Move& move);
+    bool hasAnyLegalMove(PieceColor color);
+    void checkForGameEnd(PieceColor color);
 
     bool isValidPawnMove(int fx, int fy, int tx, int ty);
     bool isValidRockMove(int fx, int fy, int tx, int ty);
@@ -92,6 +98,7 @@ public:
     void startNewGame();
     void resign();
     void offerDraw();
+    void offerdaw();
     bool validateMove(Move& move);
     int getNextStockfishElo(int currentElo);
     void undoLastMove();

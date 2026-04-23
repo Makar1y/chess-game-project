@@ -3,9 +3,20 @@
 #include "Game.hpp"
 
 #include <cmath>
+#include <cstdio>
+
+static std::string formatClock(float timeLeftSeconds) {
+    int totalSeconds = (int)std::ceil(timeLeftSeconds);
+    if(totalSeconds < 0) totalSeconds = 0;
+    int minutes = totalSeconds / 60;
+    int seconds = totalSeconds % 60;
+    char buffer[16];
+    std::snprintf(buffer, sizeof(buffer), "%02d:%02d", minutes, seconds);
+    return std::string(buffer);
+}
 
 Draw::Draw()
-    : input(resignButton, offerDrawButton, showResultsButton, overlayYesButton, overlayNoButton, selectWhiteButton, selectBlackButton, startGameButton, selectEloButton, undoButton, backToGameButton, exitToMenuButton, newGameButton) {
+    : input(resignButton, offerDrawButton, showResultsButton, overlayYesButton, overlayNoButton, selectWhiteButton, selectBlackButton, startGameButton, selectEloButton, undoButton, backToGameButton, exitToMenuButton, newGameButton, exitButton) {
     resourcesLoaded = false;
 
     const float overlayWidth              = 380.0f;
@@ -22,6 +33,7 @@ Draw::Draw()
     backToGameButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
     exitToMenuButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
     newGameButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    exitButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
 
     // main menu buttons
     startGameButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
@@ -469,6 +481,17 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo) {
         eloSelectorValueSize.y + 20.0f
     };
 
+    const std::string exitBtnText = "Exit";
+    Vector2 exitBtnSize = MeasureTextEx(uiFont22, exitBtnText.c_str(), 22, 1);
+    const float exitBtnX = centerX - exitBtnSize.x / 2.0f - 20.0f;
+    const float exitBtnY = startBtnY + startGameButton.height + 240.0f;
+    exitButton = Rectangle{
+        roundf(exitBtnX),
+        roundf(exitBtnY),
+        exitBtnSize.x + 40.0f,
+        exitBtnSize.y + 20.0f
+    };
+
     // Draw
     BeginDrawing();
     ClearBackground(RAYWHITE);
@@ -541,10 +564,18 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo) {
         },
         22, 1, GRAY);
 
+    DrawRectangleRounded(exitButton, 0.2f, 8, input.isExitClicked() ? GRAY : LIGHTGRAY);
+    DrawTextEx(uiFont22, exitBtnText.c_str(),
+        {
+            roundf(exitBtnX + (exitButton.width - exitBtnSize.x) / 2.0f),
+            roundf(exitBtnY + 10.0f)
+        },
+        22, 1, BLACK);
+
     EndDrawing();
 }
 
-void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY, std::set<std::pair<int, int>>& possibleMoves, std::set<std::pair<int, int>>& possibleCaptures, Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName, bool playerPlaysWhite, const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason, const std::string& infoMessage) {
+void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY, std::set<std::pair<int, int>>& possibleMoves, std::set<std::pair<int, int>>& possibleCaptures, Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName, bool playerPlaysWhite, float playerTimeLeftSeconds, const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason, const std::string& infoMessage) {
     static float PIECE_SCALE = 0.46f;
     static float PLAYER_SCALE = 0.28f;
 
@@ -743,6 +774,25 @@ Color resultsColor = input.isShowResultsClicked()
         roundf(undoButton.y + (undoButton.height - undoSize.y) * 0.5f)
     },
     22, 1, BLACK);
+
+    const float playerClockBottomPadding = 18.0f;
+    const float playerClockHeight = 64.0f;
+    Rectangle playerClockRect = {
+        buttonX,
+        LENGTH - playerClockBottomPadding - playerClockHeight,
+        buttonWidth,
+        playerClockHeight
+    };
+
+    std::string playerClockText = formatClock(playerTimeLeftSeconds);
+    Vector2 playerClockSize = MeasureTextEx(uiFont36, playerClockText.c_str(), 36, 1);
+    DrawRectangleRounded(playerClockRect, buttonRoundness, buttonSegments, Color{ 238, 238, 210, 255 });
+    DrawTextEx(uiFont36, playerClockText.c_str(),
+    {
+        roundf(playerClockRect.x + (playerClockRect.width - playerClockSize.x) * 0.5f),
+        roundf(playerClockRect.y + (playerClockRect.height - playerClockSize.y) * 0.5f)
+    },
+    36, 1, BLACK);
 
     if (overlayType != OverlayType::None) {
         renderOverlay(overlayType, buttonRoundness, buttonSegments, moveHistory, winnerName, winReason, infoMessage);

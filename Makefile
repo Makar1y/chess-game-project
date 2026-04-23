@@ -1,7 +1,7 @@
 CXX = g++
 TARGET = chess
 
-SRC = src/main.cpp src/Game.cpp src/Draw.cpp src/UserInput.cpp src/Board.cpp src/Piece.cpp src/Player.cpp src/Move.cpp src/Stockfish.cpp
+SRC = src/main.cpp src/Game.cpp src/Draw.cpp src/UserInput.cpp src/Board.cpp src/Piece.cpp src/Player.cpp src/Move.cpp src/Stockfish.cpp src/Audio.cpp
 
 ifeq ($(OS),Windows_NT)
 	SRC += src/StockfishInput_win.cpp

@@ -13,7 +13,8 @@ Input::Input(const Rectangle& resignButton,
              const Rectangle& undoButton,
              const Rectangle& backToGameButton,
              const Rectangle& exitToMenuButton,
-             const Rectangle& newGameButton)
+             const Rectangle& newGameButton,
+             const Rectangle& exitButton)
     : resignButton(resignButton),
       offerDrawButton(offerDrawButton),
       showResultsButton(showResultsButton),
@@ -26,7 +27,8 @@ Input::Input(const Rectangle& resignButton,
       undoButton(undoButton),
       backToGameButton(backToGameButton),
       exitToMenuButton(exitToMenuButton),
-      newGameButton(newGameButton) {
+      newGameButton(newGameButton),
+      exitButton(exitButton) {
 }
 
 bool Input::isLeftMousePressed() {
@@ -104,4 +106,9 @@ bool Input::getClickedBoardCell(int& x, int& y, bool playerPlaysWhite) {
     }
 
     return true;
+}
+
+
+bool Input::isExitClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), exitButton);
 }

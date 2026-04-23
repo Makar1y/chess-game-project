@@ -31,8 +31,8 @@ public:
     void render(Board& board, bool pieceSelected, int selectedX, int selectedY, 
         std::set<std::pair<int, int>>& possibleMoves, std::set<std::pair<int, int>>& possibleCaptures,
         Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName, bool playerPlaysWhite,
-        const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason,
-        const std::string& infoMessage);
+        float playerTimeLeftSeconds, const std::vector<std::string>& moveHistory, const std::string& winnerName,
+        const std::string& winReason, const std::string& infoMessage);
     void confirmationOverlay(const Rectangle& overlayRect, const Rectangle& overlayYesButton, const Rectangle& overlayNoButton, const char* messageText, bool overlayYesPressed, bool overlayNoPressed, float buttonRoundness, int buttonSegments);
     void infoOverlay(const char* messageText);
     void showMoveHistory(const std::vector<std::string>& moveHistory);
@@ -81,6 +81,7 @@ private:
     Rectangle backToGameButton;
     Rectangle exitToMenuButton;
     Rectangle newGameButton;
+    Rectangle exitButton;
 
     Input input;
 };
