@@ -139,12 +139,56 @@ Input& Draw::getInput() {
     return input;
 }
 
-void Draw::showMoveHistory() {
-    // Todo
+void Draw::showMoveHistory(const std::vector<std::string>& moveHistory) {
+    DrawRectangle(0, 0, WIDTH + PANEL_WIDTH, LENGTH, Fade(BLACK, 0.25f));
+    DrawRectangleRec(overlayRect, RAYWHITE);
+    DrawRectangleLinesEx(overlayRect, 2, GRAY);
+
+    const char* title = "Move History";
+    Vector2 titleSize = MeasureTextEx(uiFont22, title, 22, 1);
+    DrawTextEx(uiFont22, title, { overlayRect.x + (overlayRect.width - titleSize.x) * 0.5f, overlayRect.y + 10 }, 22, 1, DARKGRAY);
+
+    std::string historyText = "";
+    int movesToShow = std::min(10, (int)moveHistory.size()); // Show up to 10 latest moves
+    for (int i = moveHistory.size() - movesToShow; i < (int)moveHistory.size(); ++i) {
+        if (i % 2 == 0) {
+            historyText += std::to_string(i / 2 + 1) + ". ";
+        }
+        historyText += moveHistory[i] + " ";
+        if (i % 2 != 0) historyText += "\n";
+    }
+
+    DrawTextEx(uiFont22, historyText.c_str(), { overlayRect.x + 20, overlayRect.y + 40 }, 20, 1, BLACK);
+
+    // Draw close button
+    DrawRectangleRounded(overlayYesButton, 0.2f, 8, input.isOverlayYesClicked() ? Color{ 218, 218, 190, 255 } : Color{ 238, 238, 210, 255 });
+    const char* closeText = "Close";
+    Vector2 closeSize = MeasureTextEx(uiFont22, closeText, 22, 1);
+    DrawTextEx(uiFont22, closeText, { overlayYesButton.x + (overlayYesButton.width - closeSize.x) * 0.5f, overlayYesButton.y + (overlayYesButton.height - closeSize.y) * 0.5f }, 22, 1, BLACK);
 }
 
-void Draw::showResults() {
-    // Todo
+void Draw::showResults(const std::string& winnerName, const std::string& winReason, int movesMade) {
+    DrawRectangle(0, 0, WIDTH + PANEL_WIDTH, LENGTH, Fade(BLACK, 0.25f));
+    DrawRectangleRec(overlayRect, RAYWHITE);
+    DrawRectangleLinesEx(overlayRect, 2, GRAY);
+
+    const char* title = "Game Results";
+    Vector2 titleSize = MeasureTextEx(uiFont22, title, 22, 1);
+    DrawTextEx(uiFont22, title, { overlayRect.x + (overlayRect.width - titleSize.x) * 0.5f, overlayRect.y + 10 }, 22, 1, DARKGRAY);
+
+    std::string winnerStr = "Winner: " + winnerName;
+    std::string reasonStr = "Reason: " + winReason;
+    std::string movesStr = "Total moves: " + std::to_string(movesMade);
+
+    DrawTextEx(uiFont22, winnerStr.c_str(), { overlayRect.x + 20, overlayRect.y + 50 }, 20, 1, BLACK);
+    DrawTextEx(uiFont22, reasonStr.c_str(), { overlayRect.x + 20, overlayRect.y + 80 }, 20, 1, BLACK);
+    DrawTextEx(uiFont22, movesStr.c_str(), { overlayRect.x + 20, overlayRect.y + 110 }, 20, 1, BLACK);
+
+    // Draw OK button
+    DrawRectangleRounded(overlayYesButton, 0.2f, 8, input.isOverlayYesClicked() ? Color{ 218, 218, 190, 255 } : Color{ 238, 238, 210, 255 });
+    const char* okText = "OK";
+    Vector2 okSize = MeasureTextEx(uiFont22, okText, 22, 1);
+    DrawTextEx(uiFont22, okText, { overlayYesButton.x + (overlayYesButton.width - okSize.x) * 0.5f, overlayYesButton.y + (overlayYesButton.height - okSize.y) * 0.5f }, 22, 1, BLACK);
 }
 
 void Draw::confirmationOverlay(const Rectangle& overlayRect, const Rectangle& overlayYesButton, const Rectangle& overlayNoButton, const Font& uiFont22,
@@ -192,8 +236,13 @@ void Draw::confirmationOverlay(const Rectangle& overlayRect, const Rectangle& ov
         bodyFontSize, 1, BLACK);
 }
 
-void Draw::renderOverlay(OverlayType overlayType, float buttonRoundness, int buttonSegments) {
+void Draw::renderOverlay(OverlayType overlayType, float buttonRoundness, int buttonSegments, const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason) {
     if (overlayType == OverlayType::None) return;
+
+    if (overlayType == OverlayType::Results) {
+        showResults(winnerName, winReason, moveHistory.size());
+        return;
+    }
 
     const char* messageText = "";
 
@@ -204,9 +253,7 @@ void Draw::renderOverlay(OverlayType overlayType, float buttonRoundness, int but
         case OverlayType::Draw:
             messageText = "Are you sure you want to offer a draw?";
             break;
-        case OverlayType::Results:
-            break;
-        case OverlayType::None:
+        default:
             return;
     }
 
@@ -221,19 +268,6 @@ void Draw::renderOverlay(OverlayType overlayType, float buttonRoundness, int but
         buttonRoundness,
         buttonSegments
     );
-    if (input.isOverlayYesClicked() or overlayType == OverlayType::Results) {
-        if (overlayType == OverlayType::Resign) {
-            showResults();
-
-        } else if (overlayType == OverlayType::Draw) {
-            showResults();
-
-        } else if (overlayType == OverlayType::Results) {
-            showMoveHistory();
-        }
-    } else if (input.isOverlayNoClicked()) {
-        overlayType = OverlayType::None;
-    }
 }
 
 void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo) {
@@ -379,7 +413,7 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo) {
     EndDrawing();
 }
 
-void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY, std::set<std::pair<int, int>>& possibleMoves, std::set<std::pair<int, int>>& possibleCaptures, Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName, bool playerPlaysWhite) {
+void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY, std::set<std::pair<int, int>>& possibleMoves, std::set<std::pair<int, int>>& possibleCaptures, Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName, bool playerPlaysWhite, const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason) {
     static float PIECE_SCALE = 0.46f;
     static float PLAYER_SCALE = 0.28f;
 
@@ -580,7 +614,7 @@ Color resultsColor = input.isShowResultsClicked()
     22, 1, BLACK);
 
     if (overlayType != OverlayType::None) {
-        renderOverlay(overlayType, buttonRoundness, buttonSegments);
+        renderOverlay(overlayType, buttonRoundness, buttonSegments, moveHistory, winnerName, winReason);
     }
 
     EndDrawing();

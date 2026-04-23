@@ -25,6 +25,9 @@ private:
 
     OverlayType overlayType = OverlayType::None;
 
+    std::string winnerName;
+    std::string winReason;
+
     bool pieceSelected = false;
     int selectedX = -1;
     int selectedY = -1;

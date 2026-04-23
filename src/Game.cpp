@@ -23,15 +23,22 @@ void Game::update() {
 
     if (overlayType != OverlayType::None) {
         if (draw.getInput().isOverlayYesClicked()) {
-            if (overlayType == OverlayType::Resign || overlayType == OverlayType::Draw) {
+            if (overlayType == OverlayType::Resign) {
+                winnerName = player2.getName();
+                winReason = "Resignation";
+                overlayType = OverlayType::Results;
+            } else if (overlayType == OverlayType::Draw) {
+                winnerName = "None";
+                winReason = "Draw Agreement";
+                overlayType = OverlayType::Results;
+            } else if (overlayType == OverlayType::Results) {
                 board = Board();
                 clearSelection();
                 moveHistory.clear();
                 isPlayerTurn = player1.getColor() == PlayerColor::White;
                 stockfish.newGame();
+                overlayType = OverlayType::None;
             }
-
-            overlayType = OverlayType::None;
         } else if (draw.getInput().isOverlayNoClicked()) {
             overlayType = OverlayType::None;
         }
@@ -211,6 +218,8 @@ void Game::makeStockfishMove() {
     std::string bestMove = stockfish.move(moveHistory);
 
     if (bestMove.empty() || bestMove == "(none)" || bestMove == "0000") {
+        winnerName = player1.getName();
+        winReason = "Checkmate / Stalemate";
         overlayType = OverlayType::Results;
         isPlayerTurn = true;
         return;
@@ -251,7 +260,7 @@ void Game::startGame(bool playerPlaysWhite, int stockfishElo) {
 
     while (!draw.shouldClose()) {
         update();
-        draw.render(board, pieceSelected, selectedX, selectedY, possibleMoves, possibleCaptures, &lastMove, hasLastMove, overlayType, player2.getName(), this->playerPlaysWhite);
+        draw.render(board, pieceSelected, selectedX, selectedY, possibleMoves, possibleCaptures, &lastMove, hasLastMove, overlayType, player2.getName(), this->playerPlaysWhite, moveHistory, winnerName, winReason);
 
         if (!isPlayerTurn) {
             std::this_thread::sleep_for(std::chrono::milliseconds(STOCKFISH_MOVE_TIME_MS));
@@ -323,6 +332,8 @@ void Game::clearSelection() {
 }
 
 void Game::showResults() {
+    winnerName = "Unknown";
+    winReason = "Manual Results View";
     overlayType = OverlayType::Results;
 }
 
