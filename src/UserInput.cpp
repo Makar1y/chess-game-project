@@ -4,7 +4,8 @@
 Input::Input(const Rectangle& resignButton,
              const Rectangle& offerDrawButton,
              const Rectangle& showResultsButton,
-             const Rectangle& overlayButton,
+             const Rectangle& overlayYesButton,
+             const Rectangle& overlayNoButton,
              const Rectangle& selectWhiteButton,
              const Rectangle& selectBlackButton,
              const Rectangle& startGameButton,
@@ -13,7 +14,8 @@ Input::Input(const Rectangle& resignButton,
     : resignButton(resignButton),
       offerDrawButton(offerDrawButton),
       showResultsButton(showResultsButton),
-      overlayButton(overlayButton),
+      overlayYesButton(overlayYesButton),
+      overlayNoButton(overlayNoButton),
       selectWhiteButton(selectWhiteButton),
       selectBlackButton(selectBlackButton),
       startGameButton(startGameButton),
@@ -37,8 +39,12 @@ bool Input::isShowResultsClicked() {
     return CheckCollisionPointRec(GetMousePosition(), showResultsButton);
 }
 
-bool Input::isOverlayButtonClicked() {
-    return CheckCollisionPointRec(GetMousePosition(), overlayButton);
+bool Input::isOverlayYesClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), overlayYesButton);
+}
+
+bool Input::isOverlayNoClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), overlayNoButton);
 }
 
 bool Input::isSelectWhiteClicked() {

@@ -15,14 +15,6 @@
 #include "Stockfish.hpp"
 
 
-enum class OverlayType {
-    None,
-    Resign,
-    Draw,
-    Results
-};
-
-
 class Game {
 private:
     Draw draw;

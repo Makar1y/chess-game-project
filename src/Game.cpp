@@ -22,7 +22,7 @@ void Game::update() {
     if (!draw.getInput().isLeftMousePressed()) return;
 
     if (overlayType != OverlayType::None) {
-        if (draw.getInput().isOverlayButtonClicked()) {
+        if (draw.getInput().isOverlayYesClicked()) {
             if (overlayType == OverlayType::Resign || overlayType == OverlayType::Draw) {
                 board = Board();
                 clearSelection();
@@ -31,6 +31,8 @@ void Game::update() {
                 stockfish.newGame();
             }
 
+            overlayType = OverlayType::None;
+        } else if (draw.getInput().isOverlayNoClicked()) {
             overlayType = OverlayType::None;
         }
 

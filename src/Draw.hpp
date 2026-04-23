@@ -8,7 +8,12 @@
 #include "UserInput.hpp"
 #include "raylib.h"
 
-enum class OverlayType : int;
+enum class OverlayType {
+    None,
+    Resign,
+    Draw,
+    Results
+};
 
 class Draw {
 public:
@@ -26,6 +31,10 @@ public:
         Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName, bool playerPlaysWhite);
 
 private:
+    void renderOverlay(OverlayType overlayType, float buttonRoundness, int buttonSegments);
+    static void confirmationOverlay(const Rectangle& overlayRect, const Rectangle& overlayYesButton, const Rectangle& overlayNoButton, const Font& uiFont22, const char* messageText, bool overlayYesPressed, bool overlayNoPressed, float buttonRoundness, int buttonSegments);
+    void showMoveHistory();
+    void showResults();
     void loadResources();
     void unloadResources();
 
@@ -56,7 +65,8 @@ private:
     Rectangle showResultsButton;
 	Rectangle undoButton;
     Rectangle overlayRect;
-    Rectangle overlayButton;
+    Rectangle overlayYesButton;
+    Rectangle overlayNoButton;
     Rectangle startGameButton;
     Rectangle selectWhiteButton;
     Rectangle selectBlackButton;

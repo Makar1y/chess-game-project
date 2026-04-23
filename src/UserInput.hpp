@@ -7,7 +7,8 @@ public:
     Input(const Rectangle& resignButton,
           const Rectangle& offerDrawButton,
           const Rectangle& showResultsButton,
-          const Rectangle& overlayButton,
+          const Rectangle& overlayYesButton,
+          const Rectangle& overlayNoButton,
           const Rectangle& selectWhiteButton,
           const Rectangle& selectBlackButton,
           const Rectangle& startGameButton,
@@ -20,7 +21,8 @@ public:
     bool isOfferDrawClicked();
 	bool isUndoClicked();
     bool isShowResultsClicked();
-    bool isOverlayButtonClicked();
+    bool isOverlayYesClicked();
+    bool isOverlayNoClicked();
     bool isSelectWhiteClicked();
     bool isSelectBlackClicked();
     bool isStartGameClicked();
@@ -31,7 +33,8 @@ private:
     const Rectangle& resignButton;
     const Rectangle& offerDrawButton;
     const Rectangle& showResultsButton;
-    const Rectangle& overlayButton;
+    const Rectangle& overlayYesButton;
+    const Rectangle& overlayNoButton;
     const Rectangle& selectWhiteButton;
     const Rectangle& selectBlackButton;
     const Rectangle& startGameButton;

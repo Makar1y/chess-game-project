@@ -5,14 +5,15 @@
 #include <cmath>
 
 Draw::Draw()
-    : input(resignButton, offerDrawButton, showResultsButton, overlayButton, selectWhiteButton, selectBlackButton, startGameButton, selectEloButton, undoButton) {
+    : input(resignButton, offerDrawButton, showResultsButton, overlayYesButton, overlayNoButton, selectWhiteButton, selectBlackButton, startGameButton, selectEloButton, undoButton) {
     resourcesLoaded = false;
 
-    const float overlayMarginX            = 110.0f;
-    const float overlayMarginY            = 80.0f;
-    const float overlayButtonWidth        = 240.0f;
-    const float buttonOffsetBottom        = 80.0f;
-    const float overlayButtonHeight       = 50.0f;
+    const float overlayWidth              = 380.0f;
+    const float overlayHeight             = 210.0f;
+    const float overlayButtonWidth        = 120.0f;
+    const float overlayButtonHeight       = 46.0f;
+    const float overlayButtonSpacing      = 20.0f;
+    const float overlayButtonTopOffset    = 138.0f;
 
     resignButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
     undoButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
@@ -25,17 +26,23 @@ Draw::Draw()
     selectBlackButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
     selectEloButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
 
-
     overlayRect = Rectangle{
-        overlayMarginX,
-        overlayMarginY,
-        (float)(WIDTH + PANEL_WIDTH) - overlayMarginX * 2.0f,
-        (float)LENGTH - overlayMarginY * 2.0f
+        ((float)(WIDTH + PANEL_WIDTH) - overlayWidth) * 0.5f,
+        ((float)LENGTH - overlayHeight) * 0.5f,
+        overlayWidth,
+        overlayHeight
     };
 
-    overlayButton = Rectangle{
-        overlayRect.x + (overlayRect.width - overlayButtonWidth) * 0.5f,
-        overlayRect.y + overlayRect.height - buttonOffsetBottom,
+    overlayYesButton = Rectangle{
+        overlayRect.x + (overlayRect.width - (overlayButtonWidth * 2.0f + overlayButtonSpacing)) * 0.5f,
+        overlayRect.y + overlayButtonTopOffset,
+        overlayButtonWidth,
+        overlayButtonHeight
+    };
+
+    overlayNoButton = Rectangle{
+        overlayYesButton.x + overlayButtonWidth + overlayButtonSpacing,
+        overlayYesButton.y,
         overlayButtonWidth,
         overlayButtonHeight
     };
@@ -130,6 +137,103 @@ void Draw::closeWindow() {
 
 Input& Draw::getInput() {
     return input;
+}
+
+void Draw::showMoveHistory() {
+    // Todo
+}
+
+void Draw::showResults() {
+    // Todo
+}
+
+void Draw::confirmationOverlay(const Rectangle& overlayRect, const Rectangle& overlayYesButton, const Rectangle& overlayNoButton, const Font& uiFont22,
+    const char* messageText, bool overlayYesPressed, bool overlayNoPressed, float buttonRoundness, int buttonSegments) {
+    DrawRectangle(0, 0, WIDTH + PANEL_WIDTH, LENGTH, Fade(BLACK, 0.25f));
+    DrawRectangleRec(overlayRect, RAYWHITE);
+    DrawRectangleLinesEx(overlayRect, 2, GRAY);
+
+    constexpr float bodyFontSize = 22.0f;
+    const float messageY = overlayRect.y + 58.0f;
+
+    const Vector2 messageSize = MeasureTextEx(uiFont22, messageText, bodyFontSize, 1);
+    const Vector2 yesSize = MeasureTextEx(uiFont22, "Yes", bodyFontSize, 1);
+    const Vector2 noSize = MeasureTextEx(uiFont22, "No", bodyFontSize, 1);
+
+    DrawTextEx(uiFont22, messageText,
+        {
+            std::round(overlayRect.x + (overlayRect.width - messageSize.x) * 0.5f),
+            std::round(messageY)
+        },
+        bodyFontSize, 1, DARKGRAY);
+
+    const Color yesColor = overlayYesPressed
+        ? Color{ 218, 218, 190, 255 }
+        : Color{ 238, 238, 210, 255 };
+    const Color noColor = overlayNoPressed
+        ? Color{ 218, 218, 190, 255 }
+        : Color{ 238, 238, 210, 255 };
+
+    DrawRectangleRounded(overlayYesButton, buttonRoundness, buttonSegments, yesColor);
+    DrawRectangleRounded(overlayNoButton, buttonRoundness, buttonSegments, noColor);
+
+    DrawTextEx(uiFont22, "Yes",
+        {
+            std::round(overlayYesButton.x + (overlayYesButton.width - yesSize.x) * 0.5f),
+            std::round(overlayYesButton.y + (overlayYesButton.height - yesSize.y) * 0.5f)
+        },
+        bodyFontSize, 1, BLACK);
+
+    DrawTextEx(uiFont22, "No",
+        {
+            std::round(overlayNoButton.x + (overlayNoButton.width - noSize.x) * 0.5f),
+            std::round(overlayNoButton.y + (overlayNoButton.height - noSize.y) * 0.5f)
+        },
+        bodyFontSize, 1, BLACK);
+}
+
+void Draw::renderOverlay(OverlayType overlayType, float buttonRoundness, int buttonSegments) {
+    if (overlayType == OverlayType::None) return;
+
+    const char* messageText = "";
+
+    switch (overlayType) {
+        case OverlayType::Resign:
+            messageText = "Are you sure you want to resign?";
+            break;
+        case OverlayType::Draw:
+            messageText = "Are you sure you want to offer a draw?";
+            break;
+        case OverlayType::Results:
+            break;
+        case OverlayType::None:
+            return;
+    }
+
+    confirmationOverlay(
+        overlayRect,
+        overlayYesButton,
+        overlayNoButton,
+        uiFont22,
+        messageText,
+        input.isOverlayYesClicked(),
+        input.isOverlayNoClicked(),
+        buttonRoundness,
+        buttonSegments
+    );
+    if (input.isOverlayYesClicked() or overlayType == OverlayType::Results) {
+        if (overlayType == OverlayType::Resign) {
+            showResults();
+
+        } else if (overlayType == OverlayType::Draw) {
+            showResults();
+
+        } else if (overlayType == OverlayType::Results) {
+            showMoveHistory();
+        }
+    } else if (input.isOverlayNoClicked()) {
+        overlayType = OverlayType::None;
+    }
 }
 
 void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo) {
@@ -476,22 +580,7 @@ Color resultsColor = input.isShowResultsClicked()
     22, 1, BLACK);
 
     if (overlayType != OverlayType::None) {
-        DrawRectangle(0, 0, WIDTH + PANEL_WIDTH, LENGTH, Fade(BLACK, 0.25f));
-        DrawRectangleRec(overlayRect, RAYWHITE);
-        DrawRectangleLinesEx(overlayRect, 2, GRAY);
-
-        const char* overlayButtonText = (overlayType == OverlayType::Results) ? "Back to the game" : "New game";
-        Vector2 overlayButtonTextSize = MeasureTextEx(uiFont22, overlayButtonText, 22, 1);
-
-        Color overlayButtonColor = input.isOverlayButtonClicked() ? GRAY : LIGHTGRAY;
-
-        DrawRectangleRounded(overlayButton, buttonRoundness, buttonSegments, overlayButtonColor);
-        DrawTextEx(uiFont22, overlayButtonText,
-            {
-                roundf(overlayButton.x + (overlayButton.width - overlayButtonTextSize.x) * 0.5f),
-                roundf(overlayButton.y + (overlayButton.height - overlayButtonTextSize.y) * 0.5f)
-            },
-            22, 1, BLACK);
+        renderOverlay(overlayType, buttonRoundness, buttonSegments);
     }
 
     EndDrawing();
