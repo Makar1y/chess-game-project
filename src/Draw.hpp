@@ -50,6 +50,7 @@ private:
     Font uiFont22;
     Font uiFont36;
 
+    Texture2D backgroundTexture;
     Texture2D boardTexture;
     Texture2D stockfishTexture;
 
@@ -78,6 +79,8 @@ private:
     Rectangle selectWhiteButton;
     Rectangle selectBlackButton;
     Rectangle selectEloButton;
+    Rectangle selectEloLeftButton;
+    Rectangle selectEloRightButton;
     Rectangle backToGameButton;
     Rectangle exitToMenuButton;
     Rectangle newGameButton;

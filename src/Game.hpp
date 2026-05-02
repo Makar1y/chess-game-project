@@ -101,6 +101,7 @@ public:
     void offerdaw();
     bool validateMove(Move& move);
     int getNextStockfishElo(int currentElo);
+    int getPreviousStockfishElo(int currentElo);
     void undoLastMove();
     std::stack<Move> undoStack;
 };

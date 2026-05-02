@@ -381,6 +381,10 @@ void Game::mainMenu() {
                     playerPlaysWhite = true;
                 } else if (draw.getInput().isSelectBlackClicked()) {
                     playerPlaysWhite = false;
+                } else if (draw.getInput().isSelectEloLeftClicked()) {
+                    selectedElo = getPreviousStockfishElo(selectedElo);
+                } else if (draw.getInput().isSelectEloRightClicked()) {
+                    selectedElo = getNextStockfishElo(selectedElo);
                 } else if (draw.getInput().isSelectEloClicked()) {
                     selectedElo = getNextStockfishElo(selectedElo);
                 }
@@ -407,6 +411,17 @@ int Game::getNextStockfishElo(int currentElo) {
     for (int i = 0; i < STOCKFISH_ELO_OPTION_COUNT; i++) {
         if (STOCKFISH_ELO_OPTIONS[i] == currentElo) {
             return STOCKFISH_ELO_OPTIONS[(i + 1) % STOCKFISH_ELO_OPTION_COUNT];
+        }
+    }
+
+    return STOCKFISH_ELO_OPTIONS[0];
+}
+
+int Game::getPreviousStockfishElo(int currentElo) {
+    for (int i = 0; i < STOCKFISH_ELO_OPTION_COUNT; i++) {
+        if (STOCKFISH_ELO_OPTIONS[i] == currentElo) {
+            int prevIndex = (i - 1 + STOCKFISH_ELO_OPTION_COUNT) % STOCKFISH_ELO_OPTION_COUNT;
+            return STOCKFISH_ELO_OPTIONS[prevIndex];
         }
     }
 

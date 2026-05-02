@@ -13,6 +13,8 @@ public:
           const Rectangle& selectBlackButton,
           const Rectangle& startGameButton,
           const Rectangle& selectEloButton,
+          const Rectangle& selectEloLeftButton,
+          const Rectangle& selectEloRightButton,
           const Rectangle& undoButton,
           const Rectangle& backToGameButton,
           const Rectangle& exitToMenuButton,
@@ -32,6 +34,8 @@ public:
     bool isSelectBlackClicked();
     bool isStartGameClicked();
     bool isSelectEloClicked();
+    bool isSelectEloLeftClicked();
+    bool isSelectEloRightClicked();
     bool isBackToGameClicked();
     bool isExitToMenuClicked();
     bool isNewGameClicked();
@@ -48,6 +52,8 @@ private:
     const Rectangle& selectBlackButton;
     const Rectangle& startGameButton;
     const Rectangle& selectEloButton;
+    const Rectangle& selectEloLeftButton;
+    const Rectangle& selectEloRightButton;
     const Rectangle& undoButton;
     const Rectangle& backToGameButton;
     const Rectangle& exitToMenuButton;
