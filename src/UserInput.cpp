@@ -10,6 +10,8 @@ Input::Input(const Rectangle& resignButton,
              const Rectangle& selectBlackButton,
              const Rectangle& startGameButton,
              const Rectangle& selectEloButton,
+             const Rectangle& selectEloLeftButton,
+             const Rectangle& selectEloRightButton,
              const Rectangle& undoButton,
              const Rectangle& backToGameButton,
              const Rectangle& exitToMenuButton,
@@ -24,6 +26,8 @@ Input::Input(const Rectangle& resignButton,
       selectBlackButton(selectBlackButton),
       startGameButton(startGameButton),
       selectEloButton(selectEloButton),
+      selectEloLeftButton(selectEloLeftButton),
+      selectEloRightButton(selectEloRightButton),
       undoButton(undoButton),
       backToGameButton(backToGameButton),
       exitToMenuButton(exitToMenuButton),
@@ -73,6 +77,14 @@ bool Input::isStartGameClicked() {
 
 bool Input::isSelectEloClicked() {
     return CheckCollisionPointRec(GetMousePosition(), selectEloButton);
+}
+
+bool Input::isSelectEloLeftClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), selectEloLeftButton);
+}
+
+bool Input::isSelectEloRightClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), selectEloRightButton);
 }
 
 bool Input::isUndoClicked() {

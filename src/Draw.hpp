@@ -78,6 +78,8 @@ private:
     Rectangle selectWhiteButton;
     Rectangle selectBlackButton;
     Rectangle selectEloButton;
+    Rectangle selectEloLeftButton;
+    Rectangle selectEloRightButton;
     Rectangle backToGameButton;
     Rectangle exitToMenuButton;
     Rectangle newGameButton;
