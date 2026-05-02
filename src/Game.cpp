@@ -4,6 +4,8 @@
 namespace {
 const int STOCKFISH_ELO_OPTIONS[] = { 1320, 1450, 1600, 1750, 1950, 2200, 2550, 3190 };
 const int STOCKFISH_ELO_OPTION_COUNT = sizeof(STOCKFISH_ELO_OPTIONS) / sizeof(STOCKFISH_ELO_OPTIONS[0]);
+const float TIME_CONTROL_OPTIONS[] = {60.0f, 180.0f, 300.0f, 600.0f, 900.0f, 1800.0f };
+const int TIME_CONTROL_OPTION_COUNT = sizeof(TIME_CONTROL_OPTIONS) / sizeof(TIME_CONTROL_OPTIONS[0]);
 }
 
 Game::Game()
@@ -25,7 +27,7 @@ void Game::resetGameState() {
     winReason.clear();
     overlayMessage.clear();
     overlayType = OverlayType::None;
-    playerTimeLeftSeconds = PLAYER_TIME;
+    playerTimeLeftSeconds = selectedTimeControlSeconds;
     stockfish.newGame();
 }
 
@@ -354,9 +356,10 @@ void Game::makeStockfishMove() {
 }
 
 
-void Game::startGame(bool playerPlaysWhite, int stockfishElo) {
+void Game::startGame(bool playerPlaysWhite, int stockfishElo, float timeControlSeconds) {
     this->playerPlaysWhite = playerPlaysWhite;
     selectedElo = stockfishElo;
+    selectedTimeControlSeconds = timeControlSeconds;
     stockfish.setElo((StockfishElo)stockfishElo);
     player1.setColor(playerPlaysWhite ? PlayerColor::White : PlayerColor::Black);
     player2.setColor(playerPlaysWhite ? PlayerColor::Black : PlayerColor::White);
@@ -374,7 +377,7 @@ void Game::mainMenu() {
         if (screenState == ScreenState::MainMenu) {
             if (draw.getInput().isLeftMousePressed()) {
                 if (draw.getInput().isStartGameClicked()) {
-                    startGame(playerPlaysWhite, selectedElo);
+                    startGame(playerPlaysWhite, selectedElo, selectedTimeControlSeconds);
                 } else if (draw.getInput().isExitClicked()) {
                     break;
                 } else if (draw.getInput().isSelectWhiteClicked()) {
@@ -387,10 +390,16 @@ void Game::mainMenu() {
                     selectedElo = getNextStockfishElo(selectedElo);
                 } else if (draw.getInput().isSelectEloClicked()) {
                     selectedElo = getNextStockfishElo(selectedElo);
+                } else if (draw.getInput().isSelectTimeLeftClicked()) {
+                    selectedTimeControlSeconds = getPreviousTimeControl(selectedTimeControlSeconds);
+                } else if (draw.getInput().isSelectTimeRightClicked()) {
+                    selectedTimeControlSeconds = getNextTimeControl(selectedTimeControlSeconds);
+                } else if (draw.getInput().isSelectTimeClicked()) {
+                    selectedTimeControlSeconds = getNextTimeControl(selectedTimeControlSeconds);
                 }
             }
 
-            draw.mainMenu(playerPlaysWhite, selectedElo);
+            draw.mainMenu(playerPlaysWhite, selectedElo, selectedTimeControlSeconds);
             continue;
         }
 
@@ -426,6 +435,27 @@ int Game::getPreviousStockfishElo(int currentElo) {
     }
 
     return STOCKFISH_ELO_OPTIONS[0];
+}
+
+float Game::getNextTimeControl(float currentTimeControlSeconds) {
+    for (int i = 0; i < TIME_CONTROL_OPTION_COUNT; i++) {
+        if (TIME_CONTROL_OPTIONS[i] == currentTimeControlSeconds) {
+            return TIME_CONTROL_OPTIONS[(i + 1) % TIME_CONTROL_OPTION_COUNT];
+        }
+    }
+
+    return TIME_CONTROL_OPTIONS[0];
+}
+
+float Game::getPreviousTimeControl(float currentTimeControlSeconds) {
+    for (int i = 0; i < TIME_CONTROL_OPTION_COUNT; i++) {
+        if (TIME_CONTROL_OPTIONS[i] == currentTimeControlSeconds) {
+            int prevIndex = (i - 1 + TIME_CONTROL_OPTION_COUNT) % TIME_CONTROL_OPTION_COUNT;
+            return TIME_CONTROL_OPTIONS[prevIndex];
+        }
+    }
+
+    return TIME_CONTROL_OPTIONS[0];
 }
 
 std::string Game::moveToUci(Move& move) {
@@ -469,7 +499,7 @@ void Game::goToMainMenu() {
 }
 
 void Game::startNewGame() {
-    startGame(playerPlaysWhite, selectedElo);
+    startGame(playerPlaysWhite, selectedElo, selectedTimeControlSeconds);
 }
 
 void Game::resign() {

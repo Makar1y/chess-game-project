@@ -50,7 +50,7 @@ void DrawBackgroundCover(Texture2D texture, Rectangle destRect) {
 }
 
 Draw::Draw()
-    : input(resignButton, offerDrawButton, showResultsButton, overlayYesButton, overlayNoButton, selectWhiteButton, selectBlackButton, startGameButton, selectEloButton, selectEloLeftButton, selectEloRightButton, undoButton, backToGameButton, exitToMenuButton, newGameButton, exitButton) {
+    : input(resignButton, offerDrawButton, showResultsButton, overlayYesButton, overlayNoButton, selectWhiteButton, selectBlackButton, startGameButton, selectEloButton, selectEloLeftButton, selectEloRightButton, selectTimeButton, selectTimeLeftButton, selectTimeRightButton, undoButton, backToGameButton, exitToMenuButton, newGameButton, exitButton) {
     resourcesLoaded = false;
 
     const float overlayWidth              = 380.0f;
@@ -76,6 +76,9 @@ Draw::Draw()
     selectEloButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
     selectEloLeftButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
     selectEloRightButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    selectTimeButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    selectTimeLeftButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    selectTimeRightButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
 
     overlayRect = Rectangle{
         ((float)(WIDTH + PANEL_WIDTH) - overlayWidth) * 0.5f,
@@ -194,7 +197,6 @@ Input& Draw::getInput() {
 }
 
 void Draw::showMoveHistory(const std::vector<std::string>& moveHistory) {
-    // Use a larger overlay for move history with buttons
     const float historyOverlayWidth = 500.0f;
     const float historyOverlayHeight = 450.0f;
     Rectangle historyOverlayRect = {
@@ -212,11 +214,9 @@ void Draw::showMoveHistory(const std::vector<std::string>& moveHistory) {
     Vector2 titleSize = MeasureTextEx(uiFont22, title, 22, 1);
     DrawTextEx(uiFont22, title, { historyOverlayRect.x + (historyOverlayRect.width - titleSize.x) * 0.5f, historyOverlayRect.y + 10 }, 22, 1, DARKGRAY);
 
-    // Show result stats
     std::string movesStr = "Total Moves: " + std::to_string(moveHistory.size());
     DrawTextEx(uiFont22, movesStr.c_str(), { historyOverlayRect.x + 20, historyOverlayRect.y + 40 }, 18, 1, DARKGRAY);
 
-    // Build move history text (show all moves)
     std::string historyText = "";
     for (size_t i = 0; i < moveHistory.size(); ++i) {
         if (i % 2 == 0) {
@@ -225,8 +225,6 @@ void Draw::showMoveHistory(const std::vector<std::string>& moveHistory) {
         historyText += moveHistory[i] + " ";
         if (i % 2 != 0) historyText += "\n";
     }
-
-    // Draw move history in a scrollable area (simplified - just show last 20 moves)
     std::string recentHistoryText = "";
     int movesToShow = std::min(20, (int)moveHistory.size());
     int startIdx = std::max(0, (int)moveHistory.size() - movesToShow);
@@ -253,7 +251,6 @@ void Draw::showMoveHistory(const std::vector<std::string>& moveHistory) {
         buttonHeight
     };
 
-    // Back to game button
     Color backColor = input.isBackToGameClicked() ? Color{ 218, 218, 190, 255 } : Color{ 238, 238, 210, 255 };
     DrawRectangleRounded(backToGameButton, 0.2f, 8, backColor);
     const char* backText = "Back to Game";
@@ -263,7 +260,6 @@ void Draw::showMoveHistory(const std::vector<std::string>& moveHistory) {
 }
 
 void Draw::showResults(const std::string& winnerName, const std::string& winReason, int movesMade, const std::vector<std::string>& moveHistory) {
-    // Use a larger overlay for results with move history and buttons
     const float resultsOverlayWidth = 500.0f;
     const float resultsOverlayHeight = 500.0f;
     Rectangle resultsOverlayRect = {
@@ -289,7 +285,6 @@ void Draw::showResults(const std::string& winnerName, const std::string& winReas
     DrawTextEx(uiFont22, reasonStr.c_str(), { resultsOverlayRect.x + 20, resultsOverlayRect.y + 80 }, 20, 1, BLACK);
     DrawTextEx(uiFont22, movesStr.c_str(), { resultsOverlayRect.x + 20, resultsOverlayRect.y + 110 }, 20, 1, BLACK);
 
-    // Show move history
     const char* historyTitle = "Move History:";
     DrawTextEx(uiFont22, historyTitle, { resultsOverlayRect.x + 20, resultsOverlayRect.y + 145 }, 18, 1, DARKGRAY);
 
@@ -326,14 +321,14 @@ void Draw::showResults(const std::string& winnerName, const std::string& winReas
         buttonHeight
     };
 
-    // Draw Exit to Main Menu button
+    // Exit to Main Menu button
     Color exitColor = input.isExitToMenuClicked() ? Color{ 218, 218, 190, 255 } : Color{ 238, 238, 210, 255 };
     DrawRectangleRounded(exitToMenuButton, 0.2f, 8, exitColor);
     const char* exitText = "Exit to Menu";
     Vector2 exitSize = MeasureTextEx(uiFont22, exitText, 18, 1);
     DrawTextEx(uiFont22, exitText, { exitToMenuButton.x + (exitToMenuButton.width - exitSize.x) * 0.5f, exitToMenuButton.y + (exitToMenuButton.height - exitSize.y) * 0.5f }, 18, 1, BLACK);
 
-    // Draw New Game button
+    // New Game button
     Color newGameColor = input.isNewGameClicked() ? Color{ 218, 218, 190, 255 } : Color{ 238, 238, 210, 255 };
     DrawRectangleRounded(newGameButton, 0.2f, 8, newGameColor);
     const char* newGameText = "New Game";
@@ -452,7 +447,7 @@ void Draw::renderOverlay(OverlayType overlayType, float buttonRoundness, int but
     );
 }
 
-void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo) {
+void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSeconds) {
     float centerX = (WIDTH + PANEL_WIDTH) / 2.0f;
     float centerY = LENGTH / 2.0f;
     int BORDER_WIDTH = 2;
@@ -544,6 +539,42 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo) {
         roundf(eloSelectorValueY - 12.0f),
         eloArrowSize.x + 24.0f,
         eloSelectorValueSize.y + 24.0f
+    };
+
+    // Time control selector
+    const std::string timeSelectorTitle = "Time Control:";
+    const std::string timeSelectorValue = formatClock(timeControlSeconds);
+    const std::string timeLeftArrow = "<<";
+    const std::string timeRightArrow = ">>";
+    Vector2 timeSelectorTitleSize = MeasureTextEx(uiFont22, timeSelectorTitle.c_str(), 22, 1);
+    Vector2 timeSelectorValueSize = MeasureTextEx(uiFont22, timeSelectorValue.c_str(), 22, 1);
+    Vector2 timeArrowSize = MeasureTextEx(uiFont22, timeLeftArrow.c_str(), 22, 1);
+    const float timeSelectorTitleX = centerX - timeSelectorTitleSize.x / 2.0f;
+    const float timeSelectorTitleY = eloSelectorValueY + eloSelectorValueSize.y + 45.0f;
+    const float timeSelectorValueX = centerX - timeSelectorValueSize.x / 2.0f;
+    const float timeSelectorValueY = timeSelectorTitleY + timeSelectorTitleSize.y + 18.0f;
+    const float timeLeftArrowX = timeSelectorValueX - timeArrowSize.x - 40.0f;
+    const float timeRightArrowX = timeSelectorValueX + timeSelectorValueSize.x + 40.0f;
+
+    selectTimeButton = Rectangle{
+        roundf(timeSelectorValueX - 25.0f),
+        roundf(timeSelectorValueY - 12.0f),
+        timeSelectorValueSize.x + 50.0f,
+        timeSelectorValueSize.y + 24.0f
+    };
+
+    selectTimeLeftButton = Rectangle{
+        roundf(timeLeftArrowX - 12.0f),
+        roundf(timeSelectorValueY - 12.0f),
+        timeArrowSize.x + 24.0f,
+        timeSelectorValueSize.y + 24.0f
+    };
+
+    selectTimeRightButton = Rectangle{
+        roundf(timeRightArrowX - 12.0f),
+        roundf(timeSelectorValueY - 12.0f),
+        timeArrowSize.x + 24.0f,
+        timeSelectorValueSize.y + 24.0f
     };
 
     const std::string exitBtnText = "Exit";
@@ -665,6 +696,45 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo) {
         },
         22, 1, TEXT_COLOR);
 
+    // Time control selector title
+    DrawTextEx(uiFont22, timeSelectorTitle.c_str(),
+        {
+            roundf(timeSelectorTitleX),
+            roundf(timeSelectorTitleY)
+        },
+        22, 1, TITLE_TEXT_COLOR);
+
+    // Time left arrow button
+    Color timeLeftButtonColor = input.isSelectTimeLeftClicked() ? BTN_SELECTED_COLOR : BTN_COLOR;
+    DrawRectangleRounded(selectTimeLeftButton, ROUNDNESS, ROUNDNESS_SEGMENTS, timeLeftButtonColor);
+    DrawRectangleLinesEx(selectTimeLeftButton, BORDER_WIDTH, BORDER_COLOR);
+    DrawTextEx(uiFont22, timeLeftArrow.c_str(),
+        {
+            roundf(timeLeftArrowX),
+            roundf(timeSelectorValueY + 2)
+        },
+        22, 1, TEXT_COLOR);
+
+    // Time value display
+    DrawRectangleRounded(selectTimeButton, ROUNDNESS, ROUNDNESS_SEGMENTS, BTN_COLOR);
+    DrawRectangleLinesEx(selectTimeButton, BORDER_WIDTH, BORDER_COLOR);
+    DrawTextEx(uiFont22, timeSelectorValue.c_str(),
+        {
+            roundf(timeSelectorValueX),
+            roundf(timeSelectorValueY + 2)
+        },
+        22, 1, TEXT_COLOR);
+
+    // Time right arrow button
+    Color timeRightButtonColor = input.isSelectTimeRightClicked() ? BTN_SELECTED_COLOR : BTN_COLOR;
+    DrawRectangleRounded(selectTimeRightButton, ROUNDNESS, ROUNDNESS_SEGMENTS, timeRightButtonColor);
+    DrawRectangleLinesEx(selectTimeRightButton, BORDER_WIDTH, BORDER_COLOR);
+    DrawTextEx(uiFont22, timeRightArrow.c_str(),
+        {
+            roundf(timeRightArrowX),
+            roundf(timeSelectorValueY + 2)
+        },
+        22, 1, TEXT_COLOR);
 
     // Exit button
     Color exitBtnColor = input.isExitClicked() ? Color{185, 41, 55, 255} : RED;

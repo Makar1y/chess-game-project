@@ -15,6 +15,9 @@ public:
           const Rectangle& selectEloButton,
           const Rectangle& selectEloLeftButton,
           const Rectangle& selectEloRightButton,
+          const Rectangle& selectTimeButton,
+          const Rectangle& selectTimeLeftButton,
+          const Rectangle& selectTimeRightButton,
           const Rectangle& undoButton,
           const Rectangle& backToGameButton,
           const Rectangle& exitToMenuButton,
@@ -36,6 +39,9 @@ public:
     bool isSelectEloClicked();
     bool isSelectEloLeftClicked();
     bool isSelectEloRightClicked();
+    bool isSelectTimeClicked();
+    bool isSelectTimeLeftClicked();
+    bool isSelectTimeRightClicked();
     bool isBackToGameClicked();
     bool isExitToMenuClicked();
     bool isNewGameClicked();
@@ -54,6 +60,9 @@ private:
     const Rectangle& selectEloButton;
     const Rectangle& selectEloLeftButton;
     const Rectangle& selectEloRightButton;
+    const Rectangle& selectTimeButton;
+    const Rectangle& selectTimeLeftButton;
+    const Rectangle& selectTimeRightButton;
     const Rectangle& undoButton;
     const Rectangle& backToGameButton;
     const Rectangle& exitToMenuButton;

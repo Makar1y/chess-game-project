@@ -22,7 +22,7 @@ public:
     Draw();
 
     void initWindow();
-    void mainMenu(bool playerPlaysWhite, int stockfishElo);
+    void mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSeconds);
     bool shouldClose();
     void closeWindow();
 
@@ -81,6 +81,9 @@ private:
     Rectangle selectEloButton;
     Rectangle selectEloLeftButton;
     Rectangle selectEloRightButton;
+    Rectangle selectTimeButton;
+    Rectangle selectTimeLeftButton;
+    Rectangle selectTimeRightButton;
     Rectangle backToGameButton;
     Rectangle exitToMenuButton;
     Rectangle newGameButton;

@@ -30,6 +30,7 @@ private:
     Stockfish stockfish;
     Audio audio;
     int selectedElo = STOCKFISH_ELO;
+    float selectedTimeControlSeconds = PLAYER_TIME;
 
     OverlayType overlayType = OverlayType::None;
     std::string overlayMessage;
@@ -89,7 +90,7 @@ public:
     Game();
 
     void update();
-    void startGame(bool playerPlaysWhite, int stockfishElo);
+    void startGame(bool playerPlaysWhite, int stockfishElo, float timeControlSeconds);
     void mainMenu();
     void clearSelection();
     void showResults();
@@ -102,6 +103,8 @@ public:
     bool validateMove(Move& move);
     int getNextStockfishElo(int currentElo);
     int getPreviousStockfishElo(int currentElo);
+    float getNextTimeControl(float currentTimeControlSeconds);
+    float getPreviousTimeControl(float currentTimeControlSeconds);
     void undoLastMove();
     std::stack<Move> undoStack;
 };
