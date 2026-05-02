@@ -102,14 +102,16 @@ void Game::update() {
         return;
     }
 
-    if (draw.getInput().isExitToMenuClicked()) {
-        goToMainMenu();
-        return;
-    }
+    if (overlayType != OverlayType::None) {
+        if (draw.getInput().isExitToMenuClicked()) {
+            goToMainMenu();
+            return;
+        }
 
-    if (draw.getInput().isNewGameClicked()) {
-        startNewGame();
-        return;
+        if (draw.getInput().isNewGameClicked()) {
+            startNewGame();
+            return;
+        }
     }
 
     int x = -1;
