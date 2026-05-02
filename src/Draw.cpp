@@ -15,6 +15,40 @@ static std::string formatClock(float timeLeftSeconds) {
     return std::string(buffer);
 }
 
+
+void DrawBackgroundCover(Texture2D texture, Rectangle destRect) {
+    float bgAspect = (float)texture.width / (float)texture.height;
+    float destAspect = destRect.width / destRect.height;
+    
+    Rectangle sourceRect;
+    
+    if (bgAspect > destAspect) {
+        // Background wider
+        float scale = destRect.height / (float)texture.height;
+        float scaledWidth = (float)texture.width * scale;
+        float cropX = (scaledWidth - destRect.width) / 2.0f / scale;
+        
+        sourceRect = Rectangle{
+            cropX, 0.0f,
+            (float)texture.width - cropX * 2.0f,
+            (float)texture.height
+        };
+    } else {
+        // Background taller
+        float scale = destRect.width / (float)texture.width;
+        float scaledHeight = (float)texture.height * scale;
+        float cropY = (scaledHeight - destRect.height) / 2.0f / scale;
+        
+        sourceRect = Rectangle{
+            0.0f, cropY,
+            (float)texture.width,
+            (float)texture.height - cropY * 2.0f
+        };
+    }
+    
+    DrawTexturePro(texture, sourceRect, destRect, Vector2{0.0f, 0.0f}, 0.0f, WHITE);
+}
+
 Draw::Draw()
     : input(resignButton, offerDrawButton, showResultsButton, overlayYesButton, overlayNoButton, selectWhiteButton, selectBlackButton, startGameButton, selectEloButton, selectEloLeftButton, selectEloRightButton, undoButton, backToGameButton, exitToMenuButton, newGameButton, exitButton) {
     resourcesLoaded = false;
@@ -74,6 +108,7 @@ void Draw::loadResources() {
     SetTextureFilter(uiFont22.texture, TEXTURE_FILTER_BILINEAR);
     SetTextureFilter(uiFont36.texture, TEXTURE_FILTER_BILINEAR);
 
+    backgroundTexture = LoadTexture("Textures/background.png");
     boardTexture = LoadTexture("Textures/board.png");
     stockfishTexture = LoadTexture("Textures/stockfish.png");
 
@@ -91,6 +126,7 @@ void Draw::loadResources() {
     w_queen  = LoadTexture("Textures/wq.png");
     w_rook   = LoadTexture("Textures/wr.png");
 
+    SetTextureFilter(backgroundTexture, TEXTURE_FILTER_BILINEAR);
     SetTextureFilter(stockfishTexture, TEXTURE_FILTER_TRILINEAR);
 
     SetTextureFilter(b_bishop, TEXTURE_FILTER_TRILINEAR);
@@ -116,6 +152,7 @@ void Draw::unloadResources() {
     UnloadFont(uiFont22);
     UnloadFont(uiFont36);
 
+    UnloadTexture(backgroundTexture);
     UnloadTexture(boardTexture);
     UnloadTexture(stockfishTexture);
 
@@ -426,6 +463,7 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo) {
     Color TEXT_COLOR = BLACK;
     Color BTN_COLOR = WHITE;
     Color BTN_SELECTED_COLOR = GRAY;
+    Color TITLE_TEXT_COLOR = WHITE;
 
 
     // Title
@@ -522,9 +560,7 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo) {
     BeginDrawing();
     
     // Background
-    ClearBackground(RAYWHITE);
-    
-
+    DrawBackgroundCover(backgroundTexture, Rectangle{0.0f, 0.0f, centerX*2, centerY*2});
 
     // Title
     DrawTextEx(uiFont36, titleText.c_str(),
@@ -538,7 +574,7 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo) {
             roundf(titleX),
             roundf(titleY)
         },
-        36, 1, TEXT_COLOR);
+        36, 1, TITLE_TEXT_COLOR);
 
     // Start Game button
     Color startBtnColor = input.isStartGameClicked() ? BTN_SELECTED_COLOR : BTN_COLOR;
@@ -557,7 +593,7 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo) {
             roundf(colorSelectorTitleX),
             roundf(colorSelectorTitleY)
         },
-        22, 1, TEXT_COLOR);
+        22, 1, TITLE_TEXT_COLOR);
 
     // White button
     Color whiteBtnColor = input.isSelectWhiteClicked() ? GRAY : WHITE;
@@ -595,7 +631,7 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo) {
             roundf(eloSelectorTitleX),
             roundf(eloSelectorTitleY)
         },
-        22, 1, TEXT_COLOR);
+        22, 1, TITLE_TEXT_COLOR);
 
     // Left arrow button
     Color eloLeftButtonColor = input.isSelectEloLeftClicked() ? BTN_SELECTED_COLOR : BTN_COLOR;

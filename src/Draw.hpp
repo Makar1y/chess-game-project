@@ -50,6 +50,7 @@ private:
     Font uiFont22;
     Font uiFont36;
 
+    Texture2D backgroundTexture;
     Texture2D boardTexture;
     Texture2D stockfishTexture;
 
