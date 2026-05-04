@@ -1,271 +1,6 @@
 <mxfile host="65bd71144e" pages="4">
-    <diagram name="USE CASE" id="use-case-current">
-        <mxGraphModel dx="980" dy="698" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
-            <root>
-                <mxCell id="0"/>
-                <mxCell id="1" parent="0"/>
-                <mxCell id="uc-system" value="Chess Game" style="swimlane;startSize=30;html=1;rounded=0;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;" parent="1" vertex="1">
-                    <mxGeometry x="230" y="60" width="610" height="610" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-config" value="Configure color, ELO and time" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
-                    <mxGeometry x="45" y="55" width="170" height="70" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-start" value="Start game" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
-                    <mxGeometry x="255" y="55" width="130" height="70" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-move" value="Select piece and make move" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
-                    <mxGeometry x="70" y="190" width="170" height="70" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-valid" value="Validate legal move" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
-                    <mxGeometry x="320" y="190" width="155" height="70" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-engine" value="Request Stockfish move" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
-                    <mxGeometry x="420" y="315" width="155" height="70" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-undo" value="Undo last move" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
-                    <mxGeometry x="65" y="315" width="145" height="70" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-history" value="View move history" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
-                    <mxGeometry x="245" y="315" width="145" height="70" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-resign" value="Resign" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
-                    <mxGeometry x="65" y="450" width="115" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-draw" value="Offer draw" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
-                    <mxGeometry x="220" y="450" width="115" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-menu" value="New game / main menu / exit" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
-                    <mxGeometry x="200" y="530" width="190" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-e9" value="include" style="endArrow=open;html=1;rounded=0;dashed=1;" parent="uc-system" source="uc-move" target="uc-valid" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-e10" value="after player move" style="endArrow=open;html=1;rounded=0;dashed=1;" parent="uc-system" source="uc-valid" target="uc-engine" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-player" value="Player" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
-                    <mxGeometry x="90" y="150" width="40" height="80" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-stockfish-actor" value="Stockfish Engine" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
-                    <mxGeometry x="960" y="320" width="40" height="80" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-e1" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-player" target="uc-config" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-e2" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-player" target="uc-start" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-e3" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-player" target="uc-move" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-e4" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-player" target="uc-undo" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-e5" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-player" target="uc-history" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-e6" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-player" target="uc-resign" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-e7" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-player" target="uc-draw" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-e8" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-player" target="uc-menu" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="uc-e11" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-stockfish-actor" target="uc-engine" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-            </root>
-        </mxGraphModel>
-    </diagram>
-    <diagram id="activity-current" name="ACTIVITY">
-        <mxGraphModel dx="980" dy="698" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1050" math="0" shadow="0">
-            <root>
-                <mxCell id="0"/>
-                <mxCell id="1" parent="0"/>
-                <mxCell id="act-start" value="" style="ellipse;html=1;fillColor=#000000;strokeColor=#000000;" parent="1" vertex="1">
-                    <mxGeometry x="585" y="20" width="30" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-menu" value="Main menu" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="530" y="80" width="140" height="55" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-menu-action" value="Player menu action?" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="545" y="170" width="110" height="95" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-side" value="Select white / black" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="240" y="185" width="150" height="55" as="geometry"/>
-                </mxCell>
-                <mxCell id="z7oJ4BIgCbxOBKlAiT6D-1" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="act-elo" target="act-menu">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-elo" value="Increase / decrease Stockfish ELO" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="400" y="300" width="170" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="z7oJ4BIgCbxOBKlAiT6D-2" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="act-time" target="act-menu">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-time" value="Increase / decrease time control" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="620" y="300" width="170" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-exit-menu" value="Exit clicked?" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="815" y="175" width="95" height="85" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-start-game" value="Start clicked?" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="545" y="390" width="110" height="95" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-reset" value="Reset board, timers, move history and engine game" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="480" y="525" width="240" height="65" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-loop" value="Game loop" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="555" y="630" width="90" height="90" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-render" value="Render board, UI, overlays and results" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="820" y="645" width="210" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-player-turn" value="Player turn?" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="555" y="765" width="90" height="90" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-input" value="Read mouse / undo key / menu buttons" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="345" y="780" width="160" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-special" value="Overlay, resign, draw, history or undo?" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="200" y="765" width="105" height="105" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-special-handle" value="Update overlay, undo stack, menu state or results" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="45" y="780" width="120" height="75" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-select" value="Select piece or target square" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="345" y="900" width="160" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-valid" value="Legal and king safe?" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="555" y="885" width="100" height="100" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-update" value="Apply move, handle capture/castle/en passant/promotion, store history and undo" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="720" y="895" width="245" height="70" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-end" value="Checkmate, stalemate, timeout or resignation?" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="1010" y="870" width="120" height="120" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-engine" value="Request and apply Stockfish move" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="700" y="780" width="180" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-results" value="Show results overlay" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="1010" y="750" width="140" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-final" value="" style="ellipse;html=1;shape=endState;fillColor=strokeColor;" parent="1" vertex="1">
-                    <mxGeometry x="1065" y="202.5" width="30" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e1" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-start" target="act-menu" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e2" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-menu" target="act-menu-action" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e-menu-side" value="side" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-menu-action" target="act-side" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e-menu-elo" value="ELO" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-menu-action" target="act-elo" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e-menu-time" value="time" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-menu-action" target="act-time" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e-menu-exit" value="exit" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-menu-action" target="act-exit-menu" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e-menu-start" value="start" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-menu-action" target="act-start-game" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e-side-back" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-side" target="act-menu" edge="1">
-                    <mxGeometry relative="1" as="geometry">
-                        <Array as="points">
-                            <mxPoint x="315" y="110"/>
-                        </Array>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="act-e-exit-final" value="yes" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-exit-menu" target="act-final" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e-start-reset" value="yes" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-start-game" target="act-reset" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e-start-back" value="no" style="endArrow=block;html=1;rounded=0;exitX=0;exitY=0;exitDx=0;exitDy=0;" parent="1" source="act-start-game" edge="1">
-                    <mxGeometry x="-0.8229" y="-6" relative="1" as="geometry">
-                        <Array as="points">
-                            <mxPoint x="170" y="380"/>
-                            <mxPoint x="170" y="95"/>
-                            <mxPoint x="530" y="95"/>
-                        </Array>
-                        <mxPoint x="530" y="350" as="sourcePoint"/>
-                        <mxPoint x="530" y="95" as="targetPoint"/>
-                        <mxPoint as="offset"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="act-e4" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-reset" target="act-loop" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e5" value="each frame" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-loop" target="act-render" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e6" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-loop" target="act-player-turn" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e7" value="yes" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-player-turn" target="act-input" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e8" value="no" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-player-turn" target="act-engine" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e9" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-input" target="act-special" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e10" value="yes" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-special" target="act-special-handle" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e11" value="no" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-input" target="act-select" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e12" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-select" target="act-valid" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e13" value="yes" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-valid" target="act-update" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e14" value="no" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-valid" target="act-select" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e15" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-update" target="act-end" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e16" value="no" style="endArrow=block;html=1;rounded=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="act-end" target="act-engine" edge="1">
-                    <mxGeometry relative="1" as="geometry">
-                        <Array as="points"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="act-e17" value="yes" style="endArrow=block;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" parent="1" source="act-end" target="act-results" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e18" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-results" target="act-final" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="act-e19" style="endArrow=block;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=1;entryDx=0;entryDy=0;" parent="1" source="act-engine" target="act-loop" edge="1">
-                    <mxGeometry relative="1" as="geometry">
-                        <Array as="points"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="act-e21" style="endArrow=block;html=1;rounded=0;" parent="1" source="act-special-handle" target="act-loop" edge="1">
-                    <mxGeometry relative="1" as="geometry">
-                        <Array as="points">
-                            <mxPoint x="105" y="675"/>
-                        </Array>
-                    </mxGeometry>
-                </mxCell>
-            </root>
-        </mxGraphModel>
-    </diagram>
     <diagram id="sequence-current" name="SEQUENCE">
-        <mxGraphModel dx="980" dy="698" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="980" math="0" shadow="0">
+        <mxGraphModel dx="980" dy="480" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="980" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -457,105 +192,131 @@
             </root>
         </mxGraphModel>
     </diagram>
-    <diagram id="classes-current" name="CLASSES">
-        <mxGraphModel dx="980" dy="698" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1550" pageHeight="1150" math="0" shadow="0">
+    <diagram id="hojtMjvMnSkyI51ONArH" name="Architecture">
+        <mxGraphModel dx="1032" dy="505" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="cls-game" value="&lt;b&gt;Game&lt;/b&gt;&lt;hr&gt;- draw : Draw&lt;br&gt;- board : Board&lt;br&gt;- player1 : Player&lt;br&gt;- player2 : Player&lt;br&gt;- stockfish : Stockfish&lt;br&gt;- audio : Audio&lt;br&gt;- overlayType : OverlayType&lt;br&gt;- moveHistory : vector&amp;lt;string&amp;gt;&lt;br&gt;- lastMove : Move&lt;br&gt;- undoStack : stack&amp;lt;Move&amp;gt;&lt;hr&gt;+ update() : void&lt;br&gt;+ startGame(...) : void&lt;br&gt;+ mainMenu() : void&lt;br&gt;+ resign() : void&lt;br&gt;+ offerDraw() : void&lt;br&gt;+ showMoveHistory() : void&lt;br&gt;+ undoLastMove() : void&lt;br&gt;+ validateMove(Move&amp;amp;) : bool&lt;br&gt;- checkForGameEnd(PieceColor) : void&lt;br&gt;- makeStockfishMove() : void" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#f5f5f5;strokeColor=#666666;" parent="1" vertex="1">
-                    <mxGeometry x="520" y="60" width="330" height="410" as="geometry"/>
+                <mxCell id="arch-main" value="Main Application" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="470" y="40" width="160" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="cls-draw" value="&lt;b&gt;Draw&lt;/b&gt;&lt;hr&gt;- input : Input&lt;br&gt;- resourcesLoaded : bool&lt;br&gt;- textures/fonts/screen buttons&lt;hr&gt;+ initWindow() : void&lt;br&gt;+ mainMenu(...) : void&lt;br&gt;+ render(Board&amp;amp;, ..., OverlayType, ...) : void&lt;br&gt;+ confirmationOverlay(...) : void&lt;br&gt;+ infoOverlay(...) : void&lt;br&gt;+ showMoveHistory(...) : void&lt;br&gt;+ showResults(...) : void&lt;br&gt;+ getInput() : Input&amp;amp;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-                    <mxGeometry x="60" y="70" width="330" height="300" as="geometry"/>
+                <mxCell id="arch-game" value="Game Logic Module&#xa;(Game, Player, Move)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;startSize=30;" vertex="1" parent="1">
+                    <mxGeometry x="450" y="160" width="200" height="120" as="geometry"/>
                 </mxCell>
-                <mxCell id="cls-input" value="&lt;b&gt;Input&lt;/b&gt;&lt;hr&gt;- button rectangles by const reference&lt;hr&gt;+ isLeftMousePressed() : bool&lt;br&gt;+ isResignClicked() : bool&lt;br&gt;+ isUndoClicked() : bool&lt;br&gt;+ isShowResultsClicked() : bool&lt;br&gt;+ menu/overlay click checks&lt;br&gt;+ getClickedBoardCell(...) : bool" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
-                    <mxGeometry x="60" y="430" width="330" height="230" as="geometry"/>
+                <mxCell id="arch-game-core" value="Game State Manager&#xa;Turn Controller" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="arch-game">
+                    <mxGeometry x="20" y="40" width="160" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="cls-board" value="&lt;b&gt;Board&lt;/b&gt;&lt;hr&gt;- squares : unique_ptr&amp;lt;Piece&amp;gt;[8][8]&lt;hr&gt;+ Board()&lt;br&gt;+ getPiece(x, y) : Piece*&lt;br&gt;+ getPieceOwnership(x, y) : unique_ptr&amp;lt;Piece&amp;gt;&lt;br&gt;+ update(Move&amp;amp;) : void&lt;br&gt;+ undo(Move&amp;amp;) : void" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
-                    <mxGeometry x="520" y="560" width="330" height="210" as="geometry"/>
+                <mxCell id="arch-gui" value="GUI &amp;amp; Input Module (Raylib)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+                    <mxGeometry x="150" y="160" width="200" height="160" as="geometry"/>
                 </mxCell>
-                <mxCell id="cls-piece" value="&lt;b&gt;Piece&lt;/b&gt;&lt;hr&gt;- color : PieceColor&lt;br&gt;- type : PieceType&lt;br&gt;- hasMoved : bool&lt;hr&gt;+ Piece(color, type)&lt;br&gt;+ getColor() : PieceColor&lt;br&gt;+ getType() : PieceType&lt;br&gt;+ getHasMoved() : bool&lt;br&gt;+ setHasMoved(bool) : void&lt;br&gt;+ setType(PieceType) : void" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
-                    <mxGeometry x="930" y="560" width="270" height="235" as="geometry"/>
+                <mxCell id="arch-draw" value="Draw (Renderer)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="arch-gui">
+                    <mxGeometry x="20" y="40" width="160" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="cls-move" value="&lt;b&gt;Move&lt;/b&gt;&lt;hr&gt;- fromX, fromY : int&lt;br&gt;- toX, toY : int&lt;br&gt;- isFirstMove : bool&lt;br&gt;- capturedPiece : unique_ptr&amp;lt;Piece&amp;gt;&lt;hr&gt;+ getters/setters&lt;br&gt;+ setCapturedPiece(unique_ptr&amp;lt;Piece&amp;gt;) : void&lt;br&gt;+ getCapturedPiece() : unique_ptr&amp;lt;Piece&amp;gt;&lt;br&gt;copy disabled, move enabled" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
-                    <mxGeometry x="520" y="835" width="330" height="235" as="geometry"/>
+                <mxCell id="arch-input" value="UserInput Handler" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="arch-gui">
+                    <mxGeometry x="20" y="100" width="160" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="cls-player" value="&lt;b&gt;Player&lt;/b&gt;&lt;hr&gt;- name : string&lt;br&gt;- color : PlayerColor&lt;br&gt;- inCheck : bool&lt;hr&gt;+ Player(name, color)&lt;br&gt;+ getName() : string&lt;br&gt;+ getColor() : PlayerColor&lt;br&gt;+ getInCheck() : bool&lt;br&gt;+ setInCheck(bool) : void&lt;br&gt;+ setColor(PlayerColor) : void" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
-                    <mxGeometry x="60" y="725" width="270" height="235" as="geometry"/>
+                <mxCell id="arch-engine" value="Engine Interface (Stockfish)" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+                    <mxGeometry x="750" y="160" width="200" height="160" as="geometry"/>
                 </mxCell>
-                <mxCell id="cls-stockfish" value="&lt;b&gt;Stockfish&lt;/b&gt;&lt;hr&gt;- inputHandler : StockfishInput&lt;br&gt;- elo : StockfishElo&lt;hr&gt;+ Stockfish(elo, executablePath)&lt;br&gt;+ setElo(StockfishElo) : void&lt;br&gt;+ newGame() : void&lt;br&gt;+ move(moveHistory) : string&lt;br&gt;- waitFor(token) : void" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
-                    <mxGeometry x="940" y="70" width="310" height="210" as="geometry"/>
+                <mxCell id="arch-stockfish" value="Stockfish Controller" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="arch-engine">
+                    <mxGeometry x="20" y="40" width="160" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="cls-stockfishinput" value="&lt;b&gt;StockfishInput&lt;/b&gt;&lt;hr&gt;- child stdin/stdout handles&lt;br&gt;- process handle / pid&lt;hr&gt;+ StockfishInput(executablePath)&lt;br&gt;+ ~StockfishInput()&lt;br&gt;+ sendCommand(command) : void&lt;br&gt;+ readLine() : string" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
-                    <mxGeometry x="940" y="335" width="310" height="190" as="geometry"/>
+                <mxCell id="arch-sf-input" value="StockfishInput&#xa;(Pipe I/O)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="arch-engine">
+                    <mxGeometry x="20" y="100" width="160" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="cls-audio" value="&lt;b&gt;Audio&lt;/b&gt;&lt;hr&gt;- capture/castle/end/start/check/move sounds&lt;br&gt;- loaded : bool&lt;hr&gt;+ load() : void&lt;br&gt;+ unload() : void&lt;br&gt;+ playMoveEvent(capture, castle, check) : void&lt;br&gt;+ playMove/Capture/Castle/Check/GameStart/GameEnd()" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
-                    <mxGeometry x="1300" y="80" width="230" height="250" as="geometry"/>
+                <mxCell id="arch-board" value="Board Module" style="swimlane;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+                    <mxGeometry x="450" y="360" width="200" height="120" as="geometry"/>
                 </mxCell>
-                <mxCell id="cls-enums" value="&lt;b&gt;Enums&lt;/b&gt;&lt;hr&gt;PieceType: Pawn, Knight, Bishop, Rook, Queen, King&lt;br&gt;PieceColor: White, Black&lt;br&gt;PlayerColor: White, Black&lt;br&gt;OverlayType: None, Resign, Draw, Info, Results, MoveHistory&lt;br&gt;StockfishElo: 1320..3190&lt;br&gt;Game::ScreenState: MainMenu, InGame" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;fillColor=#eeeeee;strokeColor=#999999;" parent="1" vertex="1">
-                    <mxGeometry x="930" y="850" width="430" height="180" as="geometry"/>
+                <mxCell id="arch-board-class" value="Board (8x8 Grid)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="arch-board">
+                    <mxGeometry x="20" y="40" width="160" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="cls-e1" value="owns" style="endArrow=diamondThin;endFill=1;endSize=12;html=1;rounded=0;" parent="1" source="cls-game" target="cls-draw" edge="1">
+                <mxCell id="arch-audio" value="Audio Module" style="swimlane;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+                    <mxGeometry x="150" y="390" width="200" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="arch-audio-class" value="Audio Manager" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="arch-audio">
+                    <mxGeometry x="20" y="40" width="160" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="arch-binary" value="Stockfish Binary&#xa;(External Process)" style="shape=module;align=left;spacingLeft=20;align=center;verticalAlign=top;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+                    <mxGeometry x="775" y="400" width="150" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="arch-assets" value="Resources&#xa;(Textures, Sounds)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#eeeeee;strokeColor=#999999;" vertex="1" parent="1">
+                    <mxGeometry x="10" y="320" width="100" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="ae1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="arch-main" target="arch-game">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="cls-e2" value="owns" style="endArrow=diamondThin;endFill=1;endSize=12;html=1;rounded=0;" parent="1" source="cls-game" target="cls-board" edge="1">
+                <mxCell id="ae2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="arch-game">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="470" y="209.99" as="sourcePoint"/>
+                        <mxPoint x="350" y="220" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="380" y="220"/>
+                            <mxPoint x="380" y="220"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="ae3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="arch-game" target="arch-engine">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="cls-e3" value="owns 2" style="endArrow=diamondThin;endFill=1;endSize=12;html=1;rounded=0;" parent="1" source="cls-game" target="cls-player" edge="1">
+                <mxCell id="ae4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="arch-game" target="arch-board">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="cls-e4" value="owns" style="endArrow=diamondThin;endFill=1;endSize=12;html=1;rounded=0;" parent="1" source="cls-game" target="cls-stockfish" edge="1">
+                <mxCell id="ae5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="arch-game" target="arch-audio">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="400" y="250"/>
+                            <mxPoint x="400" y="450"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="ae6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="arch-sf-input" target="arch-binary">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="cls-e5" value="owns" style="endArrow=diamondThin;endFill=1;endSize=12;html=1;rounded=0;" parent="1" source="cls-game" target="cls-audio" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="ae7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0;entryDx=0;entryDy=27.5;entryPerimeter=0;" edge="1" parent="1" source="arch-gui" target="arch-assets">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="250" y="347"/>
+                        </Array>
+                    </mxGeometry>
                 </mxCell>
-                <mxCell id="cls-e6" value="owns" style="endArrow=diamondThin;endFill=1;endSize=12;html=1;rounded=0;" parent="1" source="cls-draw" target="cls-input" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="cls-e7" value="8x8 owns" style="endArrow=diamondThin;endFill=1;endSize=12;html=1;rounded=0;" parent="1" source="cls-board" target="cls-piece" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="cls-e8" value="captured piece" style="endArrow=diamondThin;endFill=1;endSize=12;html=1;rounded=0;" parent="1" source="cls-move" target="cls-piece" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="cls-e9" value="uses" style="endArrow=open;html=1;rounded=0;dashed=1;" parent="1" source="cls-board" target="cls-move" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="cls-e10" value="owns" style="endArrow=diamondThin;endFill=1;endSize=12;html=1;rounded=0;" parent="1" source="cls-stockfish" target="cls-stockfishinput" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="ae8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="arch-audio" target="arch-assets">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="250" y="360"/>
+                        </Array>
+                    </mxGeometry>
                 </mxCell>
             </root>
         </mxGraphModel>
     </diagram>
     <diagram id="dataflow-current" name="DataFlow">
-        <mxGraphModel dx="980" dy="698" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="760" math="0" shadow="0">
+        <mxGraphModel dx="1225" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="760" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="df-input" value="Mouse / Keyboard&lt;br&gt;side, ELO, time, board clicks, buttons, U key" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-                    <mxGeometry x="40" y="120" width="190" height="85" as="geometry"/>
+                <mxCell id="df-input" value="Mouse / Keyboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="20" width="190" height="85" as="geometry"/>
                 </mxCell>
                 <mxCell id="df-inputclass" value="Input" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
-                    <mxGeometry x="310" y="130" width="145" height="60" as="geometry"/>
+                    <mxGeometry x="602.5" y="150" width="145" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="df-game" value="Game&lt;br&gt;turn state, timer, selected square, possible moves, overlays, move history, undo stack" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" parent="1" vertex="1">
-                    <mxGeometry x="530" y="95" width="270" height="120" as="geometry"/>
+                    <mxGeometry x="540" y="245" width="270" height="120" as="geometry"/>
                 </mxCell>
-                <mxCell id="df-board" value="Board&lt;br&gt;8x8 unique_ptr pieces" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
-                    <mxGeometry x="530" y="300" width="185" height="70" as="geometry"/>
+                <mxCell id="df-board" value="Board" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
+                    <mxGeometry x="580" y="430" width="185" height="70" as="geometry"/>
                 </mxCell>
                 <mxCell id="df-stockfish" value="Stockfish&lt;br&gt;moveHistory -&gt; UCI best move" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
-                    <mxGeometry x="860" y="110" width="180" height="80" as="geometry"/>
+                    <mxGeometry x="270" y="265" width="180" height="80" as="geometry"/>
                 </mxCell>
                 <mxCell id="df-draw" value="Draw&lt;br&gt;board, pieces, highlights, timer, overlays, results" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
-                    <mxGeometry x="260" y="330" width="230" height="85" as="geometry"/>
+                    <mxGeometry x="790" y="510" width="230" height="85" as="geometry"/>
                 </mxCell>
                 <mxCell id="df-audio" value="Audio&lt;br&gt;move/capture/castle/check/start/end sounds" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
-                    <mxGeometry x="720" y="370" width="210" height="80" as="geometry"/>
+                    <mxGeometry x="330" y="520" width="210" height="80" as="geometry"/>
                 </mxCell>
                 <mxCell id="df-output" value="Window + Speakers&lt;br&gt;visual state and sound feedback" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#eeeeee;strokeColor=#999999;fontStyle=1;" parent="1" vertex="1">
-                    <mxGeometry x="455" y="500" width="210" height="80" as="geometry"/>
+                    <mxGeometry x="555" y="520" width="210" height="80" as="geometry"/>
                 </mxCell>
                 <mxCell id="df-e1" value="clicks/keys" style="endArrow=block;html=1;rounded=0;" parent="1" source="df-input" target="df-inputclass" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
@@ -566,11 +327,19 @@
                 <mxCell id="df-e3" value="validate/apply/undo" style="endArrow=block;html=1;rounded=0;" parent="1" source="df-game" target="df-board" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="df-e4" value="move history" style="endArrow=block;html=1;rounded=0;" parent="1" source="df-game" target="df-stockfish" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="df-e4" value="move history" style="endArrow=block;html=1;rounded=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" parent="1" source="df-game" target="df-stockfish" edge="1">
+                    <mxGeometry x="0.0017" y="-2" relative="1" as="geometry">
+                        <mxPoint x="810.0000000000002" y="281.53846153846155" as="sourcePoint"/>
+                        <mxPoint x="930.0000000000002" y="280" as="targetPoint"/>
+                        <Array as="points"/>
+                        <mxPoint y="1" as="offset"/>
+                    </mxGeometry>
                 </mxCell>
-                <mxCell id="df-e5" value="best move" style="endArrow=block;html=1;rounded=0;" parent="1" source="df-stockfish" target="df-game" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="df-e5" value="best move" style="endArrow=block;html=1;rounded=0;exitX=1;exitY=0.75;exitDx=0;exitDy=0;" parent="1" source="df-stockfish" target="df-game" edge="1">
+                    <mxGeometry x="0.0051" y="2" relative="1" as="geometry">
+                        <Array as="points"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
                 </mxCell>
                 <mxCell id="df-e6" value="render state" style="endArrow=block;html=1;rounded=0;" parent="1" source="df-game" target="df-draw" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
@@ -587,68 +356,311 @@
             </root>
         </mxGraphModel>
     </diagram>
-    <diagram id="hojtMjvMnSkyI51ONArH" name="Architecture">
-        <mxGraphModel dx="980" dy="698" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <diagram id="activity-current" name="ACTIVITY">
+        <mxGraphModel dx="1508" dy="1638" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-1" value="Main application" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1" parent="1" vertex="1">
-                    <mxGeometry x="345" y="40" width="160" height="60" as="geometry"/>
+                <mxCell id="act-start" value="" style="ellipse;html=1;fillColor=#000000;strokeColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="40" width="40" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-2" value="Raylib GUI Module" style="swimlane;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
-                    <mxGeometry x="65" y="160" width="200" height="160" as="geometry"/>
-                </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-3" value="Renderer&#xa;(Board, Pieces, UI)" style="rounded=0;whiteSpace=wrap;html=1;" parent="g6-6rKpPnrr8GGb7Riv4-2" vertex="1">
-                    <mxGeometry x="20" y="100" width="160" height="40" as="geometry"/>
-                </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-4" value="Input Handler&lt;br&gt;(Mouse)" style="rounded=0;whiteSpace=wrap;html=1;" parent="g6-6rKpPnrr8GGb7Riv4-2" vertex="1">
-                    <mxGeometry x="20" y="40" width="160" height="40" as="geometry"/>
-                </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-5" value="Chess Core Logic" style="swimlane;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="1" vertex="1">
-                    <mxGeometry x="325" y="160" width="200" height="160" as="geometry"/>
-                </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-6" value="Game State Manager" style="rounded=0;whiteSpace=wrap;html=1;" parent="g6-6rKpPnrr8GGb7Riv4-5" vertex="1">
-                    <mxGeometry x="20" y="40" width="160" height="40" as="geometry"/>
-                </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-7" value="Move Validator&#xa;(Legal Moves)" style="rounded=0;whiteSpace=wrap;html=1;" parent="g6-6rKpPnrr8GGb7Riv4-5" vertex="1">
-                    <mxGeometry x="20" y="100" width="160" height="40" as="geometry"/>
-                </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-8" value="Engine Interface" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
-                    <mxGeometry x="585" y="160" width="200" height="160" as="geometry"/>
-                </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-9" value="Stockfish Input" style="rounded=0;whiteSpace=wrap;html=1;" parent="g6-6rKpPnrr8GGb7Riv4-8" vertex="1">
-                    <mxGeometry x="20" y="40" width="160" height="40" as="geometry"/>
-                </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-10" value="&lt;div&gt;Stockfish output&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" parent="g6-6rKpPnrr8GGb7Riv4-8" vertex="1">
-                    <mxGeometry x="20" y="100" width="160" height="40" as="geometry"/>
-                </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-11" value="Stockfish Binary&#xa;(External Process)" style="shape=module;align=left;spacingLeft=20;align=center;verticalAlign=top;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" parent="1" vertex="1">
-                    <mxGeometry x="610" y="380" width="150" height="50" as="geometry"/>
-                </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-12" value="Assets&lt;br&gt;(Textures)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="1" vertex="1">
-                    <mxGeometry x="115" y="380" width="100" height="80" as="geometry"/>
-                </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="g6-6rKpPnrr8GGb7Riv4-1" target="g6-6rKpPnrr8GGb7Riv4-2" edge="1">
+                <mxCell id="MWWv0PdUlbJhpezzdtWk-19" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="act-menu" target="MWWv0PdUlbJhpezzdtWk-17">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="g6-6rKpPnrr8GGb7Riv4-1" target="g6-6rKpPnrr8GGb7Riv4-5" edge="1">
+                <mxCell id="act-menu" value="Main Menu:&#xa;Adjust Elo, Side, Time" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="30" y="120" width="140" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="act-launch" value="Click &#39;Start Game&#39;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="190" y="120" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="act-turn-check" value="Is Player&#39;s&#xa;Turn?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;" vertex="1" parent="1">
+                    <mxGeometry x="400" y="100" width="100" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="z7oJ4BIgCbxOBKlAiT6D-1" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="act-elo" target="act-menu">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="g6-6rKpPnrr8GGb7Riv4-1" target="g6-6rKpPnrr8GGb7Riv4-8" edge="1">
+                <mxCell id="act-engine-wait" value="Wait for Engine&#xa;(Stockfish thinking)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;shadow=1;fontStyle=0" vertex="1" parent="1">
+                    <mxGeometry x="380" y="10" width="140" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="act-select-piece" value="Click square to&#xa;select piece" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="550" y="120" width="130" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="act-valid-selection" value="Own piece?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;" vertex="1" parent="1">
+                    <mxGeometry x="565" y="220" width="100" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="z7oJ4BIgCbxOBKlAiT6D-2" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="act-time" target="act-menu">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="g6-6rKpPnrr8GGb7Riv4-10" target="g6-6rKpPnrr8GGb7Riv4-11" edge="1">
+                <mxCell id="act-show-moves" value="Highlight legal moves" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;shadow=1;" vertex="1" parent="1">
+                    <mxGeometry x="550" y="360" width="130" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="act-select-dest" value="Click destination&#xa;square" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="740" y="355" width="130" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="act-move-valid" value="Legal move?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;" vertex="1" parent="1">
+                    <mxGeometry x="755" y="220" width="100" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="act-commit" value="Apply move&#xa;&amp; Play SFX" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="740" y="120" width="130" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="act-promotion" value="Pawn reaches&#xa;8th rank?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;" vertex="1" parent="1">
+                    <mxGeometry x="920" y="100" width="100" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="act-promo-select" value="Pick Q/R/B/N from&#xa;Promotion UI" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;fontStyle=0" vertex="1" parent="1">
+                    <mxGeometry x="900" y="10" width="140" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="act-aux-group" value="Auxiliary Actions" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+                    <mxGeometry x="270" y="240" width="140" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="act-undo" value="Press &#39;U&#39; (Undo)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="act-aux-group">
+                    <mxGeometry x="10" y="30" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="act-resign" value="Click Resign" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="act-aux-group">
+                    <mxGeometry x="10" y="85" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="MWWv0PdUlbJhpezzdtWk-14" value="Press &quot;Esc&quot;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="act-aux-group">
+                    <mxGeometry x="10" y="140" width="120" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="act-game-over" value="Game Over?&#xa;(Mate/Draw/Resign)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;" vertex="1" parent="1">
+                    <mxGeometry x="1080" y="100" width="110" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="MWWv0PdUlbJhpezzdtWk-22" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="act-results" target="MWWv0PdUlbJhpezzdtWk-20">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="g6-6rKpPnrr8GGb7Riv4-3" target="g6-6rKpPnrr8GGb7Riv4-12" edge="1">
+                <mxCell id="MWWv0PdUlbJhpezzdtWk-23" style="edgeStyle=none;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="act-results" target="MWWv0PdUlbJhpezzdtWk-21">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-18" value="Update/Draw" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="235" y="110" width="90" height="30" as="geometry"/>
+                <mxCell id="act-results" value="View Results&#xa;&amp; Final Board" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="1180" y="270" width="130" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="g6-6rKpPnrr8GGb7Riv4-19" value="Game logic/flow" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="525" y="110" width="110" height="30" as="geometry"/>
+                <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;" edge="1" parent="1" source="act-start" target="act-menu">
+                    <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
+                <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;" edge="1" parent="1" source="act-menu" target="act-launch">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;" edge="1" parent="1" source="act-launch" target="act-turn-check">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e4" value="[No]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="act-turn-check" target="act-engine-wait">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryOffset=0.2;" edge="1" parent="1" source="act-engine-wait">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="360" y="35"/>
+                            <mxPoint x="360" y="150"/>
+                        </Array>
+                        <mxPoint x="360" y="150" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e6" value="[Yes]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;" edge="1" parent="1" source="act-turn-check" target="act-select-piece">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;" edge="1" parent="1" source="act-select-piece" target="act-valid-selection">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e8" value="[Yes]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;" edge="1" parent="1" source="act-valid-selection" target="act-show-moves">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e9" value="[No]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;" edge="1" parent="1" source="act-valid-selection" target="act-select-piece">
+                    <mxGeometry x="-0.7" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="540" y="270"/>
+                            <mxPoint x="540" y="150"/>
+                        </Array>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;" edge="1" parent="1" source="act-show-moves" target="act-select-dest">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="act-select-dest" target="act-move-valid">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e12" value="[Yes]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="act-move-valid" target="act-commit">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e13" value="[No]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;" edge="1" parent="1" source="act-move-valid" target="act-select-piece">
+                    <mxGeometry x="-0.0256" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="720" y="270"/>
+                            <mxPoint x="720" y="150"/>
+                        </Array>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;" edge="1" parent="1" source="act-commit" target="act-promotion">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e15" value="[Yes]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="act-promotion" target="act-promo-select">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;" edge="1" parent="1" source="act-promo-select" target="act-game-over">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1135" y="35"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e17" value="[No]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;" edge="1" parent="1" source="act-promotion" target="act-game-over">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e18" value="[No]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="act-game-over">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1108" y="440"/>
+                            <mxPoint x="450" y="440"/>
+                        </Array>
+                        <mxPoint x="450" y="290" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e19" value="[Yes]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="act-game-over" target="act-results">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="act-undo" target="act-turn-check">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="450" y="290"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="act-resign" target="act-game-over">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="430" y="345"/>
+                            <mxPoint x="430" y="460"/>
+                            <mxPoint x="1135" y="460"/>
+                        </Array>
+                        <mxPoint x="1163" y="240" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="MWWv0PdUlbJhpezzdtWk-11" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+                    <mxGeometry x="80" y="380" width="40" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="MWWv0PdUlbJhpezzdtWk-15" style="edgeStyle=none;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="MWWv0PdUlbJhpezzdtWk-14" target="MWWv0PdUlbJhpezzdtWk-11">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="MWWv0PdUlbJhpezzdtWk-18" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="MWWv0PdUlbJhpezzdtWk-17" target="MWWv0PdUlbJhpezzdtWk-11">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="100" y="380" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="MWWv0PdUlbJhpezzdtWk-17" value="Exit" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="40" y="230" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="MWWv0PdUlbJhpezzdtWk-24" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;rounded=0;curved=0;" edge="1" parent="1" source="MWWv0PdUlbJhpezzdtWk-20">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="330" y="150" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="1265"/>
+                            <mxPoint x="331"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="MWWv0PdUlbJhpezzdtWk-20" value="&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;Start new game&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="1200" y="70" width="130" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="MWWv0PdUlbJhpezzdtWk-26" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;rounded=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="MWWv0PdUlbJhpezzdtWk-21" target="act-menu">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="300" y="50" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="1345" y="-10"/>
+                            <mxPoint x="135" y="-10"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="MWWv0PdUlbJhpezzdtWk-21" value="Exit to main menu" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;shadow=1;fontStyle=1" vertex="1" parent="1">
+                    <mxGeometry x="1280" y="150" width="130" height="60" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram name="USE CASE" id="use-case-current">
+        <mxGraphModel dx="740" dy="480" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="uc-system" value="Chess Game" style="swimlane;startSize=30;html=1;rounded=0;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="210" y="20" width="610" height="430" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-config" value="Configure color, ELO and time" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
+                    <mxGeometry x="45" y="55" width="170" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-start" value="Start game" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
+                    <mxGeometry x="255" y="110" width="130" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-move" value="Select piece and make move" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
+                    <mxGeometry x="65" y="150" width="170" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-valid" value="Validate legal move" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
+                    <mxGeometry x="320" y="190" width="155" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-engine" value="Request Stockfish move" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
+                    <mxGeometry x="455" y="110" width="155" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-undo" value="Undo last move" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
+                    <mxGeometry x="247.5" y="280" width="145" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-history" value="View move history" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
+                    <mxGeometry x="420" y="270" width="145" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-resign" value="Resign" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
+                    <mxGeometry x="45" y="345" width="115" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-draw" value="Offer draw" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
+                    <mxGeometry x="110" y="280" width="115" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-menu" value="New game / main menu / exit" style="ellipse;whiteSpace=wrap;html=1;" parent="uc-system" vertex="1">
+                    <mxGeometry x="315" y="50" width="190" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-e9" value="include" style="endArrow=open;html=1;rounded=0;dashed=1;" parent="uc-system" source="uc-move" target="uc-valid" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-e10" value="after player move" style="endArrow=open;html=1;rounded=0;dashed=1;" parent="uc-system" source="uc-valid" target="uc-engine" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-player" value="Player" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+                    <mxGeometry x="90" y="150" width="40" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-stockfish-actor" value="Stockfish Engine" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" parent="1" vertex="1">
+                    <mxGeometry x="900" y="250" width="40" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-e1" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-player" target="uc-config" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-e2" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-player" target="uc-start" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-e3" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-player" target="uc-move" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-e4" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-player" target="uc-undo" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-e5" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-player" target="uc-history" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-e6" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-player" target="uc-resign" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-e7" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-player" target="uc-draw" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-e8" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-player" target="uc-menu" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="uc-e11" style="endArrow=none;html=1;rounded=0;" parent="1" source="uc-stockfish-actor" target="uc-engine" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+    <diagram id="Pzrl3B2lrky_s6IUa0g3" name="CLASSES">
+        <mxGraphModel dx="980" dy="480" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
             </root>
         </mxGraphModel>
     </diagram>
