@@ -31,6 +31,7 @@ private:
     Audio audio;
     int selectedElo = STOCKFISH_ELO;
     float selectedTimeControlSeconds = PLAYER_TIME;
+    int halfMoves = 0;
 
     OverlayType overlayType = OverlayType::None;
     std::string overlayMessage;
@@ -85,6 +86,8 @@ private:
     void removeEnPassantPawn(Move& move);
     bool wasItPawnPromotio(Move& move);
     void promotePawn(Move& move);
+    bool wasPawnMove(int x, int y);
+
 
 public:
     Game();

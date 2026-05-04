@@ -148,7 +148,8 @@ void Game::update() {
         if (isEnPassantMove) {
             removeEnPassantPawn(newMove);
         }
-
+        halfMoves++;
+        if(isCaptureMove || wasPawnMove(x, y)) halfMoves = 0;
         board.update(newMove);
         bool isCastleMove = wasItcastle(newMove);
 
@@ -294,14 +295,19 @@ bool Game::hasAnyLegalMove(PieceColor color) {
 }
 
 void Game::checkForGameEnd(PieceColor color) {
-    if (hasAnyLegalMove(color)) return;
-
-    if (checkForCheck(color)) {
-        winnerName = (color == (playerPlaysWhite ? PieceColor::White : PieceColor::Black)) ? player2.getName() : player1.getName();
-        winReason = "Checkmate";
-    } else {
+    if(halfMoves == 100) {
         winnerName = "Draw";
-        winReason = "Stalemate";
+        winReason = "50-move rule";
+    } else {
+        if (hasAnyLegalMove(color)) return;
+
+        if (checkForCheck(color)) {
+            winnerName = (color == (playerPlaysWhite ? PieceColor::White : PieceColor::Black)) ? player2.getName() : player1.getName();
+            winReason = "Checkmate";
+        } else {
+            winnerName = "Draw";
+            winReason = "Stalemate";
+        }
     }
 
     overlayType = OverlayType::Results;
@@ -328,7 +334,8 @@ void Game::makeStockfishMove() {
     if (isEnPassantMove) {
         removeEnPassantPawn(move);
     }
-
+    halfMoves++;
+    if(isCaptureMove || wasPawnMove(move.getToX(), move.getToY())) halfMoves = 0;
     board.update(move);
     bool isCastleMove = wasItcastle(move);
     moveHistory.push_back(moveToUci(move));
@@ -785,4 +792,9 @@ void Game::promotePawn(Move& move) {
     PieceType choise = PieceType::Queen;
 
     board.getPiece(tx, ty)->setType(choise);
+}
+
+bool Game::wasPawnMove(int x, int y) {
+    if(board.getPiece(x, y) == nullptr) return false;
+    return (board.getPiece(x, y)->getType() == PieceType::Pawn);
 }
