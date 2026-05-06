@@ -1,5 +1,7 @@
+#include "Pvp.hpp"
 #include "Game.hpp"
 #include "Draw.hpp"
+
 
 namespace {
 const int STOCKFISH_ELO_OPTIONS[] = { 1320, 1450, 1600, 1750, 1950, 2200, 2550, 3190 };
@@ -9,11 +11,18 @@ const int TIME_CONTROL_OPTION_COUNT = sizeof(TIME_CONTROL_OPTIONS) / sizeof(TIME
 }
 
 Game::Game()
-    : player1("Player 1", PLAYER_PLAYS_WHITE ? PlayerColor::White : PlayerColor::Black),
+    : player1("You", PLAYER_PLAYS_WHITE ? PlayerColor::White : PlayerColor::Black),
       player2("Stockfish", PLAYER_PLAYS_WHITE ? PlayerColor::Black : PlayerColor::White),
       stockfish((StockfishElo)STOCKFISH_ELO_OPTIONS[0]),
       playerTimeLeftSeconds(PLAYER_TIME) {
     isPlayerTurn = player1.getColor() == PlayerColor::White;
+}
+
+Game::~Game() {
+    pvpConnection.close();
+    if (pvpThread.joinable()) {
+        pvpThread.join();
+    }
 }
 
 void Game::resetGameState() {
@@ -28,10 +37,206 @@ void Game::resetGameState() {
     overlayMessage.clear();
     overlayType = OverlayType::None;
     playerTimeLeftSeconds = selectedTimeControlSeconds;
-    stockfish.newGame();
+    halfMoves = 0;
+
+    if (gameMode != GameMode::Pvp) {
+        stockfish.newGame();
+    }
+}
+
+int Game::getPvpPort() {
+    int port = std::atoi(pvpPortText.c_str());
+    if (port <= 0 || port > 65535) return 54000;
+    return port;
+}
+
+void Game::beginPvpConnection(bool host) {
+    if (pvpThread.joinable()) {
+        pvpThread.join();
+    }
+
+    pvpThreadDone = false;
+    pvpThreadSuccess = false;
+    pvpHost = host;
+    pvpStatusText = host ? "Waiting for guest..." : "Connecting to host...";
+    screenState = ScreenState::Connecting;
+
+    int port = getPvpPort();
+    std::string ip = pvpIpText;
+
+    if (!host) {
+        size_t colon = ip.rfind(':');
+        if (colon != std::string::npos && colon + 1 < ip.size()) {
+            port = std::atoi(ip.substr(colon + 1).c_str());
+            ip = ip.substr(0, colon);
+        }
+    }
+
+    pvpThread = std::thread([this, host, ip, port]() {
+        bool ok = host ? pvpConnection.host(port) : pvpConnection.join(ip, port);
+        pvpThreadSuccess = ok;
+        pvpThreadDone = true;
+    });
+}
+
+void Game::handleMainMenu() {
+    if (draw.getInput().isLeftMousePressed()) {
+        if (draw.getInput().isStartGameClicked()) {
+            startGame(playerPlaysWhite, selectedElo, selectedTimeControlSeconds);
+        } else if (draw.getInput().isPvpMenuClicked()) {
+            pvpStatusText.clear();
+            editingIp = false;
+            editingPort = false;
+            screenState = ScreenState::PvpMenu;
+        } else if (draw.getInput().isExitClicked()) {
+            exitRequested = true;
+            return;
+        } else if (draw.getInput().isSelectWhiteClicked()) {
+            playerPlaysWhite = true;
+        } else if (draw.getInput().isSelectBlackClicked()) {
+            playerPlaysWhite = false;
+        } else if (draw.getInput().isSelectEloLeftClicked()) {
+            selectedElo = getPreviousStockfishElo(selectedElo);
+        } else if (draw.getInput().isSelectEloRightClicked()) {
+            selectedElo = getNextStockfishElo(selectedElo);
+        } else if (draw.getInput().isSelectEloClicked()) {
+            selectedElo = getNextStockfishElo(selectedElo);
+        } else if (draw.getInput().isSelectTimeLeftClicked()) {
+            selectedTimeControlSeconds = getPreviousTimeControl(selectedTimeControlSeconds);
+        } else if (draw.getInput().isSelectTimeRightClicked()) {
+            selectedTimeControlSeconds = getNextTimeControl(selectedTimeControlSeconds);
+        } else if (draw.getInput().isSelectTimeClicked()) {
+            selectedTimeControlSeconds = getNextTimeControl(selectedTimeControlSeconds);
+        }
+    }
+
+    draw.mainMenu(playerPlaysWhite, selectedElo, selectedTimeControlSeconds);
+}
+
+void Game::handlePvpMenu() {
+    if (editingIp) draw.getInput().handleTextInput(pvpIpText, 64, false);
+    if (editingPort) draw.getInput().handleTextInput(pvpPortText, 5, true);
+
+    if (draw.getInput().isLeftMousePressed()) {
+        if (draw.getInput().isIpInputClicked()) {
+            editingIp = true;
+            editingPort = false;
+        } else if (draw.getInput().isPortInputClicked()) {
+            editingIp = false;
+            editingPort = true;
+        } else if (draw.getInput().isHostGameClicked()) {
+            editingIp = false;
+            editingPort = false;
+            beginPvpConnection(true);
+        } else if (draw.getInput().isJoinGameClicked()) {
+            editingIp = false;
+            editingPort = false;
+            beginPvpConnection(false);
+        } else if (draw.getInput().isBackClicked()) {
+            editingIp = false;
+            editingPort = false;
+            screenState = ScreenState::MainMenu;
+        } else {
+            editingIp = false;
+            editingPort = false;
+        }
+    }
+
+    if (screenState == ScreenState::PvpMenu) {
+        draw.pvpMenu(pvpIpText, pvpPortText, pvpStatusText, editingIp, editingPort);
+    }
+}
+
+void Game::handleConnectingMenu() {
+    if (pvpThreadDone) {
+        if (pvpThread.joinable()) {
+            pvpThread.join();
+        }
+
+        if (pvpThreadSuccess) {
+            startPvpGame(&pvpConnection, pvpHost);
+            return;
+        }
+
+        pvpStatusText = "Connection failed.";
+        screenState = ScreenState::PvpMenu;
+        return;
+    }
+
+    draw.connectingMenu(pvpStatusText);
+}
+
+bool Game::applyMove(Move& move, bool sendToOpponent) {
+    int fx, fy, tx, ty;
+    unpackMove(move, fx, fy, tx, ty);
+
+    Piece* movingPiece = board.getPiece(move.getFromX(), move.getFromY());
+    if (movingPiece == nullptr) return false;
+
+    PieceColor moverColor = movingPiece->getColor();
+    bool isPawnMove = movingPiece->getType() == PieceType::Pawn;
+
+    if (!validateMove(move) || !isThereNoCheck(move)) {
+        return false;
+    }
+
+    std::string uci = moveToUci(move);
+    bool isEnPassantMove = wasIsEnPassant(move);
+    bool isCaptureMove = board.getPiece(move.getToX(), move.getToY()) != nullptr || isEnPassantMove;
+
+    if (isEnPassantMove) {
+        removeEnPassantPawn(move);
+    }
+
+    halfMoves++;
+    if (isCaptureMove || isPawnMove) {
+        halfMoves = 0;
+    }
+
+    board.update(move);
+    bool isCastleMove = wasItcastle(move);
+
+    if (wasItPawnPromotio(move)) {
+        promotePawn(move);
+    }
+
+    if (wasItcastle(move)) {
+        moveRook(move);
+    }
+
+    moveHistory.push_back(uci);
+
+    if (!pvpMode) {
+        undoStack.push(std::move(move));
+    }
+
+    Move displayMove = uciToMove(uci);
+    lastMove = std::move(displayMove);
+    hasLastMove = true;
+
+    if (sendToOpponent && pvp != nullptr) {
+        pvp->sendMove(uci);
+    }
+
+    clearSelection();
+    clearPossibleMoves();
+
+    PieceColor opponentColor = moverColor == PieceColor::White ? PieceColor::Black : PieceColor::White;
+    bool isCheckMove = checkForCheck(opponentColor);
+    checkForGameEnd(opponentColor);
+
+    if (overlayType == OverlayType::None) {
+        audio.playMoveEvent(isCaptureMove, isCastleMove, isCheckMove);
+    }
+
+    return true;
 }
 
 void Game::update() {
+    if (pvpMode) {
+        receivePvpMessages();
+    }
+
     if (overlayType == OverlayType::None && isPlayerTurn) {
         playerTimeLeftSeconds -= GetFrameTime();
         if (playerTimeLeftSeconds <= 0.0f) {
@@ -62,59 +267,67 @@ void Game::update() {
             }
         } else if (draw.getInput().isOverlayYesClicked()) {
             if (overlayType == OverlayType::Resign) {
+                if (pvpMode && pvp != nullptr) {
+                    pvp->sendLine("RESIGN");
+                }
                 winnerName = player2.getName();
                 winReason = "Resignation";
                 overlayType = OverlayType::Results;
                 audio.playGameEnd();
             } else if (overlayType == OverlayType::Draw) {
-                overlayMessage = "Draw offer rejected automatically.";
+                if (pvpMode && pvp != nullptr) {
+                    pvp->sendLine("DRAW_OFFER");
+                    overlayMessage = "Draw offer sent.";
+                } else {
+                    overlayMessage = "Draw offer rejected automatically.";
+                }
                 overlayType = OverlayType::Info;
+            } else if (overlayType == OverlayType::DrawOfferReceived) {
+                if (pvpMode && pvp != nullptr) {
+                    pvp->sendLine("DRAW_ACCEPTED");
+                }
+                winnerName = "Draw";
+                winReason = "Draw agreed";
+                overlayType = OverlayType::Results;
+                audio.playGameEnd();
             }
         } else if (draw.getInput().isOverlayNoClicked()) {
-            overlayType = OverlayType::None;
+            if (overlayType == OverlayType::DrawOfferReceived && pvpMode && pvp != nullptr) {
+                pvp->sendLine("DRAW_REJECTED");
+                overlayMessage = "Draw offer rejected.";
+                overlayType = OverlayType::Info;
+            } else {
+                overlayType = OverlayType::None;
+            }
         }
 
         return;
+    }
+
+    if (draw.getInput().isLeftMousePressed()) {
+        if (draw.getInput().isResignClicked()) {
+            resign();
+            return;
+        }
+
+        if (!pvpMode && draw.getInput().isUndoClicked()) {
+            undoLastMove();
+            return;
+        }
+
+        if (draw.getInput().isOfferDrawClicked()) {
+            offerdaw();
+            return;
+        }
+
+        if (draw.getInput().isShowResultsClicked()) {
+            showMoveHistory();
+            return;
+        }
     }
 
     if (!isPlayerTurn) return;
-
-    if (IsKeyPressed(KEY_U)) {
-        undoLastMove();
-        return;
-    }
     if (!draw.getInput().isLeftMousePressed()) return;
-
-    if (draw.getInput().isResignClicked()) {
-        resign();
-        return;
-    }
-    if (draw.getInput().isUndoClicked()) {
-        undoLastMove();
-        return;
-    }
-
-    if (draw.getInput().isOfferDrawClicked()) {
-        offerdaw();
-        return;
-    }
-
-    if (draw.getInput().isShowResultsClicked()) {
-        showMoveHistory();
-        return;
-    }
-
-    if (overlayType != OverlayType::None) {
-        if (draw.getInput().isExitToMenuClicked()) {
-            goToMainMenu();
-            return;
-        }
-
-        if (draw.getInput().isNewGameClicked()) {
-            startNewGame();
-            return;
-        }
-    }
 
     int x = -1;
     int y = -1;
@@ -142,39 +355,8 @@ void Game::update() {
 
     Move newMove = convertToMove(selectedX, selectedY, x, y);
 
-    if (validateMove(newMove) && isThereNoCheck(newMove)) {
-        bool isEnPassantMove = wasIsEnPassant(newMove);
-        bool isCaptureMove = board.getPiece(x, y) != nullptr || isEnPassantMove;
-        if (isEnPassantMove) {
-            removeEnPassantPawn(newMove);
-        }
-        halfMoves++;
-        if(isCaptureMove || wasPawnMove(x, y)) halfMoves = 0;
-        board.update(newMove);
-        bool isCastleMove = wasItcastle(newMove);
-
-        undoStack.push(std::move(newMove));
-        moveHistory.push_back(moveToUci(newMove));
-
-        if (wasItPawnPromotio(newMove)) {
-            promotePawn(newMove);
-        }
-
-        if (wasItcastle(newMove)) {
-            moveRook(newMove);
-        }
-
-        lastMove = std::move(newMove);
-        hasLastMove = true;
-        clearSelection();
-        clearPossibleMoves();
-
-        PieceColor stockfishPieceColor = playerPlaysWhite ? PieceColor::Black : PieceColor::White;
-        bool isCheckMove = checkForCheck(stockfishPieceColor);
-        checkForGameEnd(stockfishPieceColor);
-
+    if (applyMove(newMove, pvpMode)) {
         if (overlayType == OverlayType::None) {
-            audio.playMoveEvent(isCaptureMove, isCastleMove, isCheckMove);
             isPlayerTurn = false;
         }
     } else if (board.getPiece(x, y) != nullptr && board.getPiece(x, y)->getColor() == playerPieceColor) {
@@ -329,48 +511,112 @@ void Game::makeStockfishMove() {
     }
 
     Move move = uciToMove(bestMove);
-    bool isEnPassantMove = wasIsEnPassant(move);
-    bool isCaptureMove = board.getPiece(move.getToX(), move.getToY()) != nullptr || isEnPassantMove;
-    if (isEnPassantMove) {
-        removeEnPassantPawn(move);
-    }
-    halfMoves++;
-    if(isCaptureMove || wasPawnMove(move.getToX(), move.getToY())) halfMoves = 0;
-    board.update(move);
-    bool isCastleMove = wasItcastle(move);
-    moveHistory.push_back(moveToUci(move));
-    undoStack.push(std::move(move));
-
-    if (wasItPawnPromotio(move)) {
-        promotePawn(move);
-    }
-
-    if (wasItcastle(move)) {
-        moveRook(move);
-    }
-
-    lastMove = std::move(move);
-    hasLastMove = true;
-
-    PieceColor playerPieceColor = playerPlaysWhite ? PieceColor::White : PieceColor::Black;
-    bool isCheckMove = checkForCheck(playerPieceColor);
-    checkForGameEnd(playerPieceColor);
-
-    if (overlayType == OverlayType::None) {
-        audio.playMoveEvent(isCaptureMove, isCastleMove, isCheckMove);
+    if (applyMove(move, false) && overlayType == OverlayType::None) {
         isPlayerTurn = true;
     }
 }
 
+void Game::makePvpMove(const std::string& uci) {
+    if (uci.size() < 4) return;
+
+    Move move = uciToMove(uci);
+    if (applyMove(move, false) && overlayType == OverlayType::None) {
+        isPlayerTurn = true;
+    }
+}
+
+void Game::receivePvpMessages() {
+    if (!pvpMode || pvp == nullptr) return;
+
+    while (true) {
+        std::string message = pvp->receiveMove();
+        if (message.empty()) break;
+        handlePvpMessage(message);
+    }
+}
+
+void Game::handlePvpMessage(const std::string& message) {
+    if (message.rfind("MOVE ", 0) == 0) {
+        makePvpMove(message.substr(5));
+        return;
+    }
+
+    if (message.size() == 4) {
+        makePvpMove(message);
+        return;
+    }
+
+    if (message == "RESIGN") {
+        winnerName = player1.getName();
+        winReason = "Opponent resigned";
+        overlayType = OverlayType::Results;
+        isPlayerTurn = true;
+        audio.playGameEnd();
+        return;
+    }
+
+    if (message == "NEW_GAME") {
+        startPvpGame(pvp, pvpHost);
+        return;
+    }
+
+    if (message == "DRAW_OFFER") {
+        overlayType = OverlayType::DrawOfferReceived;
+        return;
+    }
+
+    if (message == "DRAW_ACCEPTED") {
+        winnerName = "Draw";
+        winReason = "Draw agreed";
+        overlayType = OverlayType::Results;
+        isPlayerTurn = true;
+        audio.playGameEnd();
+        return;
+    }
+
+    if (message == "DRAW_REJECTED") {
+        overlayMessage = "Draw offer rejected.";
+        overlayType = OverlayType::Info;
+        return;
+    }
+}
 
 void Game::startGame(bool playerPlaysWhite, int stockfishElo, float timeControlSeconds) {
+    if (pvpThread.joinable()) {
+        pvpConnection.close();
+        pvpThread.join();
+    }
+
+    pvpConnection.close();
+    pvp = nullptr;
+    pvpMode = false;
+    gameMode = GameMode::Stockfish;
+
     this->playerPlaysWhite = playerPlaysWhite;
     selectedElo = stockfishElo;
     selectedTimeControlSeconds = timeControlSeconds;
     stockfish.setElo((StockfishElo)stockfishElo);
+    player1.setName("You");
+    player2.setName("Stockfish");
     player1.setColor(playerPlaysWhite ? PlayerColor::White : PlayerColor::Black);
     player2.setColor(playerPlaysWhite ? PlayerColor::Black : PlayerColor::White);
     isPlayerTurn = playerPlaysWhite;
+    resetGameState();
+    audio.playGameStart();
+    screenState = ScreenState::InGame;
+}
+
+void Game::startPvpGame(Pvp* pvp, bool host) {
+    this->pvp = pvp;
+    pvpMode = true;
+    gameMode = GameMode::Pvp;
+    pvpHost = host;
+    playerPlaysWhite = host;
+    player1.setName("You");
+    player2.setName("Guest");
+    player1.setColor(host ? PlayerColor::White : PlayerColor::Black);
+    player2.setColor(host ? PlayerColor::Black : PlayerColor::White);
+    isPlayerTurn = host;
     resetGameState();
     audio.playGameStart();
     screenState = ScreenState::InGame;
@@ -380,43 +626,38 @@ void Game::mainMenu() {
     draw.initWindow();
     audio.load();
 
-    while (!draw.shouldClose()) {
+    while (!exitRequested && !draw.shouldClose()) {
         if (screenState == ScreenState::MainMenu) {
-            if (draw.getInput().isLeftMousePressed()) {
-                if (draw.getInput().isStartGameClicked()) {
-                    startGame(playerPlaysWhite, selectedElo, selectedTimeControlSeconds);
-                } else if (draw.getInput().isExitClicked()) {
-                    break;
-                } else if (draw.getInput().isSelectWhiteClicked()) {
-                    playerPlaysWhite = true;
-                } else if (draw.getInput().isSelectBlackClicked()) {
-                    playerPlaysWhite = false;
-                } else if (draw.getInput().isSelectEloLeftClicked()) {
-                    selectedElo = getPreviousStockfishElo(selectedElo);
-                } else if (draw.getInput().isSelectEloRightClicked()) {
-                    selectedElo = getNextStockfishElo(selectedElo);
-                } else if (draw.getInput().isSelectEloClicked()) {
-                    selectedElo = getNextStockfishElo(selectedElo);
-                } else if (draw.getInput().isSelectTimeLeftClicked()) {
-                    selectedTimeControlSeconds = getPreviousTimeControl(selectedTimeControlSeconds);
-                } else if (draw.getInput().isSelectTimeRightClicked()) {
-                    selectedTimeControlSeconds = getNextTimeControl(selectedTimeControlSeconds);
-                } else if (draw.getInput().isSelectTimeClicked()) {
-                    selectedTimeControlSeconds = getNextTimeControl(selectedTimeControlSeconds);
-                }
-            }
+            handleMainMenu();
+            continue;
+        }
 
-            draw.mainMenu(playerPlaysWhite, selectedElo, selectedTimeControlSeconds);
+        if (screenState == ScreenState::PvpMenu) {
+            handlePvpMenu();
+            continue;
+        }
+
+        if (screenState == ScreenState::Connecting) {
+            handleConnectingMenu();
             continue;
         }
 
         update();
-        draw.render(board, pieceSelected, selectedX, selectedY, possibleMoves, possibleCaptures, &lastMove, hasLastMove, overlayType, player2.getName(), playerPlaysWhite, playerTimeLeftSeconds, moveHistory, winnerName, winReason, overlayMessage);
+        if (screenState != ScreenState::InGame) continue;
 
-        if (screenState == ScreenState::InGame && !isPlayerTurn) {
+        draw.render(board, pieceSelected, selectedX, selectedY, possibleMoves, possibleCaptures,
+            &lastMove, hasLastMove, overlayType, player2.getName(), playerPlaysWhite,
+            playerTimeLeftSeconds, moveHistory, winnerName, winReason, overlayMessage, pvpMode);
+
+        if (screenState == ScreenState::InGame && !isPlayerTurn && !pvpMode) {
             std::this_thread::sleep_for(std::chrono::milliseconds(STOCKFISH_MOVE_TIME_MS));
             makeStockfishMove();
         }
+    }
+
+    pvpConnection.close();
+    if (pvpThread.joinable()) {
+        pvpThread.join();
     }
 
     audio.unload();
@@ -500,12 +741,26 @@ void Game::showMoveHistory() {
 }
 
 void Game::goToMainMenu() {
+    if (pvpMode) {
+        pvpConnection.close();
+        pvp = nullptr;
+        pvpMode = false;
+        gameMode = GameMode::Stockfish;
+        player2.setName("Stockfish");
+    }
+
     resetGameState();
     isPlayerTurn = player1.getColor() == PlayerColor::White;
     screenState = ScreenState::MainMenu;
 }
 
 void Game::startNewGame() {
+    if (pvpMode && pvp != nullptr) {
+        pvp->sendLine("NEW_GAME");
+        startPvpGame(pvp, pvpHost);
+        return;
+    }
+
     startGame(playerPlaysWhite, selectedElo, selectedTimeControlSeconds);
 }
 
@@ -526,6 +781,7 @@ bool Game::validateMove(Move& move) {
     unpackMove(move, fx, fy, tx, ty);
 
     Piece *piece = board.getPiece(fx, fy);
+    if (piece == nullptr) return false;
     
     switch (piece->getType())
     {

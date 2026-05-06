@@ -23,4 +23,5 @@ public:
 
     void setInCheck(bool value);
     void setColor(PlayerColor color);
+    void setName(const std::string& name);
 };

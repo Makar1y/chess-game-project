@@ -25,3 +25,7 @@ void Player::setInCheck(bool value) {
 void Player::setColor(PlayerColor color) {
     this->color = color;
 }
+
+void Player::setName(const std::string& name) {
+    this->name = name;
+}

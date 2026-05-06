@@ -19,7 +19,13 @@ Input::Input(const Rectangle& resignButton,
              const Rectangle& backToGameButton,
              const Rectangle& exitToMenuButton,
              const Rectangle& newGameButton,
-             const Rectangle& exitButton)
+             const Rectangle& exitButton,
+             const Rectangle& pvpMenuButton,
+             const Rectangle& hostGameButton,
+             const Rectangle& joinGameButton,
+             const Rectangle& ipInputBox,
+             const Rectangle& portInputBox,
+             const Rectangle& backButton)
     : resignButton(resignButton),
       offerDrawButton(offerDrawButton),
       showResultsButton(showResultsButton),
@@ -38,7 +44,13 @@ Input::Input(const Rectangle& resignButton,
       backToGameButton(backToGameButton),
       exitToMenuButton(exitToMenuButton),
       newGameButton(newGameButton),
-      exitButton(exitButton) {
+      exitButton(exitButton),
+      pvpMenuButton(pvpMenuButton),
+      hostGameButton(hostGameButton),
+      joinGameButton(joinGameButton),
+      ipInputBox(ipInputBox),
+      portInputBox(portInputBox),
+      backButton(backButton) {
 }
 
 bool Input::isLeftMousePressed() {
@@ -138,7 +150,55 @@ bool Input::getClickedBoardCell(int& x, int& y, bool playerPlaysWhite) {
     return true;
 }
 
-
 bool Input::isExitClicked() {
     return CheckCollisionPointRec(GetMousePosition(), exitButton);
+}
+
+bool Input::isPvpMenuClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), pvpMenuButton);
+}
+
+bool Input::isHostGameClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), hostGameButton);
+}
+
+bool Input::isJoinGameClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), joinGameButton);
+}
+
+bool Input::isIpInputClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), ipInputBox);
+}
+
+bool Input::isPortInputClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), portInputBox);
+}
+
+bool Input::isBackClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), backButton);
+}
+
+void Input::handleTextInput(std::string& text, int maxLength, bool onlyDigits) {
+    if (IsKeyPressed(KEY_BACKSPACE) && !text.empty()) {
+        text.pop_back();
+    }
+
+    int key = GetCharPressed();
+
+    while (key > 0) {
+        char c = (char)key;
+        bool ok = false;
+
+        if (onlyDigits) {
+            ok = std::isdigit((unsigned char)c) != 0;
+        } else {
+            ok = std::isalnum((unsigned char)c) != 0 || c == '.' || c == '-' || c == ':';
+        }
+
+        if (ok && (int)text.size() < maxLength) {
+            text += c;
+        }
+
+        key = GetCharPressed();
+    }
 }

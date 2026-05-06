@@ -2,6 +2,9 @@
 
 #include "raylib.h"
 
+#include <string>
+#include <cctype>
+
 class Input {
 public:
     Input(const Rectangle& resignButton,
@@ -22,14 +25,19 @@ public:
           const Rectangle& backToGameButton,
           const Rectangle& exitToMenuButton,
           const Rectangle& newGameButton,
-          const Rectangle& exitButton);
-
+          const Rectangle& exitButton,
+          const Rectangle& pvpMenuButton,
+          const Rectangle& hostGameButton,
+          const Rectangle& joinGameButton,
+          const Rectangle& ipInputBox,
+          const Rectangle& portInputBox,
+          const Rectangle& backButton);
 
     bool isLeftMousePressed();
     bool isAnyKeyPressed();
     bool isResignClicked();
     bool isOfferDrawClicked();
-	bool isUndoClicked();
+    bool isUndoClicked();
     bool isShowResultsClicked();
     bool isOverlayYesClicked();
     bool isOverlayNoClicked();
@@ -47,6 +55,14 @@ public:
     bool isNewGameClicked();
     bool getClickedBoardCell(int& x, int& y, bool playerPlaysWhite);
     bool isExitClicked();
+    bool isPvpMenuClicked();
+    bool isHostGameClicked();
+    bool isJoinGameClicked();
+    bool isIpInputClicked();
+    bool isPortInputClicked();
+    bool isBackClicked();
+
+    void handleTextInput(std::string& text, int maxLength, bool onlyDigits);
 
 private:
     const Rectangle& resignButton;
@@ -68,4 +84,10 @@ private:
     const Rectangle& exitToMenuButton;
     const Rectangle& newGameButton;
     const Rectangle& exitButton;
+    const Rectangle& pvpMenuButton;
+    const Rectangle& hostGameButton;
+    const Rectangle& joinGameButton;
+    const Rectangle& ipInputBox;
+    const Rectangle& portInputBox;
+    const Rectangle& backButton;
 };

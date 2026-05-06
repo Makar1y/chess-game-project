@@ -50,7 +50,12 @@ void DrawBackgroundCover(Texture2D texture, Rectangle destRect) {
 }
 
 Draw::Draw()
-    : input(resignButton, offerDrawButton, showResultsButton, overlayYesButton, overlayNoButton, selectWhiteButton, selectBlackButton, startGameButton, selectEloButton, selectEloLeftButton, selectEloRightButton, selectTimeButton, selectTimeLeftButton, selectTimeRightButton, undoButton, backToGameButton, exitToMenuButton, newGameButton, exitButton) {
+    : input(resignButton, offerDrawButton, showResultsButton, overlayYesButton, overlayNoButton,
+            selectWhiteButton, selectBlackButton, startGameButton, selectEloButton,
+            selectEloLeftButton, selectEloRightButton, selectTimeButton, selectTimeLeftButton,
+            selectTimeRightButton, undoButton, backToGameButton, exitToMenuButton,
+            newGameButton, exitButton, pvpMenuButton, hostGameButton, joinGameButton,
+            ipInputBox, portInputBox, backButton) {
     resourcesLoaded = false;
 
     const float overlayWidth              = 380.0f;
@@ -68,6 +73,12 @@ Draw::Draw()
     exitToMenuButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
     newGameButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
     exitButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    pvpMenuButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    hostGameButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    joinGameButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    ipInputBox = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    portInputBox = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    backButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
 
     // main menu buttons
     startGameButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
@@ -114,6 +125,7 @@ void Draw::loadResources() {
     backgroundTexture = LoadTexture("Textures/background.png");
     boardTexture = LoadTexture("Textures/board.png");
     stockfishTexture = LoadTexture("Textures/stockfish.png");
+    guestTexture = LoadTexture("Textures/guest.png");
 
     b_bishop = LoadTexture("Textures/bb.png");
     b_king   = LoadTexture("Textures/bk.png");
@@ -131,6 +143,7 @@ void Draw::loadResources() {
 
     SetTextureFilter(backgroundTexture, TEXTURE_FILTER_BILINEAR);
     SetTextureFilter(stockfishTexture, TEXTURE_FILTER_TRILINEAR);
+    SetTextureFilter(guestTexture, TEXTURE_FILTER_TRILINEAR);
 
     SetTextureFilter(b_bishop, TEXTURE_FILTER_TRILINEAR);
     SetTextureFilter(b_king,   TEXTURE_FILTER_TRILINEAR);
@@ -158,6 +171,7 @@ void Draw::unloadResources() {
     UnloadTexture(backgroundTexture);
     UnloadTexture(boardTexture);
     UnloadTexture(stockfishTexture);
+    UnloadTexture(guestTexture);
 
     UnloadTexture(b_bishop);
     UnloadTexture(b_king);
@@ -431,6 +445,9 @@ void Draw::renderOverlay(OverlayType overlayType, float buttonRoundness, int but
         case OverlayType::Draw:
             messageText = "Are you sure you want to offer a draw?";
             break;
+        case OverlayType::DrawOfferReceived:
+            messageText = "Opponent offers a draw. Accept?";
+            break;
         default:
             return;
     }
@@ -479,6 +496,18 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSe
         startBtnSize.y + 20.0f
     };
 
+    // pvp button
+    const std::string pvpBtnText = "pvp Game";
+    Vector2 pvpBtnSize = MeasureTextEx(uiFont22, pvpBtnText.c_str(), 22, 1);
+    const float pvpBtnX = centerX - pvpBtnSize.x / 2.0f - 20.0f;
+    const float pvpBtnY = startBtnY + startBtnSize.y + 34.0f;
+    pvpMenuButton = Rectangle{
+        roundf(pvpBtnX),
+        roundf(pvpBtnY),
+        pvpBtnSize.x + 40.0f,
+        pvpBtnSize.y + 20.0f
+    };
+
     // Color selector
     const std::string colorSelectorTitle = "Play as:";
     const std::string whiteOption = "White";
@@ -487,7 +516,7 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSe
     Vector2 whiteOptionSize = MeasureTextEx(uiFont22, whiteOption.c_str(), 22, 1);
     Vector2 blackOptionSize = MeasureTextEx(uiFont22, blackOption.c_str(), 22, 1);
     const float colorSelectorTitleX = centerX - colorSelectorTitleSize.x / 2.0f;
-    const float colorSelectorTitleY = startBtnY + startBtnSize.y + 50.0f;
+    const float colorSelectorTitleY = pvpBtnY + pvpBtnSize.y + 45.0f;
     const float whiteOptionX = centerX - whiteOptionSize.x - 30.0f;
     const float whiteOptionY = colorSelectorTitleY + colorSelectorTitleSize.y + 20.0f;
     const float blackOptionX = centerX + 30.0f;
@@ -615,6 +644,17 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSe
         {
             roundf(startBtnX + (startGameButton.width - startBtnSize.x) / 2.0f),
             roundf(startBtnY + 10.0f)
+        },
+        22, 1, TEXT_COLOR);
+
+    // pvp button
+    Color pvpBtnColor = input.isPvpMenuClicked() ? BTN_SELECTED_COLOR : BTN_COLOR;
+    DrawRectangleRounded(pvpMenuButton, ROUNDNESS, ROUNDNESS_SEGMENTS, pvpBtnColor);
+    DrawRectangleLinesEx(pvpMenuButton, BORDER_WIDTH, BORDER_COLOR);
+    DrawTextEx(uiFont22, pvpBtnText.c_str(),
+        {
+            roundf(pvpBtnX + (pvpMenuButton.width - pvpBtnSize.x) / 2.0f),
+            roundf(pvpBtnY + 10.0f)
         },
         22, 1, TEXT_COLOR);
 
@@ -750,7 +790,123 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSe
     EndDrawing();
 }
 
-void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY, std::set<std::pair<int, int>>& possibleMoves, std::set<std::pair<int, int>>& possibleCaptures, Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName, bool playerPlaysWhite, float playerTimeLeftSeconds, const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason, const std::string& infoMessage) {
+
+void Draw::pvpMenu(const std::string& ipText, const std::string& portText, const std::string& statusText, bool ipFocused, bool portFocused) {
+    float centerX = (WIDTH + PANEL_WIDTH) / 2.0f;
+    float centerY = LENGTH / 2.0f;
+    const int BORDER_WIDTH = 2;
+    const int ROUNDNESS_SEGMENTS = 8;
+    const float ROUNDNESS = 0.3f;
+
+    const Color BORDER_COLOR = BLACK;
+    const Color TEXT_COLOR = BLACK;
+    const Color BTN_COLOR = WHITE;
+    const Color BTN_SELECTED_COLOR = GRAY;
+    const Color TITLE_TEXT_COLOR = WHITE;
+
+    const std::string titleText = "pvp Game";
+    Vector2 titleSize = MeasureTextEx(uiFont36, titleText.c_str(), 36, 1);
+    const float titleX = centerX - titleSize.x / 2.0f;
+    const float titleY = 55.0f;
+
+    float guestScale = 0.22f;
+    float guestW = (float)guestTexture.width * guestScale;
+    float guestH = (float)guestTexture.height * guestScale;
+    float guestX = centerX - guestW * 0.5f;
+    float guestY = titleY + titleSize.y + 24.0f;
+
+    const float fieldWidth = 360.0f;
+    const float fieldHeight = 46.0f;
+    const float fieldX = centerX - fieldWidth * 0.5f;
+
+    const std::string ipLabel = "Host IP:";
+    Vector2 ipLabelSize = MeasureTextEx(uiFont22, ipLabel.c_str(), 22, 1);
+    float ipLabelY = guestY + guestH + 35.0f;
+    ipInputBox = Rectangle{ fieldX, ipLabelY + ipLabelSize.y + 8.0f, fieldWidth, fieldHeight };
+
+    const std::string portLabel = "Port:";
+    Vector2 portLabelSize = MeasureTextEx(uiFont22, portLabel.c_str(), 22, 1);
+    float portLabelY = ipInputBox.y + ipInputBox.height + 20.0f;
+    portInputBox = Rectangle{ fieldX, portLabelY + portLabelSize.y + 8.0f, fieldWidth, fieldHeight };
+
+    const float buttonWidth = 170.0f;
+    const float buttonHeight = 48.0f;
+    const float buttonGap = 20.0f;
+    const float buttonsY = portInputBox.y + portInputBox.height + 35.0f;
+
+    hostGameButton = Rectangle{ centerX - buttonWidth - buttonGap * 0.5f, buttonsY, buttonWidth, buttonHeight };
+    joinGameButton = Rectangle{ centerX + buttonGap * 0.5f, buttonsY, buttonWidth, buttonHeight };
+
+    backButton = Rectangle{ centerX - 75.0f, LENGTH - 80.0f, 150.0f, 48.0f };
+
+    BeginDrawing();
+    DrawBackgroundCover(backgroundTexture, Rectangle{0.0f, 0.0f, centerX * 2, centerY * 2});
+
+    DrawTextEx(uiFont36, titleText.c_str(), { roundf(titleX + 2), roundf(titleY + 2) }, 36, 1, Color{0, 0, 0, 100});
+    DrawTextEx(uiFont36, titleText.c_str(), { roundf(titleX), roundf(titleY) }, 36, 1, TITLE_TEXT_COLOR);
+
+    DrawTextureEx(guestTexture, { guestX, guestY }, 0.0f, guestScale, WHITE);
+
+    DrawTextEx(uiFont22, ipLabel.c_str(), { fieldX, ipLabelY }, 22, 1, TITLE_TEXT_COLOR);
+    DrawRectangleRounded(ipInputBox, 0.15f, ROUNDNESS_SEGMENTS, WHITE);
+    DrawRectangleLinesEx(ipInputBox, ipFocused ? 4 : BORDER_WIDTH, ipFocused ? YELLOW : BORDER_COLOR);
+    DrawTextEx(uiFont22, ipText.c_str(), { ipInputBox.x + 14.0f, ipInputBox.y + 12.0f }, 22, 1, TEXT_COLOR);
+
+    DrawTextEx(uiFont22, portLabel.c_str(), { fieldX, portLabelY }, 22, 1, TITLE_TEXT_COLOR);
+    DrawRectangleRounded(portInputBox, 0.15f, ROUNDNESS_SEGMENTS, WHITE);
+    DrawRectangleLinesEx(portInputBox, portFocused ? 4 : BORDER_WIDTH, portFocused ? YELLOW : BORDER_COLOR);
+    DrawTextEx(uiFont22, portText.c_str(), { portInputBox.x + 14.0f, portInputBox.y + 12.0f }, 22, 1, TEXT_COLOR);
+
+    Color hostColor = input.isHostGameClicked() ? BTN_SELECTED_COLOR : BTN_COLOR;
+    Color joinColor = input.isJoinGameClicked() ? BTN_SELECTED_COLOR : BTN_COLOR;
+    DrawRectangleRounded(hostGameButton, ROUNDNESS, ROUNDNESS_SEGMENTS, hostColor);
+    DrawRectangleLinesEx(hostGameButton, BORDER_WIDTH, BORDER_COLOR);
+    DrawRectangleRounded(joinGameButton, ROUNDNESS, ROUNDNESS_SEGMENTS, joinColor);
+    DrawRectangleLinesEx(joinGameButton, BORDER_WIDTH, BORDER_COLOR);
+
+    const char* hostText = "Create Game";
+    const char* joinText = "Join Game";
+    Vector2 hostSize = MeasureTextEx(uiFont22, hostText, 22, 1);
+    Vector2 joinSize = MeasureTextEx(uiFont22, joinText, 22, 1);
+    DrawTextEx(uiFont22, hostText, { hostGameButton.x + (hostGameButton.width - hostSize.x) * 0.5f, hostGameButton.y + 13.0f }, 22, 1, TEXT_COLOR);
+    DrawTextEx(uiFont22, joinText, { joinGameButton.x + (joinGameButton.width - joinSize.x) * 0.5f, joinGameButton.y + 13.0f }, 22, 1, TEXT_COLOR);
+
+    if (!statusText.empty()) {
+        Vector2 statusSize = MeasureTextEx(uiFont22, statusText.c_str(), 20, 1);
+        DrawTextEx(uiFont22, statusText.c_str(), { centerX - statusSize.x * 0.5f, buttonsY + buttonHeight + 24.0f }, 20, 1, TITLE_TEXT_COLOR);
+    }
+
+    Color backColor = input.isBackClicked() ? Color{185, 41, 55, 255} : RED;
+    DrawRectangleRounded(backButton, ROUNDNESS, ROUNDNESS_SEGMENTS, backColor);
+    DrawRectangleLinesEx(backButton, BORDER_WIDTH, BORDER_COLOR);
+    const char* backText = "Back";
+    Vector2 backSize = MeasureTextEx(uiFont22, backText, 22, 1);
+    DrawTextEx(uiFont22, backText, { backButton.x + (backButton.width - backSize.x) * 0.5f, backButton.y + 13.0f }, 22, 1, TEXT_COLOR);
+
+    EndDrawing();
+}
+
+void Draw::connectingMenu(const std::string& statusText) {
+    float centerX = (WIDTH + PANEL_WIDTH) / 2.0f;
+    float centerY = LENGTH / 2.0f;
+
+    BeginDrawing();
+    DrawBackgroundCover(backgroundTexture, Rectangle{0.0f, 0.0f, centerX * 2, centerY * 2});
+
+    const std::string titleText = "pvp Connection";
+    Vector2 titleSize = MeasureTextEx(uiFont36, titleText.c_str(), 36, 1);
+    DrawTextEx(uiFont36, titleText.c_str(), { centerX - titleSize.x * 0.5f, 120.0f }, 36, 1, WHITE);
+
+    float guestScale = 0.25f;
+    DrawTextureEx(guestTexture, { centerX - guestTexture.width * guestScale * 0.5f, 190.0f }, 0.0f, guestScale, WHITE);
+
+    Vector2 statusSize = MeasureTextEx(uiFont22, statusText.c_str(), 22, 1);
+    DrawTextEx(uiFont22, statusText.c_str(), { centerX - statusSize.x * 0.5f, 390.0f }, 22, 1, WHITE);
+
+    EndDrawing();
+}
+
+void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY, std::set<std::pair<int, int>>& possibleMoves, std::set<std::pair<int, int>>& possibleCaptures, Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName, bool playerPlaysWhite, float playerTimeLeftSeconds, const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason, const std::string& infoMessage, bool pvpMode) {
     static float PIECE_SCALE = 0.46f;
     static float PLAYER_SCALE = 0.28f;
 
@@ -868,12 +1024,13 @@ void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY
     DrawRectangle(WIDTH, 0, PANEL_WIDTH, LENGTH, Color{ 117, 148, 85, 255 });
     DrawLine(WIDTH, 0, WIDTH, LENGTH, Color{ 238, 238, 210, 255 });
 
-    float playerImageW = (float)stockfishTexture.width * PLAYER_SCALE;
-    float playerImageH = (float)stockfishTexture.height * PLAYER_SCALE;
+    Texture2D& playerTexture = pvpMode ? guestTexture : stockfishTexture;
+    float playerImageW = (float)playerTexture.width * PLAYER_SCALE;
+    float playerImageH = (float)playerTexture.height * PLAYER_SCALE;
     float playerImageX = WIDTH + (PANEL_WIDTH - playerImageW) * 0.5f;
     float playerImageY = playerImageTop;
 
-    DrawTextureEx(stockfishTexture, { playerImageX, playerImageY }, 0.0f, PLAYER_SCALE, WHITE);
+    DrawTextureEx(playerTexture, { playerImageX, playerImageY }, 0.0f, PLAYER_SCALE, WHITE);
 
     Vector2 playerTextSize = MeasureTextEx(uiFont36, playerName.c_str(), 36, 1);
     float playerTextX = WIDTH + (PANEL_WIDTH - playerTextSize.x) * 0.5f;
@@ -893,7 +1050,11 @@ void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY
     resignButton = { buttonX, firstButtonY, buttonWidth, buttonHeight };
     offerDrawButton = { buttonX, firstButtonY + buttonHeight + buttonSpacing, buttonWidth, buttonHeight };
     showResultsButton = { buttonX, firstButtonY + (buttonHeight + buttonSpacing) * 2.0f, buttonWidth, buttonHeight };
-    undoButton = {buttonX,firstButtonY + (buttonHeight + buttonSpacing) * 3.0f,buttonWidth,buttonHeight};
+    if (pvpMode) {
+        undoButton = { 0.0f, 0.0f, 0.0f, 0.0f };
+    } else {
+        undoButton = { buttonX, firstButtonY + (buttonHeight + buttonSpacing) * 3.0f, buttonWidth, buttonHeight };
+    }
 
 Color resignColor = input.isResignClicked()
     ? Color{ 218, 218, 190, 255 }
@@ -911,7 +1072,9 @@ Color resultsColor = input.isShowResultsClicked()
     DrawRectangleRounded(resignButton, buttonRoundness, buttonSegments, resignColor);
     DrawRectangleRounded(offerDrawButton, buttonRoundness, buttonSegments, drawColor);
     DrawRectangleRounded(showResultsButton, buttonRoundness, buttonSegments, resultsColor);
-    DrawRectangleRounded(undoButton, buttonRoundness, buttonSegments, undoColor);
+    if (!pvpMode) {
+        DrawRectangleRounded(undoButton, buttonRoundness, buttonSegments, undoColor);
+    }
 
     const char* resignText = "Resign";
     const char* drawTextStr = "Offer Draw";
@@ -943,12 +1106,14 @@ Color resultsColor = input.isShowResultsClicked()
             roundf(showResultsButton.y + (showResultsButton.height - resultsSize.y) * 0.5f)
         },
         22, 1, BLACK);
-    DrawTextEx(uiFont22, undoText,
-    {
-        roundf(undoButton.x + (undoButton.width - undoSize.x) * 0.5f),
-        roundf(undoButton.y + (undoButton.height - undoSize.y) * 0.5f)
-    },
-    22, 1, BLACK);
+    if (!pvpMode) {
+        DrawTextEx(uiFont22, undoText,
+        {
+            roundf(undoButton.x + (undoButton.width - undoSize.x) * 0.5f),
+            roundf(undoButton.y + (undoButton.height - undoSize.y) * 0.5f)
+        },
+        22, 1, BLACK);
+    }
 
     const float playerClockBottomPadding = 18.0f;
     const float playerClockHeight = 64.0f;

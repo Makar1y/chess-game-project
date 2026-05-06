@@ -14,7 +14,8 @@ enum class OverlayType {
     Draw,
     Info,
     Results,
-    MoveHistory
+    MoveHistory,
+    DrawOfferReceived
 };
 
 class Draw {
@@ -23,6 +24,8 @@ public:
 
     void initWindow();
     void mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSeconds);
+    void pvpMenu(const std::string& ipText, const std::string& portText, const std::string& statusText, bool ipFocused, bool portFocused);
+    void connectingMenu(const std::string& statusText);
     bool shouldClose();
     void closeWindow();
 
@@ -32,7 +35,7 @@ public:
         std::set<std::pair<int, int>>& possibleMoves, std::set<std::pair<int, int>>& possibleCaptures,
         Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName, bool playerPlaysWhite,
         float playerTimeLeftSeconds, const std::vector<std::string>& moveHistory, const std::string& winnerName,
-        const std::string& winReason, const std::string& infoMessage);
+        const std::string& winReason, const std::string& infoMessage, bool pvpMode);
     void confirmationOverlay(const Rectangle& overlayRect, const Rectangle& overlayYesButton, const Rectangle& overlayNoButton, const char* messageText, bool overlayYesPressed, bool overlayNoPressed, float buttonRoundness, int buttonSegments);
     void infoOverlay(const char* messageText);
     void showMoveHistory(const std::vector<std::string>& moveHistory);
@@ -53,6 +56,7 @@ private:
     Texture2D backgroundTexture;
     Texture2D boardTexture;
     Texture2D stockfishTexture;
+    Texture2D guestTexture;
 
     Texture2D b_bishop;
     Texture2D b_king;
@@ -76,6 +80,12 @@ private:
     Rectangle overlayYesButton;
     Rectangle overlayNoButton;
     Rectangle startGameButton;
+    Rectangle pvpMenuButton;
+    Rectangle hostGameButton;
+    Rectangle joinGameButton;
+    Rectangle ipInputBox;
+    Rectangle portInputBox;
+    Rectangle backButton;
     Rectangle selectWhiteButton;
     Rectangle selectBlackButton;
     Rectangle selectEloButton;

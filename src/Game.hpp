@@ -1,26 +1,36 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <thread>
+#include <atomic>
 #include <chrono>
 #include <optional>
-#include  <stack>
+#include <set>
+#include <stack>
+#include <string>
+#include <thread>
+#include <vector>
+#include <cstdlib>
 
 #include "../Config.hpp"
+#include "Audio.hpp"
 #include "Board.hpp"
 #include "Draw.hpp"
 #include "Move.hpp"
 #include "Player.hpp"
+#include "Pvp.hpp"
 #include "Stockfish.hpp"
-#include "Audio.hpp"
-
 
 class Game {
 private:
     enum class ScreenState {
         MainMenu,
+        PvpMenu,
+        Connecting,
         InGame
+    };
+
+    enum class GameMode {
+        Stockfish,
+        Pvp
     };
 
     Draw draw;
@@ -29,6 +39,22 @@ private:
     Player player2;
     Stockfish stockfish;
     Audio audio;
+    Pvp pvpConnection;
+    Pvp* pvp = nullptr;
+
+    GameMode gameMode = GameMode::Stockfish;
+    bool pvpMode = false;
+    bool pvpHost = false;
+
+    std::thread pvpThread;
+    std::atomic_bool pvpThreadDone{ false };
+    std::atomic_bool pvpThreadSuccess{ false };
+    std::string pvpIpText = "127.0.0.1";
+    std::string pvpPortText = "54000";
+    std::string pvpStatusText;
+    bool editingIp = false;
+    bool editingPort = false;
+
     int selectedElo = STOCKFISH_ELO;
     float selectedTimeControlSeconds = PLAYER_TIME;
     int halfMoves = 0;
@@ -54,10 +80,22 @@ private:
     Move lastMove;
     bool hasLastMove = false;
     ScreenState screenState = ScreenState::MainMenu;
+    bool exitRequested = false;
 
     void resetGameState();
 
+    void handleMainMenu();
+    void handlePvpMenu();
+    void handleConnectingMenu();
+    void beginPvpConnection(bool host);
+    void handleTextInput(std::string& text, int maxLength, bool onlyDigits);
+    int getPvpPort();
+
+    bool applyMove(Move& move, bool sendToOpponent);
     void makeStockfishMove();
+    void makePvpMove(const std::string& uci);
+    void receivePvpMessages();
+    void handlePvpMessage(const std::string& message);
     std::string moveToUci(Move& move);
     Move uciToMove(const std::string& uciMove);
 
@@ -88,12 +126,13 @@ private:
     void promotePawn(Move& move);
     bool wasPawnMove(int x, int y);
 
-
 public:
     Game();
+    ~Game();
 
     void update();
     void startGame(bool playerPlaysWhite, int stockfishElo, float timeControlSeconds);
+    void startPvpGame(Pvp* pvp, bool host);
     void mainMenu();
     void clearSelection();
     void showResults();
