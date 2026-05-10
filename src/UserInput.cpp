@@ -25,7 +25,12 @@ Input::Input(const Rectangle& resignButton,
              const Rectangle& joinGameButton,
              const Rectangle& ipInputBox,
              const Rectangle& portInputBox,
-             const Rectangle& backButton)
+             const Rectangle& backButton,
+             const Rectangle& promoteQueenSelection,
+             const Rectangle& promoteKnightSelection,
+             const Rectangle& promoteRookSelection,
+             const Rectangle& promoteBishopSelection,
+             const Rectangle& cancelPromotionButton)
     : resignButton(resignButton),
       offerDrawButton(offerDrawButton),
       showResultsButton(showResultsButton),
@@ -50,7 +55,12 @@ Input::Input(const Rectangle& resignButton,
       joinGameButton(joinGameButton),
       ipInputBox(ipInputBox),
       portInputBox(portInputBox),
-      backButton(backButton) {
+      backButton(backButton),
+      promoteQueenSelection(promoteQueenSelection),
+      promoteKnightSelection(promoteKnightSelection),
+      promoteRookSelection(promoteRookSelection),
+      promoteBishopSelection(promoteBishopSelection),
+      cancelPromotionButton(cancelPromotionButton) {
 }
 
 bool Input::isLeftMousePressed() {
@@ -176,6 +186,26 @@ bool Input::isPortInputClicked() {
 
 bool Input::isBackClicked() {
     return CheckCollisionPointRec(GetMousePosition(), backButton);
+}
+
+bool Input::isPromoteQueenSelectionClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), promoteQueenSelection);
+}
+
+bool Input::isPromoteKnightSelectionClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), promoteKnightSelection);
+}
+
+bool Input::isPromoteRookSelectionClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), promoteRookSelection);
+}
+
+bool Input::isPromoteBishopSelectionClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), promoteBishopSelection);
+}
+
+bool Input::isCancelPromotionClicked() {
+    return CheckCollisionPointRec(GetMousePosition(), cancelPromotionButton);
 }
 
 void Input::handleTextInput(std::string& text, int maxLength, bool onlyDigits) {

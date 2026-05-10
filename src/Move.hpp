@@ -10,6 +10,7 @@ private:
     int toX;
     int toY;
     bool isFirstMove;
+    char promotionPiece = 'e'; // e means empty
 
     std::unique_ptr<Piece> capturedPiece;
 
@@ -27,6 +28,7 @@ public:
     int getToX();
     int getToY();
     bool getIsFirstMove();
+    char getPromotionPiece();
     std::unique_ptr<Piece> getCapturedPiece();
 
     void setFromX(int x);
@@ -34,5 +36,6 @@ public:
     void setToX(int x);
     void setToY(int y);
     void setIsFirstMove(bool isFirstMove);
+    void setPromotionPiece(char promotionPiece);
     void setCapturedPiece(std::unique_ptr<Piece> piece);
 };

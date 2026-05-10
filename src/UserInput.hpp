@@ -31,7 +31,12 @@ public:
           const Rectangle& joinGameButton,
           const Rectangle& ipInputBox,
           const Rectangle& portInputBox,
-          const Rectangle& backButton);
+          const Rectangle& backButton,
+          const Rectangle& promoteQueenSelection,
+          const Rectangle& promoteKnightSelection,
+          const Rectangle& promoteRookSelection,
+          const Rectangle& promoteBishopSelection,
+          const Rectangle& cancelPromotionButton);
 
     bool isLeftMousePressed();
     bool isAnyKeyPressed();
@@ -61,6 +66,11 @@ public:
     bool isIpInputClicked();
     bool isPortInputClicked();
     bool isBackClicked();
+    bool isPromoteQueenSelectionClicked();
+    bool isPromoteKnightSelectionClicked();
+    bool isPromoteRookSelectionClicked();
+    bool isPromoteBishopSelectionClicked();
+    bool isCancelPromotionClicked();
 
     void handleTextInput(std::string& text, int maxLength, bool onlyDigits);
 
@@ -90,4 +100,9 @@ private:
     const Rectangle& ipInputBox;
     const Rectangle& portInputBox;
     const Rectangle& backButton;
+    const Rectangle& promoteQueenSelection;
+    const Rectangle& promoteKnightSelection;
+    const Rectangle& promoteRookSelection;
+    const Rectangle& promoteBishopSelection;
+    const Rectangle& cancelPromotionButton;
 };

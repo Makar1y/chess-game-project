@@ -55,7 +55,8 @@ Draw::Draw()
             selectEloLeftButton, selectEloRightButton, selectTimeButton, selectTimeLeftButton,
             selectTimeRightButton, undoButton, backToGameButton, exitToMenuButton,
             newGameButton, exitButton, pvpMenuButton, hostGameButton, joinGameButton,
-            ipInputBox, portInputBox, backButton) {
+            ipInputBox, portInputBox, backButton, promoteQueenSelection, promoteKnightSelection,
+            promoteRookSelection, promoteBishopSelection, cancelPromotionButton) {
     resourcesLoaded = false;
 
     const float overlayWidth              = 380.0f;
@@ -79,6 +80,12 @@ Draw::Draw()
     ipInputBox = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
     portInputBox = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
     backButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    promoteQueenSelection = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    promoteKnightSelection = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    promoteRookSelection = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    promoteBishopSelection = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+    cancelPromotionButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
+
 
     // main menu buttons
     startGameButton = Rectangle{ 0.0f, 0.0f, 0.0f, 0.0f };
@@ -418,12 +425,108 @@ void Draw::infoOverlay(const char* messageText) {
         22, 1, DARKGRAY);
 }
 
+void Draw::showPromotion(const std::vector<std::string>& moveHistory) {  
+    std::string lastmove = moveHistory.back().substr(2, 2);
+    bool playerPlaysWhite = lastmove[1] == '8' ? true : false;
+    int x = lastmove[0] - 'a';
+    int y = '8' - lastmove[1];
+    int drawBoardX = playerPlaysWhite ? x : 7 - x;
+    int drawBoardY = playerPlaysWhite ? y : 7 - y;
+    float PIECE_SCALE = 0.46f;
+    float cellSize = WIDTH / 8.0f;
+
+    Texture2D* tex[4];
+    if(playerPlaysWhite)
+    {
+        tex[0] = &w_queen;
+        tex[1] = &w_knight;
+        tex[2] = &w_rook;
+        tex[3] = &w_bishop;
+    }
+    else
+    {
+        tex[0] = &b_queen;
+        tex[1] = &b_knight;
+        tex[2] = &b_rook;
+        tex[3] = &b_bishop;
+    }
+
+    promoteQueenSelection   = {(float)drawBoardX * cellSize, (float)drawBoardY * cellSize, cellSize, cellSize};
+    promoteKnightSelection  = {(float)drawBoardX * cellSize, (float)(drawBoardY + 1) * cellSize, cellSize, cellSize};
+    promoteRookSelection    = {(float)drawBoardX * cellSize, (float)(drawBoardY + 2) * cellSize, cellSize, cellSize};
+    promoteBishopSelection  = {(float)drawBoardX * cellSize, (float)(drawBoardY + 3) * cellSize, cellSize, cellSize};
+
+    Rectangle buttons[4] = {
+        promoteQueenSelection,
+        promoteKnightSelection,
+        promoteRookSelection,
+        promoteBishopSelection
+    };
+
+    for(int i = 0; i < 4; i++)
+    {
+        DrawRectangleRec(buttons[i], WHITE);
+
+        float drawW = (float)tex[i]->width * PIECE_SCALE;
+        float drawH = (float)tex[i]->height * PIECE_SCALE;
+
+        float drawX = buttons[i].x + (cellSize - drawW) * 0.5f;
+        float drawY = buttons[i].y + (cellSize - drawH) * 0.5f;
+
+        DrawTextureEx(*tex[i], { drawX, drawY }, 0.0f, PIECE_SCALE, WHITE);
+
+        if(CheckCollisionPointRec(GetMousePosition(), buttons[i]))
+        {
+            DrawRectangleLinesEx(buttons[i], 3, GOLD);
+        }
+    }
+
+    float posX = drawBoardX * cellSize;
+    float posY = (drawBoardY + 4) * cellSize;
+
+    Color bgColor = {241, 241, 241, 255};
+    Color xColor = {139, 137, 135, 255};
+
+    float cancelH = cellSize / 2.0f;
+
+    cancelPromotionButton = {
+        posX,
+        posY,
+        cellSize,
+        cancelH
+    };
+
+    DrawRectangleRec(cancelPromotionButton, bgColor);
+
+    if(CheckCollisionPointRec(GetMousePosition(), cancelPromotionButton))
+    {
+        DrawRectangleLinesEx(cancelPromotionButton, 3, LIGHTGRAY);
+    }
+
+    const char* text = "x";
+    int fontSize = 30;
+
+    int textWidth = MeasureText(text, fontSize);
+
+    float textX = posX + (cellSize - textWidth) / 2;
+    float textY = posY + (cancelH - fontSize) / 2;
+
+    DrawText(text, textX,     textY,     fontSize, xColor);
+    DrawText(text, textX + 1, textY,     fontSize, xColor);
+    DrawText(text, textX,     textY + 1, fontSize, xColor);
+    DrawText(text, textX + 1, textY + 1, fontSize, xColor);
+}
+
 void Draw::renderOverlay(OverlayType overlayType, float buttonRoundness, int buttonSegments, const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason, const std::string& infoMessage) {
     if (overlayType == OverlayType::None) return;
 
     if (overlayType == OverlayType::Results) {
         showResults(winnerName, winReason, moveHistory.size(), moveHistory);
         return;
+    }
+
+    if(overlayType == OverlayType::Promotion) {
+        showPromotion(moveHistory);
     }
 
     if (overlayType == OverlayType::MoveHistory) {
@@ -971,7 +1074,7 @@ void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY
                 DrawRectangle(
                     (int)drawBoardX * cellSize,
                     (int)drawBoardY * cellSize,
-                    cellSize + 1, // Need to add plus one to width because of rounding above makes small hole
+                    cellSize + 1,
                     cellSize + 1,
                     hightlight
                 );

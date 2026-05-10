@@ -123,8 +123,10 @@ private:
     bool wasIsEnPassant(Move& move);
     void removeEnPassantPawn(Move& move);
     bool wasItPawnPromotio(Move& move);
-    void promotePawn(Move& move);
+    void promotePawn(PieceType choice);
     bool wasPawnMove(int x, int y);
+    PieceType promotionPieceSelected();
+    void promotePawnEngine(Move& move);
 
 public:
     Game();

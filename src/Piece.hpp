@@ -6,7 +6,8 @@ enum class PieceType {
     Bishop,
     Rook,
     Queen,
-    King
+    King,
+    None
 };
 
 enum class PieceColor {

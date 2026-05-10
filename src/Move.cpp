@@ -20,6 +20,10 @@ bool Move::getIsFirstMove() {
     return isFirstMove;
 }
 
+char Move::getPromotionPiece() {
+    return promotionPiece;
+}
+
 std::unique_ptr<Piece> Move::getCapturedPiece() {
     return std::move(capturedPiece);
 }
@@ -42,6 +46,10 @@ void Move::setToY(int y) {
 
 void Move::setIsFirstMove(bool isFirstMove) {
     this->isFirstMove = isFirstMove;
+}
+
+void Move::setPromotionPiece(char promotionPiece) {
+    this->promotionPiece = promotionPiece;
 }
 
 void Move::setCapturedPiece(std::unique_ptr<Piece> piece) {

@@ -196,15 +196,19 @@ bool Game::applyMove(Move& move, bool sendToOpponent) {
     board.update(move);
     bool isCastleMove = wasItcastle(move);
 
-    if (wasItPawnPromotio(move)) {
-        promotePawn(move);
-    }
-
     if (wasItcastle(move)) {
         moveRook(move);
     }
 
     moveHistory.push_back(uci);
+
+    if(move.getPromotionPiece() != 'e') {
+        promotePawnEngine(move);
+    }
+
+    if (wasItPawnPromotio(move)) {
+        overlayType = OverlayType::Promotion;
+    }
 
     if (!pvpMode) {
         undoStack.push(std::move(move));
@@ -299,6 +303,18 @@ void Game::update() {
             } else {
                 overlayType = OverlayType::None;
             }
+        } else if (overlayType == OverlayType::Promotion) {
+            PieceType choice = promotionPieceSelected();
+            if(choice != PieceType::None) {
+                promotePawn(choice);
+                overlayType = OverlayType::None;
+                return;
+            }
+            if(draw.getInput().isCancelPromotionClicked() || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                overlayType = OverlayType::None;
+                undoLastMove();
+            }
+            
         }
 
         return;
@@ -712,6 +728,10 @@ std::string Game::moveToUci(Move& move) {
     uci[1] = (char)('8' - move.getFromY());
     uci[2] = (char)('a' + move.getToX());
     uci[3] = (char)('8' - move.getToY());
+    char promotedPiece = move.getPromotionPiece();
+    if(promotedPiece != 'e') {
+        uci += promotedPiece;
+    }
     return uci;
 }
 
@@ -721,6 +741,8 @@ Move Game::uciToMove(const std::string& uciMove) {
     move.setFromY('8' - uciMove[1]);
     move.setToX(uciMove[2] - 'a');
     move.setToY('8' - uciMove[3]);
+    if(uciMove.size() > 4)
+        move.setPromotionPiece(uciMove[4]);
     return move;
 }
 
@@ -1028,7 +1050,6 @@ bool Game::wasItPawnPromotio(Move& move) {
 }
 void Game::undoLastMove() {
     if (undoStack.empty()) return;
-
     Move last = std::move(undoStack.top());
     undoStack.pop();
 
@@ -1041,16 +1062,68 @@ void Game::undoLastMove() {
     hasLastMove = false;
 }
 
-void Game::promotePawn(Move& move) {
-    int fx, fy, tx, ty;
-    unpackMove(move, fx, fy, tx, ty);
-    //TODO overlay for chossing pawn promotion
-    PieceType choise = PieceType::Queen;
-
-    board.getPiece(tx, ty)->setType(choise);
+void Game::promotePawn(PieceType choice) {
+    std::string lastmove = moveHistory.back().substr(2, 2);
+    int x = lastmove[0] - 'a';
+    int y = '8' - lastmove[1];
+    switch (choice)
+    {
+    case PieceType::Queen:
+        moveHistory.back() += 'q';
+        break;
+    case PieceType::Rook:
+        moveHistory.back() += 'r';
+        break;
+    case PieceType::Knight:
+        moveHistory.back() += 'n';
+        break;
+    case PieceType::Bishop:
+        moveHistory.back() += 'b';
+        break;
+    }
+    isPlayerTurn = false;
+    board.getPiece(x, y)->setType(choice);
 }
 
 bool Game::wasPawnMove(int x, int y) {
     if(board.getPiece(x, y) == nullptr) return false;
     return (board.getPiece(x, y)->getType() == PieceType::Pawn);
+}
+
+PieceType Game::promotionPieceSelected() {
+    if(draw.getInput().isPromoteQueenSelectionClicked()) {
+        return PieceType::Queen;
+    }
+    if(draw.getInput().isPromoteKnightSelectionClicked()) {
+        return PieceType::Knight;
+    }
+    if(draw.getInput().isPromoteRookSelectionClicked()) {
+        return PieceType::Rook;
+    }
+    if(draw.getInput().isPromoteBishopSelectionClicked()) {
+        return PieceType::Bishop;
+    }
+    return PieceType::None;
+}
+
+void Game::promotePawnEngine(Move& move) {
+    PieceType choice;
+    switch (move.getPromotionPiece())
+    {
+    case 'q':
+        choice = PieceType::Queen;
+        break;
+    case 'n':
+        choice = PieceType::Knight;
+        break;
+    case 'r':
+        choice = PieceType::Rook;
+        break;
+    case 'b':
+        choice = PieceType::Bishop;
+        break;
+    }
+    int x = move.getToX();
+    int y = move.getToY();
+    board.getPiece(x, y)->setType(choice);
 }

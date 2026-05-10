@@ -21,7 +21,7 @@ Board::Board() {
     for (int i = 0; i < 8; i++) {
         squares[1][i] = std::make_unique<Piece>(PieceColor::Black, PieceType::Pawn);
     }
-
+    
     for (int i = 0; i < 8; i++) {
         squares[6][i] = std::make_unique<Piece>(PieceColor::White, PieceType::Pawn);
     }

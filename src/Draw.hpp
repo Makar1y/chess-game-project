@@ -15,7 +15,8 @@ enum class OverlayType {
     Info,
     Results,
     MoveHistory,
-    DrawOfferReceived
+    DrawOfferReceived,
+    Promotion
 };
 
 class Draw {
@@ -40,6 +41,7 @@ public:
     void infoOverlay(const char* messageText);
     void showMoveHistory(const std::vector<std::string>& moveHistory);
     void showResults(const std::string& winnerName, const std::string& winReason, int movesMade, const std::vector<std::string>& moveHistory);
+    void showPromotion(const std::vector<std::string>& moveHistory);
 
 private:
     void renderOverlay(OverlayType overlayType, float buttonRoundness, int buttonSegments,
@@ -98,6 +100,11 @@ private:
     Rectangle exitToMenuButton;
     Rectangle newGameButton;
     Rectangle exitButton;
+    Rectangle promoteQueenSelection;
+    Rectangle promoteKnightSelection;
+    Rectangle promoteRookSelection;
+    Rectangle promoteBishopSelection;
+    Rectangle cancelPromotionButton;
 
     Input input;
 };
