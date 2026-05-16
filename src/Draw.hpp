@@ -24,7 +24,7 @@ public:
     Draw();
 
     void initWindow();
-    void mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSeconds);
+    void mainMenu(bool playerPlaysWhite, const std::string& difficultyName, float timeControlSeconds);
     void pvpMenu(const std::string& ipText, const std::string& portText, const std::string& statusText, bool ipFocused, bool portFocused);
     void connectingMenu(const std::string& statusText);
     bool shouldClose();

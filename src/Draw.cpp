@@ -567,12 +567,12 @@ void Draw::renderOverlay(OverlayType overlayType, float buttonRoundness, int but
     );
 }
 
-void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSeconds) {
+void Draw::mainMenu(bool playerPlaysWhite, const std::string& difficultyName, float timeControlSeconds) {
     float centerX = (WIDTH + PANEL_WIDTH) / 2.0f;
     float centerY = LENGTH / 2.0f;
     int BORDER_WIDTH = 2;
     int ROUNDNESS_SEGMENTS = 8;
-    int ROUNDNESS = 0.3f;
+    float ROUNDNESS = 0.3f;
 
     Color BORDER_COLOR = BLACK;
     Color TEXT_COLOR = BLACK;
@@ -587,8 +587,8 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSe
     const float titleX = centerX - titleSize.x / 2.0f;
     const float titleY = 60.0f;
 
-    // Start button
-    const std::string startBtnText = "Start Game";
+    // Start button (Stockfish)
+    const std::string startBtnText = "PvE (Stockfish)";
     Vector2 startBtnSize = MeasureTextEx(uiFont22, startBtnText.c_str(), 22, 1);
     const float startBtnX = centerX - startBtnSize.x / 2.0f - 20.0f;
     const float startBtnY = titleY + titleSize.y + 80.0f;
@@ -599,7 +599,7 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSe
         startBtnSize.y + 20.0f
     };
 
-    // pvp button
+    // PvP button
     const std::string pvpBtnText = "PvP Match";
     Vector2 pvpBtnSize = MeasureTextEx(uiFont22, pvpBtnText.c_str(), 22, 1);
     const float pvpBtnX = centerX - pvpBtnSize.x / 2.0f - 20.0f;
@@ -639,7 +639,7 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSe
 
     // Elo selector
     const std::string eloSelectorTitle = "Difficulty:";
-    const std::string eloSelectorValue = std::to_string(stockfishElo);
+    const std::string eloSelectorValue = difficultyName;
     const std::string eloLeftArrow = "<<";
     const std::string eloRightArrow = ">>";
     Vector2 eloSelectorTitleSize = MeasureTextEx(uiFont22, eloSelectorTitle.c_str(), 22, 1);
@@ -727,8 +727,8 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSe
 
     // Title
     DrawTextEx(uiFont36, titleText.c_str(),
-        {
-            roundf(titleX + 2),
+       {
+            roundf(titleX + 2),    
             roundf(titleY + 2)
         },
         36, 1, Color{0, 0, 0, 100});
@@ -813,8 +813,8 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSe
     DrawRectangleLinesEx(selectEloLeftButton, BORDER_WIDTH, BORDER_COLOR);
     DrawTextEx(uiFont22, eloLeftArrow.c_str(),
         {
-            roundf(eloLeftArrowX),
-            roundf(eloSelectorValueY + 2)
+            roundf(selectEloLeftButton.x + (selectEloLeftButton.width - eloArrowSize.x) * 0.5f),
+            roundf(selectEloLeftButton.y + (selectEloLeftButton.height - eloArrowSize.y) * 0.5f)
         },
         22, 1, TEXT_COLOR);
 
@@ -823,8 +823,8 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSe
     DrawRectangleLinesEx(selectEloButton, BORDER_WIDTH, BORDER_COLOR);
     DrawTextEx(uiFont22, eloSelectorValue.c_str(),
         {
-            roundf(eloSelectorValueX),
-            roundf(eloSelectorValueY + 2)
+            roundf(selectEloButton.x + (selectEloButton.width - eloSelectorValueSize.x) * 0.5f),
+            roundf(selectEloButton.y + (selectEloButton.height - eloSelectorValueSize.y) * 0.5f)
         },
         22, 1, TEXT_COLOR);
 
@@ -834,8 +834,8 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSe
     DrawRectangleLinesEx(selectEloRightButton, BORDER_WIDTH, BORDER_COLOR);
     DrawTextEx(uiFont22, eloRightArrow.c_str(),
         {
-            roundf(eloRightArrowX),
-            roundf(eloSelectorValueY + 2)
+            roundf(selectEloRightButton.x + (selectEloRightButton.width - eloArrowSize.x) * 0.5f),
+            roundf(selectEloRightButton.y + (selectEloRightButton.height - eloArrowSize.y) * 0.5f)
         },
         22, 1, TEXT_COLOR);
 
@@ -853,8 +853,8 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSe
     DrawRectangleLinesEx(selectTimeLeftButton, BORDER_WIDTH, BORDER_COLOR);
     DrawTextEx(uiFont22, timeLeftArrow.c_str(),
         {
-            roundf(timeLeftArrowX),
-            roundf(timeSelectorValueY + 2)
+            roundf(selectTimeLeftButton.x + (selectTimeLeftButton.width - timeArrowSize.x) * 0.5f),
+            roundf(selectTimeLeftButton.y + (selectTimeLeftButton.height - timeArrowSize.y) * 0.5f)
         },
         22, 1, TEXT_COLOR);
 
@@ -863,8 +863,8 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSe
     DrawRectangleLinesEx(selectTimeButton, BORDER_WIDTH, BORDER_COLOR);
     DrawTextEx(uiFont22, timeSelectorValue.c_str(),
         {
-            roundf(timeSelectorValueX),
-            roundf(timeSelectorValueY + 2)
+            roundf(selectTimeButton.x + (selectTimeButton.width - timeSelectorValueSize.x) * 0.5f),
+            roundf(selectTimeButton.y + (selectTimeButton.height - timeSelectorValueSize.y) * 0.5f)
         },
         22, 1, TEXT_COLOR);
 
@@ -874,8 +874,8 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSe
     DrawRectangleLinesEx(selectTimeRightButton, BORDER_WIDTH, BORDER_COLOR);
     DrawTextEx(uiFont22, timeRightArrow.c_str(),
         {
-            roundf(timeRightArrowX),
-            roundf(timeSelectorValueY + 2)
+            roundf(selectTimeRightButton.x + (selectTimeRightButton.width - timeArrowSize.x) * 0.5f),
+            roundf(selectTimeRightButton.y + (selectTimeRightButton.height - timeArrowSize.y) * 0.5f)
         },
         22, 1, TEXT_COLOR);
 
@@ -885,8 +885,8 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSe
     DrawRectangleLinesEx(exitButton, BORDER_WIDTH, BORDER_COLOR);
     DrawTextEx(uiFont22, exitBtnText.c_str(),
         {
-            roundf(exitBtnX + (exitButton.width - exitBtnSize.x) / 2.0f),
-            roundf(exitBtnY + 10.0f)
+            roundf(exitButton.x + (exitButton.width - exitBtnSize.x) * 0.5f),
+            roundf(exitButton.y + (exitButton.height - exitBtnSize.y) * 0.5f)
         },
         22, 1, TEXT_COLOR);
 
@@ -907,7 +907,7 @@ void Draw::pvpMenu(const std::string& ipText, const std::string& portText, const
     const Color BTN_SELECTED_COLOR = GRAY;
     const Color TITLE_TEXT_COLOR = WHITE;
 
-    const std::string titleText = "pvp Game";
+    const std::string titleText = "PvP Match";
     Vector2 titleSize = MeasureTextEx(uiFont36, titleText.c_str(), 36, 1);
     const float titleX = centerX - titleSize.x / 2.0f;
     const float titleY = 55.0f;
@@ -984,7 +984,7 @@ void Draw::pvpMenu(const std::string& ipText, const std::string& portText, const
     DrawRectangleLinesEx(backButton, BORDER_WIDTH, BORDER_COLOR);
     const char* backText = "Back";
     Vector2 backSize = MeasureTextEx(uiFont22, backText, 22, 1);
-    DrawTextEx(uiFont22, backText, { backButton.x + (backButton.width - backSize.x) * 0.5f, backButton.y + 13.0f }, 22, 1, TEXT_COLOR);
+    DrawTextEx(uiFont22, backText, { backButton.x + (backButton.width - backSize.x) * 0.5f, backButton.y + (backButton.height - backSize.y) * 0.5f }, 22, 1, TEXT_COLOR);
 
     EndDrawing();
 }

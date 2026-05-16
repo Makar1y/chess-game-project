@@ -139,6 +139,7 @@ public:
     void clearSelection();
     void showResults();
     void showMoveHistory();
+    std::string getDifficultyName(int elo);
     void goToMainMenu();
     void startNewGame();
     void resign();

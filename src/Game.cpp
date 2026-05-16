@@ -110,7 +110,7 @@ void Game::handleMainMenu() {
         }
     }
 
-    draw.mainMenu(playerPlaysWhite, selectedElo, selectedTimeControlSeconds);
+    draw.mainMenu(playerPlaysWhite, getDifficultyName(selectedElo), selectedTimeControlSeconds);
 }
 
 void Game::handlePvpMenu() {
@@ -720,6 +720,17 @@ float Game::getPreviousTimeControl(float currentTimeControlSeconds) {
     }
 
     return TIME_CONTROL_OPTIONS[0];
+}
+
+std::string Game::getDifficultyName(int elo) {
+    if (elo <= 1320) return "Beginner";
+    if (elo <= 1450) return "Casual";
+    if (elo <= 1600) return "Intermediate";
+    if (elo <= 1750) return "Advanced";
+    if (elo <= 1950) return "Expert";
+    if (elo <= 2200) return "Master";
+    if (elo <= 2550) return "Grandmaster";
+    return "Impossible";
 }
 
 std::string Game::moveToUci(Move& move) {
