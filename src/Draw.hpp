@@ -38,7 +38,8 @@ public:
         float playerTimeLeftSeconds, const std::vector<std::string>& moveHistory, const std::string& winnerName,
         const std::string& winReason, const std::string& infoMessage, bool pvpMode,
         const std::vector<PieceType>& whiteCaptured, const std::vector<PieceType>& blackCaptured);
-    void confirmationOverlay(const Rectangle& overlayRect, const Rectangle& overlayYesButton, const Rectangle& overlayNoButton, const char* messageText, bool overlayYesPressed, bool overlayNoPressed, float buttonRoundness, int buttonSegments);
+    void confirmationOverlay(const Rectangle& overlayRect, const Rectangle& overlayYesButton,
+        const Rectangle& overlayNoButton, const char* messageText, bool overlayYesPressed, bool overlayNoPressed, float buttonRoundness, int buttonSegments);
     void infoOverlay(const char* messageText);
     void showMoveHistory(const std::vector<std::string>& moveHistory);
     void showResults(const std::string& winnerName, const std::string& winReason, int movesMade, const std::vector<std::string>& moveHistory);
@@ -49,6 +50,8 @@ private:
     void renderOverlay(OverlayType overlayType, float buttonRoundness, int buttonSegments,
         const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason,
         const std::string& infoMessage);
+    void renderButton(const Rectangle& rect, const char* text, bool hovered, bool selected = false, 
+        Color baseColor = WHITE, Color textColor = BLACK, Color borderColor = BLACK, float fontSize = 22.0f);
     void loadResources();
     void unloadResources();
 

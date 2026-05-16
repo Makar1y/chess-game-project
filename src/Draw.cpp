@@ -223,6 +223,26 @@ void Draw::resetHistoryScroll() {
     historyScrollOffset = 0.0f;
 }
 
+void Draw::renderButton(const Rectangle& rect, const char* text, bool hovered, bool selected, Color baseColor, Color textColor, Color borderColor, float fontSize) {
+    Color btnColor = hovered ? (baseColor.r + baseColor.g + baseColor.b > 600 ? GRAY : DARKGRAY) : baseColor;
+    if (baseColor.r == RED.r && baseColor.g == RED.g && baseColor.b == RED.b) {
+        btnColor = hovered ? Color{185, 41, 55, 255} : RED;
+    }
+
+    DrawRectangleRounded(rect, 0.3f, 8, btnColor);
+    if (selected) {
+        DrawRectangleLinesEx(rect, 4, YELLOW);
+    } else {
+        DrawRectangleLinesEx(rect, 2, borderColor);
+    }
+
+    Vector2 textSize = MeasureTextEx(uiFont22, text, fontSize, 1);
+    DrawTextEx(uiFont22, text, {
+        roundf(rect.x + (rect.width - textSize.x) * 0.5f),
+        roundf(rect.y + (rect.height - textSize.y) * 0.5f)
+    }, fontSize, 1, textColor);
+}
+
 void Draw::showMoveHistory(const std::vector<std::string>& moveHistory) {
     const float historyOverlayWidth = 500.0f;
     const float historyOverlayHeight = 450.0f;
@@ -278,24 +298,7 @@ void Draw::showMoveHistory(const std::vector<std::string>& moveHistory) {
     }
 
     // Draw buttons
-    float buttonWidth = 160.0f;
-    float buttonHeight = 40.0f;
-    float buttonSpacing = 15.0f;
-    float buttonsY = historyOverlayRect.y + historyOverlayRect.height - buttonHeight - 20;
-
-    backToGameButton = {
-        historyOverlayRect.x + (historyOverlayRect.width - (buttonWidth * 2 + buttonSpacing)) * 0.5f,
-        buttonsY,
-        buttonWidth,
-        buttonHeight
-    };
-
-    Color backColor = input.isBackToGameClicked() ? Color{ 218, 218, 190, 255 } : Color{ 238, 238, 210, 255 };
-    DrawRectangleRounded(backToGameButton, 0.2f, 8, backColor);
-    const char* backText = "Back to Game";
-    Vector2 backSize = MeasureTextEx(uiFont22, backText, 18, 1);
-    DrawTextEx(uiFont22, backText, { backToGameButton.x + (backToGameButton.width - backSize.x) * 0.5f, backToGameButton.y + (backToGameButton.height - backSize.y) * 0.5f }, 18, 1, BLACK);
-
+    renderButton(backToGameButton, "Back to Game", input.isBackToGameClicked(), false, Color{ 238, 238, 210, 255 }, BLACK, BLACK, 18.0f);
 }
 
 void Draw::showResults(const std::string& winnerName, const std::string& winReason, int movesMade, const std::vector<std::string>& moveHistory) {
@@ -361,38 +364,8 @@ void Draw::showResults(const std::string& winnerName, const std::string& winReas
     }
 
     // Draw buttons
-    float buttonWidth = 160.0f;
-    float buttonHeight = 40.0f;
-    float buttonSpacing = 15.0f;
-    float buttonsY = resultsOverlayRect.y + resultsOverlayRect.height - buttonHeight - 20;
-
-    exitToMenuButton = {
-        resultsOverlayRect.x + (resultsOverlayRect.width - (buttonWidth * 2 + buttonSpacing)) * 0.5f,
-        buttonsY,
-        buttonWidth,
-        buttonHeight
-    };
-
-    newGameButton = {
-        exitToMenuButton.x + buttonWidth + buttonSpacing,
-        buttonsY,
-        buttonWidth,
-        buttonHeight
-    };
-
-    // Exit to Main Menu button
-    Color exitColor = input.isExitToMenuClicked() ? Color{ 218, 218, 190, 255 } : Color{ 238, 238, 210, 255 };
-    DrawRectangleRounded(exitToMenuButton, 0.2f, 8, exitColor);
-    const char* exitText = "Exit to Menu";
-    Vector2 exitSize = MeasureTextEx(uiFont22, exitText, 18, 1);
-    DrawTextEx(uiFont22, exitText, { exitToMenuButton.x + (exitToMenuButton.width - exitSize.x) * 0.5f, exitToMenuButton.y + (exitToMenuButton.height - exitSize.y) * 0.5f }, 18, 1, BLACK);
-
-    // New Game button
-    Color newGameColor = input.isNewGameClicked() ? Color{ 218, 218, 190, 255 } : Color{ 238, 238, 210, 255 };
-    DrawRectangleRounded(newGameButton, 0.2f, 8, newGameColor);
-    const char* newGameText = "New Game";
-    Vector2 newGameSize = MeasureTextEx(uiFont22, newGameText, 18, 1);
-    DrawTextEx(uiFont22, newGameText, { newGameButton.x + (newGameButton.width - newGameSize.x) * 0.5f, newGameButton.y + (newGameButton.height - newGameSize.y) * 0.5f }, 18, 1, BLACK);
+    renderButton(exitToMenuButton, "Exit to Menu", input.isExitToMenuClicked(), false, Color{ 238, 238, 210, 255 }, BLACK, BLACK, 18.0f);
+    renderButton(newGameButton, "New Game", input.isNewGameClicked(), false, Color{ 238, 238, 210, 255 }, BLACK, BLACK, 18.0f);
 }
 
 void Draw::confirmationOverlay(const Rectangle& overlayRect, const Rectangle& overlayYesButton, const Rectangle& overlayNoButton,
@@ -415,29 +388,8 @@ void Draw::confirmationOverlay(const Rectangle& overlayRect, const Rectangle& ov
         },
         bodyFontSize, 1, DARKGRAY);
 
-    const Color yesColor = overlayYesPressed
-        ? Color{ 218, 218, 190, 255 }
-        : Color{ 238, 238, 210, 255 };
-    const Color noColor = overlayNoPressed
-        ? Color{ 218, 218, 190, 255 }
-        : Color{ 238, 238, 210, 255 };
-
-    DrawRectangleRounded(overlayYesButton, buttonRoundness, buttonSegments, yesColor);
-    DrawRectangleRounded(overlayNoButton, buttonRoundness, buttonSegments, noColor);
-
-    DrawTextEx(uiFont22, "Yes",
-        {
-            std::round(overlayYesButton.x + (overlayYesButton.width - yesSize.x) * 0.5f),
-            std::round(overlayYesButton.y + (overlayYesButton.height - yesSize.y) * 0.5f)
-        },
-        bodyFontSize, 1, BLACK);
-
-    DrawTextEx(uiFont22, "No",
-        {
-            std::round(overlayNoButton.x + (overlayNoButton.width - noSize.x) * 0.5f),
-            std::round(overlayNoButton.y + (overlayNoButton.height - noSize.y) * 0.5f)
-        },
-        bodyFontSize, 1, BLACK);
+    renderButton(overlayYesButton, "Yes", overlayYesPressed, false, Color{ 238, 238, 210, 255 });
+    renderButton(overlayNoButton, "No", overlayNoPressed, false, Color{ 238, 238, 210, 255 });
 }
 
 void Draw::infoOverlay(const char* messageText) {
@@ -608,421 +560,140 @@ void Draw::renderOverlay(OverlayType overlayType, float buttonRoundness, int but
 void Draw::mainMenu(bool playerPlaysWhite, const std::string& difficultyName, float timeControlSeconds) {
     float centerX = (WIDTH + PANEL_WIDTH) / 2.0f;
     float centerY = LENGTH / 2.0f;
-    int BORDER_WIDTH = 2;
-    int ROUNDNESS_SEGMENTS = 8;
-    float ROUNDNESS = 0.3f;
 
-    Color BORDER_COLOR = BLACK;
-    Color TEXT_COLOR = BLACK;
-    Color BTN_COLOR = WHITE;
-    Color BTN_SELECTED_COLOR = GRAY;
-    Color TITLE_TEXT_COLOR = WHITE;
-
-
-    // Title
-    const std::string titleText = "Chess";
-    Vector2 titleSize = MeasureTextEx(uiFont36, titleText.c_str(), 36, 1);
-    const float titleX = centerX - titleSize.x / 2.0f;
+    // Constants for layout
     const float titleY = 60.0f;
+    const float buttonGapHalf = 10.0f;         // Half of horizontal gap between paired buttons
+    const float titleToButtonOffset = 28.0f;   // Vertical distance from title text to buttons
+    const float sectionSpacing = 35.0f;        // Vertical distance between UI sections
+    const float internalPaddingX = 20.0f;      // Horizontal padding inside buttons
+    const float internalPaddingY = 16.0f;      // Vertical padding inside buttons
+    const float arrowGap = 5.0f;               // Gap between selector arrows and value
+    const float buttonVerticalGap = 15.0f;     // Gap between vertical buttons
+    const float arrowWidth = 40.0f;
 
-    // Start button (Stockfish)
-    const std::string startBtnText = "PvE (Stockfish)";
-    Vector2 startBtnSize = MeasureTextEx(uiFont22, startBtnText.c_str(), 22, 1);
-    const float startBtnX = centerX - startBtnSize.x / 2.0f - 20.0f;
-    const float startBtnY = titleY + titleSize.y + 80.0f;
-    startGameButton = Rectangle{
-        roundf(startBtnX),
-        roundf(startBtnY),
-        startBtnSize.x + 40.0f,
-        startBtnSize.y + 20.0f
-    };
-
-    // PvP button
-    const std::string pvpBtnText = "PvP Match";
-    Vector2 pvpBtnSize = MeasureTextEx(uiFont22, pvpBtnText.c_str(), 22, 1);
-    const float pvpBtnX = centerX - pvpBtnSize.x / 2.0f - 20.0f;
-    const float pvpBtnY = startBtnY + startBtnSize.y + 34.0f;
-    pvpMenuButton = Rectangle{
-        roundf(pvpBtnX),
-        roundf(pvpBtnY),
-        pvpBtnSize.x + 40.0f,
-        pvpBtnSize.y + 20.0f
-    };
-
-    // Color selector
-    const std::string colorSelectorTitle = "Play as:";
-    const std::string whiteOption = "White";
-    const std::string blackOption = "Black";
-    Vector2 colorSelectorTitleSize = MeasureTextEx(uiFont22, colorSelectorTitle.c_str(), 22, 1);
-    Vector2 whiteOptionSize = MeasureTextEx(uiFont22, whiteOption.c_str(), 22, 1);
-    Vector2 blackOptionSize = MeasureTextEx(uiFont22, blackOption.c_str(), 22, 1);
-    const float colorSelectorTitleX = centerX - colorSelectorTitleSize.x / 2.0f;
-    const float colorSelectorTitleY = pvpBtnY + pvpBtnSize.y + 45.0f;
-    const float whiteOptionX = centerX - whiteOptionSize.x - 30.0f;
-    const float whiteOptionY = colorSelectorTitleY + colorSelectorTitleSize.y + 20.0f;
-    const float blackOptionX = centerX + 30.0f;
-    const float blackOptionY = whiteOptionY;
-    selectWhiteButton = Rectangle{
-        roundf(whiteOptionX - 15.0f),
-        roundf(whiteOptionY - 8.0f),
-        whiteOptionSize.x + 30.0f,
-        whiteOptionSize.y + 16.0f
-    };
-    selectBlackButton = Rectangle{
-        roundf(blackOptionX - 15.0f),
-        roundf(blackOptionY - 8.0f),
-        blackOptionSize.x + 30.0f,
-        blackOptionSize.y + 16.0f
-    };
-
-    // Elo selector
-    const std::string eloSelectorTitle = "Difficulty:";
-    const std::string eloSelectorValue = difficultyName;
-    const std::string eloLeftArrow = "<<";
-    const std::string eloRightArrow = ">>";
-    Vector2 eloSelectorTitleSize = MeasureTextEx(uiFont22, eloSelectorTitle.c_str(), 22, 1);
-    Vector2 eloSelectorValueSize = MeasureTextEx(uiFont22, eloSelectorValue.c_str(), 22, 1);
-    Vector2 eloArrowSize = MeasureTextEx(uiFont22, eloLeftArrow.c_str(), 22, 1);
-    const float eloSelectorTitleX = centerX - eloSelectorTitleSize.x / 2.0f;
-    const float eloSelectorTitleY = whiteOptionY + whiteOptionSize.y + 50.0f;
-    const float eloSelectorValueX = centerX - eloSelectorValueSize.x / 2.0f;
-    const float eloSelectorValueY = eloSelectorTitleY + eloSelectorTitleSize.y + 18.0f;
-    const float eloLeftArrowX = eloSelectorValueX - eloArrowSize.x - 40.0f;
-    const float eloRightArrowX = eloSelectorValueX + eloSelectorValueSize.x + 40.0f;
-    
-    selectEloButton = Rectangle{
-        roundf(eloSelectorValueX - 25.0f),
-        roundf(eloSelectorValueY - 12.0f),
-        eloSelectorValueSize.x + 50.0f,
-        eloSelectorValueSize.y + 24.0f
+    // Calculations for all UI elements
+    auto getBtnRect = [&](const std::string& text, float y, float pX = 40.0f, float pY = 20.0f) {
+        Vector2 size = MeasureTextEx(uiFont22, text.c_str(), 22, 1);
+        return Rectangle{ roundf(centerX - (size.x + pX) / 2.0f), roundf(y), size.x + pX, size.y + pY };
     };
     
-    selectEloLeftButton = Rectangle{
-        roundf(eloLeftArrowX - 12.0f),
-        roundf(eloSelectorValueY - 12.0f),
-        eloArrowSize.x + 24.0f,
-        eloSelectorValueSize.y + 24.0f
-    };
-    
-    selectEloRightButton = Rectangle{
-        roundf(eloRightArrowX - 12.0f),
-        roundf(eloSelectorValueY - 12.0f),
-        eloArrowSize.x + 24.0f,
-        eloSelectorValueSize.y + 24.0f
-    };
+    // Define rectangles
+    startGameButton = getBtnRect("PvE (Stockfish)", titleY + 120.0f);
+    pvpMenuButton = getBtnRect("PvP Match", startGameButton.y + startGameButton.height + buttonVerticalGap);
 
-    // Time control selector
-    const std::string timeSelectorTitle = "Time Control:";
-    const std::string timeSelectorValue = formatClock(timeControlSeconds);
-    const std::string timeLeftArrow = "<<";
-    const std::string timeRightArrow = ">>";
-    Vector2 timeSelectorTitleSize = MeasureTextEx(uiFont22, timeSelectorTitle.c_str(), 22, 1);
-    Vector2 timeSelectorValueSize = MeasureTextEx(uiFont22, timeSelectorValue.c_str(), 22, 1);
-    Vector2 timeArrowSize = MeasureTextEx(uiFont22, timeLeftArrow.c_str(), 22, 1);
-    const float timeSelectorTitleX = centerX - timeSelectorTitleSize.x / 2.0f;
-    const float timeSelectorTitleY = eloSelectorValueY + eloSelectorValueSize.y + 45.0f;
-    const float timeSelectorValueX = centerX - timeSelectorValueSize.x / 2.0f;
-    const float timeSelectorValueY = timeSelectorTitleY + timeSelectorTitleSize.y + 18.0f;
-    const float timeLeftArrowX = timeSelectorValueX - timeArrowSize.x - 40.0f;
-    const float timeRightArrowX = timeSelectorValueX + timeSelectorValueSize.x + 40.0f;
+    float colorY = pvpMenuButton.y + pvpMenuButton.height + sectionSpacing;
+    Vector2 whiteSize = MeasureTextEx(uiFont22, "White", 22, 1);
+    Vector2 blackSize = MeasureTextEx(uiFont22, "Black", 22, 1);
+    selectWhiteButton = { roundf(centerX - whiteSize.x - internalPaddingX - buttonGapHalf), roundf(colorY + titleToButtonOffset), whiteSize.x + internalPaddingX, whiteSize.y + internalPaddingY };
+    selectBlackButton = { roundf(centerX + buttonGapHalf), roundf(colorY + titleToButtonOffset), blackSize.x + internalPaddingX, blackSize.y + internalPaddingY };
 
-    selectTimeButton = Rectangle{
-        roundf(timeSelectorValueX - 25.0f),
-        roundf(timeSelectorValueY - 12.0f),
-        timeSelectorValueSize.x + 50.0f,
-        timeSelectorValueSize.y + 24.0f
-    };
+    float eloY = selectWhiteButton.y + selectWhiteButton.height + sectionSpacing;
+    const std::string eloValueText = difficultyName;
+    Vector2 eloValueSize = MeasureTextEx(uiFont22, eloValueText.c_str(), 22, 1);
+    selectEloButton = { roundf(centerX - (eloValueSize.x + 50.0f) / 2.0f), roundf(eloY + titleToButtonOffset), eloValueSize.x + 50.0f, eloValueSize.y + 24.0f };
+    selectEloLeftButton = { roundf(selectEloButton.x - arrowWidth - arrowGap), selectEloButton.y, arrowWidth, selectEloButton.height };
+    selectEloRightButton = { roundf(selectEloButton.x + selectEloButton.width + arrowGap), selectEloButton.y, arrowWidth, selectEloButton.height };
 
-    selectTimeLeftButton = Rectangle{
-        roundf(timeLeftArrowX - 12.0f),
-        roundf(timeSelectorValueY - 12.0f),
-        timeArrowSize.x + 24.0f,
-        timeSelectorValueSize.y + 24.0f
-    };
+    float timeY = selectEloButton.y + selectEloButton.height + sectionSpacing;
+    const std::string timeValueText = formatClock(timeControlSeconds);
+    Vector2 timeValueSize = MeasureTextEx(uiFont22, timeValueText.c_str(), 22, 1);
+    selectTimeButton = { roundf(centerX - (timeValueSize.x + 50.0f) / 2.0f), roundf(timeY + titleToButtonOffset), timeValueSize.x + 50.0f, timeValueSize.y + 24.0f };
+    selectTimeLeftButton = { roundf(selectTimeButton.x - arrowWidth - arrowGap), selectTimeButton.y, arrowWidth, selectTimeButton.height };
+    selectTimeRightButton = { roundf(selectTimeButton.x + selectTimeButton.width + arrowGap), selectTimeButton.y, arrowWidth, selectTimeButton.height };
 
-    selectTimeRightButton = Rectangle{
-        roundf(timeRightArrowX - 12.0f),
-        roundf(timeSelectorValueY - 12.0f),
-        timeArrowSize.x + 24.0f,
-        timeSelectorValueSize.y + 24.0f
-    };
-
-    const std::string exitBtnText = "Exit";
-    Vector2 exitBtnSize = MeasureTextEx(uiFont22, exitBtnText.c_str(), 22, 1);
-    const float exitBtnX = centerX - exitBtnSize.x / 2.0f - 20.0f;
-    const float exitBtnY = LENGTH - 80.0f;
-    exitButton = Rectangle{
-        roundf(exitBtnX),
-        roundf(exitBtnY),
-        exitBtnSize.x + 40.0f,
-        exitBtnSize.y + 20.0f
-    };
+    exitButton = getBtnRect("Exit", LENGTH - 80.0f);
 
     BeginDrawing();
-    
-    // Background
-    DrawBackgroundCover(backgroundTexture, Rectangle{0.0f, 0.0f, centerX*2, centerY*2});
+    DrawBackgroundCover(backgroundTexture, {0, 0, (float)WIDTH + PANEL_WIDTH, (float)LENGTH});
 
     // Title
-    DrawTextEx(uiFont36, titleText.c_str(),
-       {
-            roundf(titleX + 2),    
-            roundf(titleY + 2)
-        },
-        36, 1, Color{0, 0, 0, 100});
-    DrawTextEx(uiFont36, titleText.c_str(),
-        {
-            roundf(titleX),
-            roundf(titleY)
-        },
-        36, 1, TITLE_TEXT_COLOR);
+    Vector2 titleSize = MeasureTextEx(uiFont36, "Chess", 36, 1);
+    DrawTextEx(uiFont36, "Chess", { roundf(centerX - titleSize.x / 2.0f + 2), titleY + 2 }, 36, 1, Color{0,0,0,100});
+    DrawTextEx(uiFont36, "Chess", { roundf(centerX - titleSize.x / 2.0f), titleY }, 36, 1, WHITE);
 
-    // Start Game button
-    Color startBtnColor = input.isStartGameClicked() ? BTN_SELECTED_COLOR : BTN_COLOR;
-    DrawRectangleRounded(startGameButton, ROUNDNESS, ROUNDNESS_SEGMENTS, startBtnColor);
-    DrawRectangleLinesEx(startGameButton, BORDER_WIDTH, BORDER_COLOR);
-    DrawTextEx(uiFont22, startBtnText.c_str(),
-        {
-            roundf(startBtnX + (startGameButton.width - startBtnSize.x) / 2.0f),
-            roundf(startBtnY + 10.0f)
-        },
-        22, 1, TEXT_COLOR);
+    // Render Buttons
+    renderButton(startGameButton, "PvE (Stockfish)", input.isStartGameClicked());
+    renderButton(pvpMenuButton, "PvP Match", input.isPvpMenuClicked());
 
-    // pvp button
-    Color pvpBtnColor = input.isPvpMenuClicked() ? BTN_SELECTED_COLOR : BTN_COLOR;
-    DrawRectangleRounded(pvpMenuButton, ROUNDNESS, ROUNDNESS_SEGMENTS, pvpBtnColor);
-    DrawRectangleLinesEx(pvpMenuButton, BORDER_WIDTH, BORDER_COLOR);
-    DrawTextEx(uiFont22, pvpBtnText.c_str(),
-        {
-            roundf(pvpBtnX + (pvpMenuButton.width - pvpBtnSize.x) / 2.0f),
-            roundf(pvpBtnY + 10.0f)
-        },
-        22, 1, TEXT_COLOR);
+    // Color Selector
+    DrawTextEx(uiFont22, "Play as:", { roundf(centerX - MeasureTextEx(uiFont22, "Play as:", 22, 1).x / 2.0f), colorY }, 22, 1, WHITE);
+    renderButton(selectWhiteButton, "White", input.isSelectWhiteClicked(), playerPlaysWhite, WHITE, BLACK, BLACK);
+    renderButton(selectBlackButton, "Black", input.isSelectBlackClicked(), !playerPlaysWhite, BLACK, WHITE, WHITE);
 
-    // Color selector title
-    DrawTextEx(uiFont22, colorSelectorTitle.c_str(),
-        {
-            roundf(colorSelectorTitleX),
-            roundf(colorSelectorTitleY)
-        },
-        22, 1, TITLE_TEXT_COLOR);
+    // Difficulty Selector
+    DrawTextEx(uiFont22, "Difficulty:", { roundf(centerX - MeasureTextEx(uiFont22, "Difficulty:", 22, 1).x / 2.0f), eloY }, 22, 1, WHITE);
+    renderButton(selectEloLeftButton, "<<", input.isSelectEloLeftClicked());
+    renderButton(selectEloButton, eloValueText.c_str(), false);
+    renderButton(selectEloRightButton, ">>", input.isSelectEloRightClicked());
 
-    // White button
-    Color whiteBtnColor = input.isSelectWhiteClicked() ? GRAY : WHITE;
-    DrawRectangleRounded(selectWhiteButton, ROUNDNESS, ROUNDNESS_SEGMENTS, whiteBtnColor);
-    if (playerPlaysWhite) {
-        DrawRectangleLinesEx(selectWhiteButton, 4, YELLOW);
-    } else {
-        DrawRectangleLinesEx(selectWhiteButton, BORDER_WIDTH, BLACK);
-    }
-    DrawTextEx(uiFont22, whiteOption.c_str(),
-        {
-            roundf(whiteOptionX),
-            roundf(whiteOptionY)
-        },
-        22, 1, BLACK);
+    // Time Selector
+    DrawTextEx(uiFont22, "Time Control:", { roundf(centerX - MeasureTextEx(uiFont22, "Time Control:", 22, 1).x / 2.0f), timeY }, 22, 1, WHITE);
+    renderButton(selectTimeLeftButton, "<<", input.isSelectTimeLeftClicked());
+    renderButton(selectTimeButton, timeValueText.c_str(), false);
+    renderButton(selectTimeRightButton, ">>", input.isSelectTimeRightClicked());
 
-    // Black button
-    Color blackBtnColor = input.isSelectBlackClicked() ? DARKGRAY : BLACK;
-    DrawRectangleRounded(selectBlackButton, ROUNDNESS, ROUNDNESS_SEGMENTS, blackBtnColor);
-    if (!playerPlaysWhite) {
-        DrawRectangleLinesEx(selectBlackButton, 4, YELLOW);
-    } else {
-        DrawRectangleLinesEx(selectBlackButton, 2, WHITE);
-    }
-    DrawTextEx(uiFont22, blackOption.c_str(),
-        {
-            roundf(blackOptionX),
-            roundf(blackOptionY)
-        },
-        22, 1, WHITE);
-
-    // Elo selector title
-    DrawTextEx(uiFont22, eloSelectorTitle.c_str(),
-        {
-            roundf(eloSelectorTitleX),
-            roundf(eloSelectorTitleY)
-        },
-        22, 1, TITLE_TEXT_COLOR);
-
-    // Left arrow button
-    Color eloLeftButtonColor = input.isSelectEloLeftClicked() ? BTN_SELECTED_COLOR : BTN_COLOR;
-    DrawRectangleRounded(selectEloLeftButton, ROUNDNESS, ROUNDNESS_SEGMENTS, eloLeftButtonColor);
-    DrawRectangleLinesEx(selectEloLeftButton, BORDER_WIDTH, BORDER_COLOR);
-    DrawTextEx(uiFont22, eloLeftArrow.c_str(),
-        {
-            roundf(selectEloLeftButton.x + (selectEloLeftButton.width - eloArrowSize.x) * 0.5f),
-            roundf(selectEloLeftButton.y + (selectEloLeftButton.height - eloArrowSize.y) * 0.5f)
-        },
-        22, 1, TEXT_COLOR);
-
-    // ELO value display
-    DrawRectangleRounded(selectEloButton, ROUNDNESS, ROUNDNESS_SEGMENTS, BTN_COLOR);
-    DrawRectangleLinesEx(selectEloButton, BORDER_WIDTH, BORDER_COLOR);
-    DrawTextEx(uiFont22, eloSelectorValue.c_str(),
-        {
-            roundf(selectEloButton.x + (selectEloButton.width - eloSelectorValueSize.x) * 0.5f),
-            roundf(selectEloButton.y + (selectEloButton.height - eloSelectorValueSize.y) * 0.5f)
-        },
-        22, 1, TEXT_COLOR);
-
-    // Right arrow button
-    Color eloRightButtonColor = input.isSelectEloRightClicked() ? BTN_SELECTED_COLOR : BTN_COLOR;
-    DrawRectangleRounded(selectEloRightButton, ROUNDNESS, ROUNDNESS_SEGMENTS, eloRightButtonColor);
-    DrawRectangleLinesEx(selectEloRightButton, BORDER_WIDTH, BORDER_COLOR);
-    DrawTextEx(uiFont22, eloRightArrow.c_str(),
-        {
-            roundf(selectEloRightButton.x + (selectEloRightButton.width - eloArrowSize.x) * 0.5f),
-            roundf(selectEloRightButton.y + (selectEloRightButton.height - eloArrowSize.y) * 0.5f)
-        },
-        22, 1, TEXT_COLOR);
-
-    // Time control selector title
-    DrawTextEx(uiFont22, timeSelectorTitle.c_str(),
-        {
-            roundf(timeSelectorTitleX),
-            roundf(timeSelectorTitleY)
-        },
-        22, 1, TITLE_TEXT_COLOR);
-
-    // Time left arrow button
-    Color timeLeftButtonColor = input.isSelectTimeLeftClicked() ? BTN_SELECTED_COLOR : BTN_COLOR;
-    DrawRectangleRounded(selectTimeLeftButton, ROUNDNESS, ROUNDNESS_SEGMENTS, timeLeftButtonColor);
-    DrawRectangleLinesEx(selectTimeLeftButton, BORDER_WIDTH, BORDER_COLOR);
-    DrawTextEx(uiFont22, timeLeftArrow.c_str(),
-        {
-            roundf(selectTimeLeftButton.x + (selectTimeLeftButton.width - timeArrowSize.x) * 0.5f),
-            roundf(selectTimeLeftButton.y + (selectTimeLeftButton.height - timeArrowSize.y) * 0.5f)
-        },
-        22, 1, TEXT_COLOR);
-
-    // Time value display
-    DrawRectangleRounded(selectTimeButton, ROUNDNESS, ROUNDNESS_SEGMENTS, BTN_COLOR);
-    DrawRectangleLinesEx(selectTimeButton, BORDER_WIDTH, BORDER_COLOR);
-    DrawTextEx(uiFont22, timeSelectorValue.c_str(),
-        {
-            roundf(selectTimeButton.x + (selectTimeButton.width - timeSelectorValueSize.x) * 0.5f),
-            roundf(selectTimeButton.y + (selectTimeButton.height - timeSelectorValueSize.y) * 0.5f)
-        },
-        22, 1, TEXT_COLOR);
-
-    // Time right arrow button
-    Color timeRightButtonColor = input.isSelectTimeRightClicked() ? BTN_SELECTED_COLOR : BTN_COLOR;
-    DrawRectangleRounded(selectTimeRightButton, ROUNDNESS, ROUNDNESS_SEGMENTS, timeRightButtonColor);
-    DrawRectangleLinesEx(selectTimeRightButton, BORDER_WIDTH, BORDER_COLOR);
-    DrawTextEx(uiFont22, timeRightArrow.c_str(),
-        {
-            roundf(selectTimeRightButton.x + (selectTimeRightButton.width - timeArrowSize.x) * 0.5f),
-            roundf(selectTimeRightButton.y + (selectTimeRightButton.height - timeArrowSize.y) * 0.5f)
-        },
-        22, 1, TEXT_COLOR);
-
-    // Exit button
-    Color exitBtnColor = input.isExitClicked() ? Color{185, 41, 55, 255} : RED;
-    DrawRectangleRounded(exitButton, ROUNDNESS, ROUNDNESS_SEGMENTS, exitBtnColor);
-    DrawRectangleLinesEx(exitButton, BORDER_WIDTH, BORDER_COLOR);
-    DrawTextEx(uiFont22, exitBtnText.c_str(),
-        {
-            roundf(exitButton.x + (exitButton.width - exitBtnSize.x) * 0.5f),
-            roundf(exitButton.y + (exitButton.height - exitBtnSize.y) * 0.5f)
-        },
-        22, 1, TEXT_COLOR);
+    renderButton(exitButton, "Exit", input.isExitClicked(), false, RED, WHITE);
 
     EndDrawing();
 }
 
-
 void Draw::pvpMenu(const std::string& ipText, const std::string& portText, const std::string& statusText, bool ipFocused, bool portFocused) {
     float centerX = (WIDTH + PANEL_WIDTH) / 2.0f;
-    float centerY = LENGTH / 2.0f;
-    const int BORDER_WIDTH = 2;
-    const int ROUNDNESS_SEGMENTS = 8;
-    const float ROUNDNESS = 0.3f;
-
-    const Color BORDER_COLOR = BLACK;
-    const Color TEXT_COLOR = BLACK;
-    const Color BTN_COLOR = WHITE;
-    const Color BTN_SELECTED_COLOR = GRAY;
-    const Color TITLE_TEXT_COLOR = WHITE;
-
-    const std::string titleText = "PvP Match";
-    Vector2 titleSize = MeasureTextEx(uiFont36, titleText.c_str(), 36, 1);
-    const float titleX = centerX - titleSize.x / 2.0f;
     const float titleY = 55.0f;
+    const float guestScale = 0.22f;
 
-    float guestScale = 0.22f;
-    float guestW = (float)guestTexture.width * guestScale;
+    // Define layouts
+    Vector2 titleSize = MeasureTextEx(uiFont36, "PvP Match", 36, 1);
     float guestH = (float)guestTexture.height * guestScale;
-    float guestX = centerX - guestW * 0.5f;
     float guestY = titleY + titleSize.y + 24.0f;
 
     const float fieldWidth = 360.0f;
     const float fieldHeight = 46.0f;
     const float fieldX = centerX - fieldWidth * 0.5f;
 
-    const std::string ipLabel = "Host IP:";
-    Vector2 ipLabelSize = MeasureTextEx(uiFont22, ipLabel.c_str(), 22, 1);
-    float ipLabelY = guestY + guestH + 35.0f;
-    ipInputBox = Rectangle{ fieldX, ipLabelY + ipLabelSize.y + 8.0f, fieldWidth, fieldHeight };
-
-    const std::string portLabel = "Port:";
-    Vector2 portLabelSize = MeasureTextEx(uiFont22, portLabel.c_str(), 22, 1);
-    float portLabelY = ipInputBox.y + ipInputBox.height + 20.0f;
-    portInputBox = Rectangle{ fieldX, portLabelY + portLabelSize.y + 8.0f, fieldWidth, fieldHeight };
-
+    const float titleToButtonOffset = 30.0f;   // Vertical distance from label/title to input/button
+    const float sectionSpacing = 35.0f;        // Vertical distance between sections
+    const float buttonGapHalf = 5.0f;          // Half of horizontal gap between buttons
     const float buttonWidth = 170.0f;
     const float buttonHeight = 48.0f;
-    const float buttonGap = 20.0f;
-    const float buttonsY = portInputBox.y + portInputBox.height + 35.0f;
 
-    hostGameButton = Rectangle{ centerX - buttonWidth - buttonGap * 0.5f, buttonsY, buttonWidth, buttonHeight };
-    joinGameButton = Rectangle{ centerX + buttonGap * 0.5f, buttonsY, buttonWidth, buttonHeight };
+    float ipLabelY = guestY + guestH + sectionSpacing;
+    ipInputBox = { fieldX, ipLabelY + titleToButtonOffset, fieldWidth, fieldHeight };
 
-    backButton = Rectangle{ centerX - 75.0f, LENGTH - 80.0f, 150.0f, 48.0f };
+    float portLabelY = ipInputBox.y + ipInputBox.height + 20.0f;
+    portInputBox = { fieldX, portLabelY + titleToButtonOffset, fieldWidth, fieldHeight };
+
+    const float buttonsY = portInputBox.y + portInputBox.height + sectionSpacing;
+    hostGameButton = { roundf(centerX - buttonWidth - buttonGapHalf), buttonsY, buttonWidth, buttonHeight };
+    joinGameButton = { roundf(centerX + buttonGapHalf), buttonsY, buttonWidth, buttonHeight };
+    backButton = { roundf(centerX - 75.0f), LENGTH - 80.0f, 150.0f, 48.0f };
 
     BeginDrawing();
-    DrawBackgroundCover(backgroundTexture, Rectangle{0.0f, 0.0f, centerX * 2, centerY * 2});
+    DrawBackgroundCover(backgroundTexture, {0, 0, (float)WIDTH + PANEL_WIDTH, (float)LENGTH});
 
-    DrawTextEx(uiFont36, titleText.c_str(), { roundf(titleX + 2), roundf(titleY + 2) }, 36, 1, Color{0, 0, 0, 100});
-    DrawTextEx(uiFont36, titleText.c_str(), { roundf(titleX), roundf(titleY) }, 36, 1, TITLE_TEXT_COLOR);
+    // Title & Texture
+    DrawTextEx(uiFont36, "PvP Match", { roundf(centerX - titleSize.x / 2.0f + 2), titleY + 2 }, 36, 1, Color{0, 0, 0, 100});
+    DrawTextEx(uiFont36, "PvP Match", { roundf(centerX - titleSize.x / 2.0f), titleY }, 36, 1, WHITE);
+    DrawTextureEx(guestTexture, { centerX - (float)guestTexture.width * guestScale * 0.5f, guestY }, 0.0f, guestScale, WHITE);
 
-    DrawTextureEx(guestTexture, { guestX, guestY }, 0.0f, guestScale, WHITE);
+    // Input Fields
+    DrawTextEx(uiFont22, "Host IP:", { fieldX, ipLabelY }, 22, 1, WHITE);
+    renderButton(ipInputBox, ipText.c_str(), false, ipFocused, WHITE, BLACK, BLACK);
+    
+    DrawTextEx(uiFont22, "Port:", { fieldX, portLabelY }, 22, 1, WHITE);
+    renderButton(portInputBox, portText.c_str(), false, portFocused, WHITE, BLACK, BLACK);
 
-    DrawTextEx(uiFont22, ipLabel.c_str(), { fieldX, ipLabelY }, 22, 1, TITLE_TEXT_COLOR);
-    DrawRectangleRounded(ipInputBox, 0.15f, ROUNDNESS_SEGMENTS, WHITE);
-    DrawRectangleLinesEx(ipInputBox, ipFocused ? 4 : BORDER_WIDTH, ipFocused ? YELLOW : BORDER_COLOR);
-    DrawTextEx(uiFont22, ipText.c_str(), { ipInputBox.x + 14.0f, ipInputBox.y + 12.0f }, 22, 1, TEXT_COLOR);
-
-    DrawTextEx(uiFont22, portLabel.c_str(), { fieldX, portLabelY }, 22, 1, TITLE_TEXT_COLOR);
-    DrawRectangleRounded(portInputBox, 0.15f, ROUNDNESS_SEGMENTS, WHITE);
-    DrawRectangleLinesEx(portInputBox, portFocused ? 4 : BORDER_WIDTH, portFocused ? YELLOW : BORDER_COLOR);
-    DrawTextEx(uiFont22, portText.c_str(), { portInputBox.x + 14.0f, portInputBox.y + 12.0f }, 22, 1, TEXT_COLOR);
-
-    Color hostColor = input.isHostGameClicked() ? BTN_SELECTED_COLOR : BTN_COLOR;
-    Color joinColor = input.isJoinGameClicked() ? BTN_SELECTED_COLOR : BTN_COLOR;
-    DrawRectangleRounded(hostGameButton, ROUNDNESS, ROUNDNESS_SEGMENTS, hostColor);
-    DrawRectangleLinesEx(hostGameButton, BORDER_WIDTH, BORDER_COLOR);
-    DrawRectangleRounded(joinGameButton, ROUNDNESS, ROUNDNESS_SEGMENTS, joinColor);
-    DrawRectangleLinesEx(joinGameButton, BORDER_WIDTH, BORDER_COLOR);
-
-    const char* hostText = "Create Game";
-    const char* joinText = "Join Game";
-    Vector2 hostSize = MeasureTextEx(uiFont22, hostText, 22, 1);
-    Vector2 joinSize = MeasureTextEx(uiFont22, joinText, 22, 1);
-    DrawTextEx(uiFont22, hostText, { hostGameButton.x + (hostGameButton.width - hostSize.x) * 0.5f, hostGameButton.y + 13.0f }, 22, 1, TEXT_COLOR);
-    DrawTextEx(uiFont22, joinText, { joinGameButton.x + (joinGameButton.width - joinSize.x) * 0.5f, joinGameButton.y + 13.0f }, 22, 1, TEXT_COLOR);
+    // Buttons
+    renderButton(hostGameButton, "Create Game", input.isHostGameClicked());
+    renderButton(joinGameButton, "Join Game", input.isJoinGameClicked());
 
     if (!statusText.empty()) {
         Vector2 statusSize = MeasureTextEx(uiFont22, statusText.c_str(), 20, 1);
-        DrawTextEx(uiFont22, statusText.c_str(), { centerX - statusSize.x * 0.5f, buttonsY + buttonHeight + 24.0f }, 20, 1, TITLE_TEXT_COLOR);
+        DrawTextEx(uiFont22, statusText.c_str(), { centerX - statusSize.x * 0.5f, buttonsY + 72.0f }, 20, 1, WHITE);
     }
 
-    Color backColor = input.isBackClicked() ? Color{185, 41, 55, 255} : RED;
-    DrawRectangleRounded(backButton, ROUNDNESS, ROUNDNESS_SEGMENTS, backColor);
-    DrawRectangleLinesEx(backButton, BORDER_WIDTH, BORDER_COLOR);
-    const char* backText = "Back";
-    Vector2 backSize = MeasureTextEx(uiFont22, backText, 22, 1);
-    DrawTextEx(uiFont22, backText, { backButton.x + (backButton.width - backSize.x) * 0.5f, backButton.y + (backButton.height - backSize.y) * 0.5f }, 22, 1, TEXT_COLOR);
+    renderButton(backButton, "Back", input.isBackClicked(), false, RED, WHITE);
 
     EndDrawing();
 }
@@ -1247,63 +918,11 @@ void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY
         undoButton = { buttonX, firstButtonY + (buttonHeight + buttonSpacing) * 3.0f, buttonWidth, buttonHeight };
     }
 
-Color resignColor = input.isResignClicked()
-    ? Color{ 218, 218, 190, 255 }
-    : Color{ 238, 238, 210, 255 };
-
-Color drawColor = input.isOfferDrawClicked()
-    ? Color{ 218, 218, 190, 255 }
-    : Color{ 238, 238, 210, 255 };
-
-Color resultsColor = input.isShowResultsClicked()
-    ? Color{ 218, 218, 190, 255 }
-    : Color{ 238, 238, 210, 255 };
-    Color undoColor = input.isUndoClicked() ? GRAY : LIGHTGRAY;
-
-    DrawRectangleRounded(resignButton, buttonRoundness, buttonSegments, resignColor);
-    DrawRectangleRounded(offerDrawButton, buttonRoundness, buttonSegments, drawColor);
-    DrawRectangleRounded(showResultsButton, buttonRoundness, buttonSegments, resultsColor);
+    renderButton(resignButton, "Resign", input.isResignClicked(), false, Color{ 238, 238, 210, 255 });
+    renderButton(offerDrawButton, "Offer Draw", input.isOfferDrawClicked(), false, Color{ 238, 238, 210, 255 });
+    renderButton(showResultsButton, "Show Moves", input.isShowResultsClicked(), false, Color{ 238, 238, 210, 255 });
     if (!pvpMode) {
-        DrawRectangleRounded(undoButton, buttonRoundness, buttonSegments, undoColor);
-    }
-
-    const char* resignText = "Resign";
-    const char* drawTextStr = "Offer Draw";
-    const char* resultsText = "Show Moves";
-    const char* undoText = "Undo Move";
-
-    Vector2 resignSize = MeasureTextEx(uiFont22, resignText, 22, 1);
-    Vector2 drawSize = MeasureTextEx(uiFont22, drawTextStr, 22, 1);
-    Vector2 resultsSize = MeasureTextEx(uiFont22, resultsText, 22, 1);
-    Vector2 undoSize = MeasureTextEx(uiFont22, undoText, 22, 1);
-
-    DrawTextEx(uiFont22, resignText,
-        {
-            roundf(resignButton.x + (resignButton.width - resignSize.x) * 0.5f),
-            roundf(resignButton.y + (resignButton.height - resignSize.y) * 0.5f)
-        },
-        22, 1, BLACK);
-
-    DrawTextEx(uiFont22, drawTextStr,
-        {
-            roundf(offerDrawButton.x + (offerDrawButton.width - drawSize.x) * 0.5f),
-            roundf(offerDrawButton.y + (offerDrawButton.height - drawSize.y) * 0.5f)
-        },
-        22, 1, BLACK);
-
-    DrawTextEx(uiFont22, resultsText,
-        {
-            roundf(showResultsButton.x + (showResultsButton.width - resultsSize.x) * 0.5f),
-            roundf(showResultsButton.y + (showResultsButton.height - resultsSize.y) * 0.5f)
-        },
-        22, 1, BLACK);
-    if (!pvpMode) {
-        DrawTextEx(uiFont22, undoText,
-        {
-            roundf(undoButton.x + (undoButton.width - undoSize.x) * 0.5f),
-            roundf(undoButton.y + (undoButton.height - undoSize.y) * 0.5f)
-        },
-        22, 1, BLACK);
+        renderButton(undoButton, "Undo Move", input.isUndoClicked(), false, LIGHTGRAY);
     }
 
     const float playerClockBottomPadding = 18.0f;
