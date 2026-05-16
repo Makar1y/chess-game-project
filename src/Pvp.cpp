@@ -42,7 +42,7 @@ void Pvp::closeSocket(SocketHandle s) {
 #ifdef _WIN32
     closesocket(s);
 #else
-    close(s);
+    ::close(s);
 #endif
 }
 

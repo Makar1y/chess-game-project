@@ -600,7 +600,7 @@ void Draw::mainMenu(bool playerPlaysWhite, int stockfishElo, float timeControlSe
     };
 
     // pvp button
-    const std::string pvpBtnText = "pvp Game";
+    const std::string pvpBtnText = "PvP Match";
     Vector2 pvpBtnSize = MeasureTextEx(uiFont22, pvpBtnText.c_str(), 22, 1);
     const float pvpBtnX = centerX - pvpBtnSize.x / 2.0f - 20.0f;
     const float pvpBtnY = startBtnY + startBtnSize.y + 34.0f;
