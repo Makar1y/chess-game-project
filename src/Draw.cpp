@@ -1009,9 +1009,16 @@ void Draw::connectingMenu(const std::string& statusText) {
     EndDrawing();
 }
 
-void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY, std::set<std::pair<int, int>>& possibleMoves, std::set<std::pair<int, int>>& possibleCaptures, Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName, bool playerPlaysWhite, float playerTimeLeftSeconds, const std::vector<std::string>& moveHistory, const std::string& winnerName, const std::string& winReason, const std::string& infoMessage, bool pvpMode) {
+void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY,
+                  std::set<std::pair<int, int>>& possibleMoves, std::set<std::pair<int, int>>& possibleCaptures,
+                  Move* lastMove, bool hasLastMove, OverlayType overlayType, std::string playerName,
+                  bool playerPlaysWhite, float playerTimeLeftSeconds, const std::vector<std::string>& moveHistory,
+                  const std::string& winnerName, const std::string& winReason, const std::string& infoMessage,
+                  bool pvpMode, const std::vector<PieceType>& whiteCaptured, const std::vector<PieceType>& blackCaptured) {
+
     static float PIECE_SCALE = 0.46f;
     static float PLAYER_SCALE = 0.28f;
+    static float CAPTURED_PIECE_SCALE = 0.14f;
 
     BeginDrawing();
     ClearBackground(RAYWHITE);
@@ -1146,6 +1153,49 @@ void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY
     },
     36, 1, Color{ 238, 238, 210, 255 });
 
+    // Captured pieces by opponent
+    PieceColor opponentColor = playerPlaysWhite ? PieceColor::Black : PieceColor::White;
+    const std::vector<PieceType>& opponentCapturedList = (opponentColor == PieceColor::White) ? whiteCaptured : blackCaptured;
+    PieceColor opponentCapturedColor = (opponentColor == PieceColor::White) ? PieceColor::Black : PieceColor::White;
+
+    float capturedX = WIDTH + panelSidePadding;
+    float capturedY = playerImageY - 40.0f;
+    float capturedSpacing = 22.0f;
+    float currentX = capturedX;
+    float currentY = capturedY;
+
+    for (PieceType type : opponentCapturedList) {
+        Texture2D* tex = nullptr;
+        if (opponentCapturedColor == PieceColor::Black) {
+            switch (type) {
+                case PieceType::Pawn:   tex = &b_pawn;   break;
+                case PieceType::Knight: tex = &b_knight; break;
+                case PieceType::Bishop: tex = &b_bishop; break;
+                case PieceType::Rook:   tex = &b_rook;   break;
+                case PieceType::Queen:  tex = &b_queen;  break;
+                default: break;
+            }
+        } else {
+            switch (type) {
+                case PieceType::Pawn:   tex = &w_pawn;   break;
+                case PieceType::Knight: tex = &w_knight; break;
+                case PieceType::Bishop: tex = &w_bishop; break;
+                case PieceType::Rook:   tex = &w_rook;   break;
+                case PieceType::Queen:  tex = &w_queen;  break;
+                default: break;
+            }
+        }
+
+        if (tex) {
+            DrawTextureEx(*tex, { currentX, currentY }, 0.0f, CAPTURED_PIECE_SCALE, WHITE);
+            currentX += capturedSpacing;
+            if (currentX > WIDTH + PANEL_WIDTH - panelSidePadding - capturedSpacing) {
+                currentX = capturedX;
+                currentY += capturedSpacing + 4.0f;
+            }
+        }
+    }
+
     float buttonWidth = PANEL_WIDTH - panelSidePadding * 2.0f;
     float buttonX = WIDTH + (PANEL_WIDTH - buttonWidth) * 0.5f;
     float firstButtonY = playerTextY + playerTextSize.y + buttonsTopSpacing;
@@ -1226,6 +1276,48 @@ Color resultsColor = input.isShowResultsClicked()
         buttonWidth,
         playerClockHeight
     };
+
+    // Captured pieces by bottom player
+    PieceColor player1Color = playerPlaysWhite ? PieceColor::White : PieceColor::Black;
+    const std::vector<PieceType>& p1CapturedList = (player1Color == PieceColor::White) ? whiteCaptured : blackCaptured;
+    PieceColor p1CapturedColor = (player1Color == PieceColor::White) ? PieceColor::Black : PieceColor::White;
+
+    float p1CapturedX = WIDTH + panelSidePadding;
+    float p1CapturedY = playerClockRect.y - 40.0f;
+    float p1CurrentX = p1CapturedX;
+    float p1CurrentY = p1CapturedY;
+
+    for (PieceType type : p1CapturedList) {
+        Texture2D* tex = nullptr;
+        if (p1CapturedColor == PieceColor::Black) {
+            switch (type) {
+                case PieceType::Pawn:   tex = &b_pawn;   break;
+                case PieceType::Knight: tex = &b_knight; break;
+                case PieceType::Bishop: tex = &b_bishop; break;
+                case PieceType::Rook:   tex = &b_rook;   break;
+                case PieceType::Queen:  tex = &b_queen;  break;
+                default: break;
+            }
+        } else {
+            switch (type) {
+                case PieceType::Pawn:   tex = &w_pawn;   break;
+                case PieceType::Knight: tex = &w_knight; break;
+                case PieceType::Bishop: tex = &w_bishop; break;
+                case PieceType::Rook:   tex = &w_rook;   break;
+                case PieceType::Queen:  tex = &w_queen;  break;
+                default: break;
+            }
+        }
+
+        if (tex) {
+            DrawTextureEx(*tex, { p1CurrentX, p1CurrentY }, 0.0f, CAPTURED_PIECE_SCALE, WHITE);
+            p1CurrentX += capturedSpacing;
+            if (p1CurrentX > WIDTH + PANEL_WIDTH - panelSidePadding - capturedSpacing) {
+                p1CurrentX = p1CapturedX;
+                p1CurrentY -= (capturedSpacing + 4.0f);
+            }
+        }
+    }
 
     std::string playerClockText = formatClock(playerTimeLeftSeconds);
     Vector2 playerClockSize = MeasureTextEx(uiFont36, playerClockText.c_str(), 36, 1);

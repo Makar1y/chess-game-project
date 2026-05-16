@@ -77,6 +77,8 @@ private:
     bool playerPlaysWhite = PLAYER_PLAYS_WHITE;
     bool isPlayerTurn = true;
     std::vector<std::string> moveHistory;
+    std::vector<PieceType> whiteCapturedPieces;
+    std::vector<PieceType> blackCapturedPieces;
     Move lastMove;
     bool hasLastMove = false;
     ScreenState screenState = ScreenState::MainMenu;

@@ -31,6 +31,8 @@ void Game::resetGameState() {
     clearPossibleMoves();
     moveHistory.clear();
     undoStack = std::stack<Move>();
+    whiteCapturedPieces.clear();
+    blackCapturedPieces.clear();
     hasLastMove = false;
     winnerName.clear();
     winReason.clear();
@@ -191,6 +193,17 @@ bool Game::applyMove(Move& move, bool sendToOpponent) {
     halfMoves++;
     if (isCaptureMove || isPawnMove) {
         halfMoves = 0;
+    }
+
+    if (isCaptureMove) {
+        Piece* captured = board.getPiece(move.getToX(), move.getToY());
+        if (captured) {
+            if (moverColor == PieceColor::White) whiteCapturedPieces.push_back(captured->getType());
+            else blackCapturedPieces.push_back(captured->getType());
+        } else if (isEnPassantMove) {
+            if (moverColor == PieceColor::White) whiteCapturedPieces.push_back(PieceType::Pawn);
+            else blackCapturedPieces.push_back(PieceType::Pawn);
+        }
     }
 
     board.update(move);
@@ -663,7 +676,8 @@ void Game::mainMenu() {
 
         draw.render(board, pieceSelected, selectedX, selectedY, possibleMoves, possibleCaptures,
             &lastMove, hasLastMove, overlayType, player2.getName(), playerPlaysWhite,
-            playerTimeLeftSeconds, moveHistory, winnerName, winReason, overlayMessage, pvpMode);
+            playerTimeLeftSeconds, moveHistory, winnerName, winReason, overlayMessage, pvpMode,
+            whiteCapturedPieces, blackCapturedPieces);
 
         if (screenState == ScreenState::InGame && !isPlayerTurn && !pvpMode) {
             std::this_thread::sleep_for(std::chrono::milliseconds(STOCKFISH_MOVE_TIME_MS));
@@ -1065,6 +1079,15 @@ void Game::undoLastMove() {
     undoStack.pop();
 
     board.undo(last);
+
+    Piece* restored = board.getPiece(last.getToX(), last.getToY());
+    if (restored) {
+        if (restored->getColor() == PieceColor::Black) {
+            if (!whiteCapturedPieces.empty()) whiteCapturedPieces.pop_back();
+        } else {
+            if (!blackCapturedPieces.empty()) blackCapturedPieces.pop_back();
+        }
+    }
 
     if (!moveHistory.empty()) {
         moveHistory.pop_back();
