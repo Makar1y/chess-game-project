@@ -118,6 +118,8 @@ Draw::Draw()
         overlayButtonWidth,
         overlayButtonHeight
     };
+
+    historyScrollOffset = 0.0f;
 }
 
 void Draw::loadResources() {
@@ -217,6 +219,10 @@ Input& Draw::getInput() {
     return input;
 }
 
+void Draw::resetHistoryScroll() {
+    historyScrollOffset = 0.0f;
+}
+
 void Draw::showMoveHistory(const std::vector<std::string>& moveHistory) {
     const float historyOverlayWidth = 500.0f;
     const float historyOverlayHeight = 450.0f;
@@ -246,18 +252,30 @@ void Draw::showMoveHistory(const std::vector<std::string>& moveHistory) {
         historyText += moveHistory[i] + " ";
         if (i % 2 != 0) historyText += "\n";
     }
-    std::string recentHistoryText = "";
-    int movesToShow = std::min(20, (int)moveHistory.size());
-    int startIdx = std::max(0, (int)moveHistory.size() - movesToShow);
-    for (int i = startIdx; i < (int)moveHistory.size(); ++i) {
-        if (i % 2 == 0) {
-            recentHistoryText += std::to_string(i / 2 + 1) + ". ";
-        }
-        recentHistoryText += moveHistory[i] + " ";
-        if (i % 2 != 0) recentHistoryText += "\n";
-    }
 
-    DrawTextEx(uiFont22, recentHistoryText.c_str(), { historyOverlayRect.x + 20, historyOverlayRect.y + 70 }, 18, 1, BLACK);
+    // Scrolling logic
+    float wheel = GetMouseWheelMove();
+    historyScrollOffset += wheel * 25.0f;
+    
+    Vector2 textSize = MeasureTextEx(uiFont22, historyText.c_str(), 18, 1);
+    float visibleHeight = historyOverlayRect.height - 150.0f; // Space between header and buttons
+    float maxScroll = textSize.y - visibleHeight;
+    if (maxScroll < 0) maxScroll = 0;
+    
+    if (historyScrollOffset > 0) historyScrollOffset = 0;
+    if (historyScrollOffset < -maxScroll) historyScrollOffset = -maxScroll;
+
+    // Draw move history with clipping
+    BeginScissorMode((int)historyOverlayRect.x, (int)(historyOverlayRect.y + 70), (int)historyOverlayRect.width, (int)visibleHeight);
+    DrawTextEx(uiFont22, historyText.c_str(), { historyOverlayRect.x + 20, historyOverlayRect.y + 70 + historyScrollOffset }, 18, 1, BLACK);
+    EndScissorMode();
+
+    // Draw scroll indicator
+    if (maxScroll > 0) {
+        float scrollBarHeight = (visibleHeight / textSize.y) * visibleHeight;
+        float scrollBarY = historyOverlayRect.y + 70 + (-historyScrollOffset / maxScroll) * (visibleHeight - scrollBarHeight);
+        DrawRectangle(historyOverlayRect.x + historyOverlayRect.width - 10, scrollBarY, 5, scrollBarHeight, Fade(GRAY, 0.6f));
+    }
 
     // Draw buttons
     float buttonWidth = 160.0f;
@@ -309,18 +327,38 @@ void Draw::showResults(const std::string& winnerName, const std::string& winReas
     const char* historyTitle = "Move History:";
     DrawTextEx(uiFont22, historyTitle, { resultsOverlayRect.x + 20, resultsOverlayRect.y + 145 }, 18, 1, DARKGRAY);
 
-    std::string recentHistoryText = "";
-    int movesToShow = std::min(16, (int)moveHistory.size());
-    int startIdx = std::max(0, (int)moveHistory.size() - movesToShow);
-    for (int i = startIdx; i < (int)moveHistory.size(); ++i) {
+    std::string historyText = "";
+    for (size_t i = 0; i < moveHistory.size(); ++i) {
         if (i % 2 == 0) {
-            recentHistoryText += std::to_string(i / 2 + 1) + ". ";
+            historyText += std::to_string(i / 2 + 1) + ". ";
         }
-        recentHistoryText += moveHistory[i] + " ";
-        if (i % 2 != 0) recentHistoryText += "\n";
+        historyText += moveHistory[i] + " ";
+        if (i % 2 != 0) historyText += "\n";
     }
 
-    DrawTextEx(uiFont22, recentHistoryText.c_str(), { resultsOverlayRect.x + 20, resultsOverlayRect.y + 175 }, 18, 1, BLACK);
+    // Scrolling logic
+    float wheel = GetMouseWheelMove();
+    historyScrollOffset += wheel * 25.0f;
+
+    Vector2 textSize = MeasureTextEx(uiFont22, historyText.c_str(), 18, 1);
+    float visibleHeight = resultsOverlayRect.height - 175.0f - 80.0f; // From Y=175 to buttons
+    float maxScroll = textSize.y - visibleHeight;
+    if (maxScroll < 0) maxScroll = 0;
+
+    if (historyScrollOffset > 0) historyScrollOffset = 0;
+    if (historyScrollOffset < -maxScroll) historyScrollOffset = -maxScroll;
+
+    // Draw move history with clipping
+    BeginScissorMode((int)resultsOverlayRect.x, (int)(resultsOverlayRect.y + 175), (int)resultsOverlayRect.width, (int)visibleHeight);
+    DrawTextEx(uiFont22, historyText.c_str(), { resultsOverlayRect.x + 20, resultsOverlayRect.y + 175 + historyScrollOffset }, 18, 1, BLACK);
+    EndScissorMode();
+
+    // Scroll indicator
+    if (maxScroll > 0) {
+        float scrollBarHeight = (visibleHeight / textSize.y) * visibleHeight;
+        float scrollBarY = resultsOverlayRect.y + 175 + (-historyScrollOffset / maxScroll) * (visibleHeight - scrollBarHeight);
+        DrawRectangle(resultsOverlayRect.x + resultsOverlayRect.width - 10, scrollBarY, 5, scrollBarHeight, Fade(GRAY, 0.6f));
+    }
 
     // Draw buttons
     float buttonWidth = 160.0f;

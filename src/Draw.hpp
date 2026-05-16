@@ -43,6 +43,7 @@ public:
     void showMoveHistory(const std::vector<std::string>& moveHistory);
     void showResults(const std::string& winnerName, const std::string& winReason, int movesMade, const std::vector<std::string>& moveHistory);
     void showPromotion(const std::vector<std::string>& moveHistory);
+    void resetHistoryScroll();
 
 private:
     void renderOverlay(OverlayType overlayType, float buttonRoundness, int buttonSegments,
@@ -108,4 +109,5 @@ private:
     Rectangle cancelPromotionButton;
 
     Input input;
+    float historyScrollOffset;
 };

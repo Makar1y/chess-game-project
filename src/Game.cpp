@@ -780,10 +780,12 @@ void Game::clearSelection() {
 void Game::showResults() {
     winnerName = "Unknown";
     winReason = "Manual Results View";
+    draw.resetHistoryScroll();
     overlayType = OverlayType::Results;
 }
 
 void Game::showMoveHistory() {
+    draw.resetHistoryScroll();
     overlayType = OverlayType::MoveHistory;
 }
 
