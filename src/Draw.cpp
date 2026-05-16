@@ -59,7 +59,7 @@ Draw::Draw()
             promoteRookSelection, promoteBishopSelection, cancelPromotionButton) {
     resourcesLoaded = false;
 
-    const float overlayWidth              = 380.0f;
+    const float overlayWidth              = 440.0f;
     const float overlayHeight             = 210.0f;
     const float overlayButtonWidth        = 120.0f;
     const float overlayButtonHeight       = 46.0f;
@@ -231,15 +231,15 @@ void Draw::renderButton(const Rectangle& rect, const char* text, bool hovered, b
 
     DrawRectangleRounded(rect, 0.3f, 8, btnColor);
     if (selected) {
-        DrawRectangleLinesEx(rect, 4, YELLOW);
+        DrawRectangleLinesEx(rect, 4, ORANGE);
     } else {
-        DrawRectangleLinesEx(rect, 2, borderColor);
+        DrawRectangleLinesEx(rect, 2.5f, borderColor);
     }
 
     Vector2 textSize = MeasureTextEx(uiFont22, text, fontSize, 1);
     DrawTextEx(uiFont22, text, {
-        roundf(rect.x + (rect.width - textSize.x) * 0.5f),
-        roundf(rect.y + (rect.height - textSize.y) * 0.5f)
+        rect.x + (rect.width - textSize.x) * 0.5f,
+        rect.y + (rect.height - textSize.y) * 0.5f
     }, fontSize, 1, textColor);
 }
 
@@ -251,6 +251,13 @@ void Draw::showMoveHistory(const std::vector<std::string>& moveHistory) {
         ((float)LENGTH - historyOverlayHeight) * 0.5f,
         historyOverlayWidth,
         historyOverlayHeight
+    };
+
+    backToGameButton = { 
+        historyOverlayRect.x + (historyOverlayRect.width - 160.0f) * 0.5f, 
+        historyOverlayRect.y + historyOverlayRect.height - 60.0f, 
+        160.0f, 
+        44.0f 
     };
 
     DrawRectangle(0, 0, WIDTH + PANEL_WIDTH, LENGTH, Fade(BLACK, 0.25f));
@@ -364,6 +371,19 @@ void Draw::showResults(const std::string& winnerName, const std::string& winReas
     }
 
     // Draw buttons
+    exitToMenuButton = { 
+        resultsOverlayRect.x + (resultsOverlayRect.width - 340.0f) * 0.5f, 
+        resultsOverlayRect.y + resultsOverlayRect.height - 60.0f, 
+        160.0f, 
+        44.0f 
+    };
+    newGameButton = { 
+        exitToMenuButton.x + 180.0f, 
+        exitToMenuButton.y, 
+        160.0f, 
+        44.0f 
+    };
+
     renderButton(exitToMenuButton, "Exit to Menu", input.isExitToMenuClicked(), false, Color{ 238, 238, 210, 255 }, BLACK, BLACK, 18.0f);
     renderButton(newGameButton, "New Game", input.isNewGameClicked(), false, Color{ 238, 238, 210, 255 }, BLACK, BLACK, 18.0f);
 }
@@ -564,7 +584,7 @@ void Draw::mainMenu(bool playerPlaysWhite, const std::string& difficultyName, fl
     // Constants for layout
     const float titleY = 60.0f;
     const float buttonGapHalf = 10.0f;         // Half of horizontal gap between paired buttons
-    const float titleToButtonOffset = 28.0f;   // Vertical distance from title text to buttons
+    const float titleToButtonOffset = 30.0f;   // Vertical distance from title text to buttons
     const float sectionSpacing = 35.0f;        // Vertical distance between UI sections
     const float internalPaddingX = 20.0f;      // Horizontal padding inside buttons
     const float internalPaddingY = 16.0f;      // Vertical padding inside buttons
@@ -575,7 +595,7 @@ void Draw::mainMenu(bool playerPlaysWhite, const std::string& difficultyName, fl
     // Calculations for all UI elements
     auto getBtnRect = [&](const std::string& text, float y, float pX = 40.0f, float pY = 20.0f) {
         Vector2 size = MeasureTextEx(uiFont22, text.c_str(), 22, 1);
-        return Rectangle{ roundf(centerX - (size.x + pX) / 2.0f), roundf(y), size.x + pX, size.y + pY };
+        return Rectangle{ (centerX - (size.x + pX) / 2.0f), (y), size.x + pX, size.y + pY };
     };
     
     // Define rectangles
@@ -585,22 +605,22 @@ void Draw::mainMenu(bool playerPlaysWhite, const std::string& difficultyName, fl
     float colorY = pvpMenuButton.y + pvpMenuButton.height + sectionSpacing;
     Vector2 whiteSize = MeasureTextEx(uiFont22, "White", 22, 1);
     Vector2 blackSize = MeasureTextEx(uiFont22, "Black", 22, 1);
-    selectWhiteButton = { roundf(centerX - whiteSize.x - internalPaddingX - buttonGapHalf), roundf(colorY + titleToButtonOffset), whiteSize.x + internalPaddingX, whiteSize.y + internalPaddingY };
-    selectBlackButton = { roundf(centerX + buttonGapHalf), roundf(colorY + titleToButtonOffset), blackSize.x + internalPaddingX, blackSize.y + internalPaddingY };
+    selectWhiteButton = { (centerX - whiteSize.x - internalPaddingX - buttonGapHalf), (colorY + titleToButtonOffset), whiteSize.x + internalPaddingX, whiteSize.y + internalPaddingY };
+    selectBlackButton = { (centerX + buttonGapHalf), (colorY + titleToButtonOffset), blackSize.x + internalPaddingX, blackSize.y + internalPaddingY };
 
     float eloY = selectWhiteButton.y + selectWhiteButton.height + sectionSpacing;
     const std::string eloValueText = difficultyName;
     Vector2 eloValueSize = MeasureTextEx(uiFont22, eloValueText.c_str(), 22, 1);
-    selectEloButton = { roundf(centerX - (eloValueSize.x + 50.0f) / 2.0f), roundf(eloY + titleToButtonOffset), eloValueSize.x + 50.0f, eloValueSize.y + 24.0f };
-    selectEloLeftButton = { roundf(selectEloButton.x - arrowWidth - arrowGap), selectEloButton.y, arrowWidth, selectEloButton.height };
-    selectEloRightButton = { roundf(selectEloButton.x + selectEloButton.width + arrowGap), selectEloButton.y, arrowWidth, selectEloButton.height };
+    selectEloButton = { (centerX - (eloValueSize.x + 50.0f) / 2.0f), (eloY + titleToButtonOffset), eloValueSize.x + 50.0f, eloValueSize.y +24.0f };
+    selectEloLeftButton = { (selectEloButton.x - arrowWidth - arrowGap), selectEloButton.y, arrowWidth, selectEloButton.height };
+    selectEloRightButton = { (selectEloButton.x + selectEloButton.width + arrowGap), selectEloButton.y, arrowWidth, selectEloButton.height };
 
     float timeY = selectEloButton.y + selectEloButton.height + sectionSpacing;
     const std::string timeValueText = formatClock(timeControlSeconds);
     Vector2 timeValueSize = MeasureTextEx(uiFont22, timeValueText.c_str(), 22, 1);
-    selectTimeButton = { roundf(centerX - (timeValueSize.x + 50.0f) / 2.0f), roundf(timeY + titleToButtonOffset), timeValueSize.x + 50.0f, timeValueSize.y + 24.0f };
-    selectTimeLeftButton = { roundf(selectTimeButton.x - arrowWidth - arrowGap), selectTimeButton.y, arrowWidth, selectTimeButton.height };
-    selectTimeRightButton = { roundf(selectTimeButton.x + selectTimeButton.width + arrowGap), selectTimeButton.y, arrowWidth, selectTimeButton.height };
+    selectTimeButton = { (centerX - (timeValueSize.x + 50.0f) / 2.0f), (timeY + titleToButtonOffset), timeValueSize.x + 50.0f, timeValueSize.y + 24.0f };
+    selectTimeLeftButton = { (selectTimeButton.x - arrowWidth - arrowGap), selectTimeButton.y, arrowWidth, selectTimeButton.height };
+    selectTimeRightButton = { (selectTimeButton.x + selectTimeButton.width + arrowGap), selectTimeButton.y, arrowWidth, selectTimeButton.height };
 
     exitButton = getBtnRect("Exit", LENGTH - 80.0f);
 
@@ -609,28 +629,28 @@ void Draw::mainMenu(bool playerPlaysWhite, const std::string& difficultyName, fl
 
     // Title
     Vector2 titleSize = MeasureTextEx(uiFont36, "Chess", 36, 1);
-    DrawTextEx(uiFont36, "Chess", { roundf(centerX - titleSize.x / 2.0f + 2), titleY + 2 }, 36, 1, Color{0,0,0,100});
-    DrawTextEx(uiFont36, "Chess", { roundf(centerX - titleSize.x / 2.0f), titleY }, 36, 1, WHITE);
+    DrawTextEx(uiFont36, "Chess", { (centerX - titleSize.x / 2.0f + 2), titleY + 2 }, 36, 1, Color{0,0,0,100});
+    DrawTextEx(uiFont36, "Chess", { (centerX - titleSize.x / 2.0f), titleY }, 36, 1, WHITE);
 
     // Render Buttons
     renderButton(startGameButton, "PvE (Stockfish)", input.isStartGameClicked());
     renderButton(pvpMenuButton, "PvP Match", input.isPvpMenuClicked());
 
     // Color Selector
-    DrawTextEx(uiFont22, "Play as:", { roundf(centerX - MeasureTextEx(uiFont22, "Play as:", 22, 1).x / 2.0f), colorY }, 22, 1, WHITE);
+    DrawTextEx(uiFont22, "Play as:", { (centerX - MeasureTextEx(uiFont22, "Play as:", 22, 1).x / 2.0f), colorY }, 22, 1, WHITE);
     renderButton(selectWhiteButton, "White", input.isSelectWhiteClicked(), playerPlaysWhite, WHITE, BLACK, BLACK);
     renderButton(selectBlackButton, "Black", input.isSelectBlackClicked(), !playerPlaysWhite, BLACK, WHITE, WHITE);
 
     // Difficulty Selector
-    DrawTextEx(uiFont22, "Difficulty:", { roundf(centerX - MeasureTextEx(uiFont22, "Difficulty:", 22, 1).x / 2.0f), eloY }, 22, 1, WHITE);
+    DrawTextEx(uiFont22, "Difficulty:", { (centerX - MeasureTextEx(uiFont22, "Difficulty:", 22, 1).x / 2.0f), eloY }, 22, 1, WHITE);
     renderButton(selectEloLeftButton, "<<", input.isSelectEloLeftClicked());
-    renderButton(selectEloButton, eloValueText.c_str(), false);
+    renderButton(selectEloButton, eloValueText.c_str(), false, false);
     renderButton(selectEloRightButton, ">>", input.isSelectEloRightClicked());
 
     // Time Selector
-    DrawTextEx(uiFont22, "Time Control:", { roundf(centerX - MeasureTextEx(uiFont22, "Time Control:", 22, 1).x / 2.0f), timeY }, 22, 1, WHITE);
+    DrawTextEx(uiFont22, "Time Control:", { (centerX - MeasureTextEx(uiFont22, "Time Control:", 22, 1).x / 2.0f), timeY }, 22, 1, WHITE);
     renderButton(selectTimeLeftButton, "<<", input.isSelectTimeLeftClicked());
-    renderButton(selectTimeButton, timeValueText.c_str(), false);
+    renderButton(selectTimeButton, timeValueText.c_str(), false, false);
     renderButton(selectTimeRightButton, ">>", input.isSelectTimeRightClicked());
 
     renderButton(exitButton, "Exit", input.isExitClicked(), false, RED, WHITE);
@@ -665,16 +685,16 @@ void Draw::pvpMenu(const std::string& ipText, const std::string& portText, const
     portInputBox = { fieldX, portLabelY + titleToButtonOffset, fieldWidth, fieldHeight };
 
     const float buttonsY = portInputBox.y + portInputBox.height + sectionSpacing;
-    hostGameButton = { roundf(centerX - buttonWidth - buttonGapHalf), buttonsY, buttonWidth, buttonHeight };
-    joinGameButton = { roundf(centerX + buttonGapHalf), buttonsY, buttonWidth, buttonHeight };
-    backButton = { roundf(centerX - 75.0f), LENGTH - 80.0f, 150.0f, 48.0f };
+    hostGameButton = { (centerX - buttonWidth - buttonGapHalf), buttonsY, buttonWidth, buttonHeight };
+    joinGameButton = { (centerX + buttonGapHalf), buttonsY, buttonWidth, buttonHeight };
+    backButton = { (centerX - 75.0f), LENGTH - 80.0f, 150.0f, 48.0f };
 
     BeginDrawing();
     DrawBackgroundCover(backgroundTexture, {0, 0, (float)WIDTH + PANEL_WIDTH, (float)LENGTH});
 
     // Title & Texture
-    DrawTextEx(uiFont36, "PvP Match", { roundf(centerX - titleSize.x / 2.0f + 2), titleY + 2 }, 36, 1, Color{0, 0, 0, 100});
-    DrawTextEx(uiFont36, "PvP Match", { roundf(centerX - titleSize.x / 2.0f), titleY }, 36, 1, WHITE);
+    DrawTextEx(uiFont36, "PvP Match", { (centerX - titleSize.x / 2.0f + 2), titleY + 2 }, 36, 1, Color{0, 0, 0, 100});
+    DrawTextEx(uiFont36, "PvP Match", { (centerX - titleSize.x / 2.0f), titleY }, 36, 1, WHITE);
     DrawTextureEx(guestTexture, { centerX - (float)guestTexture.width * guestScale * 0.5f, guestY }, 0.0f, guestScale, WHITE);
 
     // Input Fields
@@ -981,8 +1001,8 @@ void Draw::render(Board& board, bool pieceSelected, int selectedX, int selectedY
     DrawRectangleRounded(playerClockRect, buttonRoundness, buttonSegments, Color{ 238, 238, 210, 255 });
     DrawTextEx(uiFont36, playerClockText.c_str(),
     {
-        roundf(playerClockRect.x + (playerClockRect.width - playerClockSize.x) * 0.5f),
-        roundf(playerClockRect.y + (playerClockRect.height - playerClockSize.y) * 0.5f)
+        (playerClockRect.x + (playerClockRect.width - playerClockSize.x) * 0.5f),
+        (playerClockRect.y + (playerClockRect.height - playerClockSize.y) * 0.5f)
     },
     36, 1, BLACK);
 

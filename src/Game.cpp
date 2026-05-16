@@ -101,13 +101,9 @@ void Game::handleMainMenu() {
             selectedElo = getPreviousStockfishElo(selectedElo);
         } else if (draw.getInput().isSelectEloRightClicked()) {
             selectedElo = getNextStockfishElo(selectedElo);
-        } else if (draw.getInput().isSelectEloClicked()) {
-            selectedElo = getNextStockfishElo(selectedElo);
         } else if (draw.getInput().isSelectTimeLeftClicked()) {
             selectedTimeControlSeconds = getPreviousTimeControl(selectedTimeControlSeconds);
         } else if (draw.getInput().isSelectTimeRightClicked()) {
-            selectedTimeControlSeconds = getNextTimeControl(selectedTimeControlSeconds);
-        } else if (draw.getInput().isSelectTimeClicked()) {
             selectedTimeControlSeconds = getNextTimeControl(selectedTimeControlSeconds);
         }
     }
